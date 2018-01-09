@@ -41,7 +41,7 @@ return
                  for $line in csv:parse($benutzer-csv, map { 'separator': ';' })/*:csv/*:record
                  let $vorname := $line/*:entry[1]
                  let $nachname := $line/*:entry[2]
-                 let $username := $line/*:entry[4]
+                 let $username := $line/*:entry[3]
                  return <div class="col-md-4">{$username}</div>
                 }
                 </pre>

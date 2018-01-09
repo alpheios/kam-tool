@@ -161,6 +161,9 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+declare %plugin:provide("schema/render/modal/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+<pre>{serialize($Item)}</pre>
+};
 
 declare %plugin:provide("ui/page/content","stammdaten/kk")
 function _:stammdaten-kk($map)
@@ -211,7 +214,7 @@ as element(schema){
     </element>
     <element name="zuständig" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
-                <key>@id</key>
+                <key>username/string()</key>
                 <display-name>name/string()</display-name>
                 <label>Zuständig</label>
                 <class>col-md-6</class>
