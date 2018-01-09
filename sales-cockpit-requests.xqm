@@ -33,6 +33,17 @@ function _:page1() {
 };
 
 declare
+  %rest:path("sanofi/importer")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-importer() {
+  ui:page(map{
+    "title": "Importer"
+    },"sanofi/importer")
+};
+
+declare
   %rest:path("sanofi/projekt")
   %rest:GET
   %output:method("html")

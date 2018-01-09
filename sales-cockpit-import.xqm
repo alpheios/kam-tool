@@ -25,3 +25,5 @@ import module namespace projekte-gantt          = "sanofi/views/projekte" at "vi
 
 
 import module namespace blauer-ozean-task       = "sanofi/task/blauer-ozean/edit/reusable" at "tasks/blauer-ozean-edit-reusable.xqm";
+
+import module namespace importer       = "sanofi/views/importer" at "views/importer.xqm";
