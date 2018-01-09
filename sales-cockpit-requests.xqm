@@ -33,6 +33,17 @@ function _:page1() {
 };
 
 declare
+  %rest:path("sanofi/projekt")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page100() {
+  ui:page(map{"id":request:parameter("id"),
+    "title": "Projekte - Gantt"
+    },"sanofi/projekt")
+};
+
+declare
   %rest:path("sanofi/kam-top-4-kk")
   %rest:GET
   %output:method("html")
@@ -132,6 +143,17 @@ declare
   };
 
 declare
+    %rest:path("sanofi/stammdaten/projekt")
+    %rest:GET
+    %output:method("html")
+    %output:version("5.0")
+  function _:page-stammdaten-projekt() {
+    ui:page(map{
+      "title": "Stammdaten Projekte"
+      },"stammdaten/projekt")
+  };
+
+declare
     %rest:path("sanofi/stammdaten/kv")
     %rest:GET
     %output:method("html")
@@ -152,6 +174,7 @@ declare
       "title": "Stammdaten Krankenkassen"
       },"stammdaten/kk")
   };
+
 declare
     %rest:path("sanofi/stammdaten/wirkstoff")
     %rest:GET

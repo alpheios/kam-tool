@@ -26,6 +26,7 @@ function _:sanofi-blauer-ozean($map as map(*))
 as element(xhtml:div)
 {
 let $id := $map => map:get("id")
+let $id := if (not($id)) then "1234" else $id
 let $context := map{"context":"sanofi/blauer-ozean"}
 let $schema := plugin:provider-lookup("sanofi/blauer-ozean","schema")!.()
 let $items := plugin:provider-lookup("sanofi/blauer-ozean","datastore/dataobject/all")!.(trace($schema),$context)
@@ -35,28 +36,26 @@ let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
 let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()
 let $ist := string-join(for $x in $ist-names return $item/element()[name()=$x]/string(),",")
 let $soll := string-join(for $x in $soll-names return $item/element()[name()=$x]/string(),",")
-let $andere := string-join(for $x in $andere-names return $item/element()[name()=$x]/string(),",")
 let $labels := '"'||string-join($schema/element[ends-with(@name,"-ist")]/label/substring-before(string()," IST"),'","')||'"'
 let $edit-button := try {plugin:provider-lookup("sanofi/blauer-ozean","schema/render/button/modal/edit")!.($item,$schema,$map)} catch * {}
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-12 col-md-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
                   <h5>{$edit-button} Der Blaue Ozean (SWAT Alternative) als Radar Chart</h5>
                   <select class="chosen pull-right" onchange="window.location='/influx/sanofi/blauer-ozean?id='+$(this).val()">
-                    {$items ! <option value="{./@id/string()}">{./*:name/string()}</option>}
+                    <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
+                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
                   </select>
               </div>
               <div class="ibox-content">
-              <pre>{serialize($item)}</pre>
-                  <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                      <canvas id="radarChart" height="646" width="1294" style="display: block; width: 647px; height: 323px;"></canvas>
-                  </div>
+                <canvas id="radarChart" width="720" height="720"></canvas>
               </div>
           </div>
       </div>
+      { if ($id) then <bla>
       <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
       <script>//<![CDATA[
       var radarData = {
@@ -66,30 +65,32 @@ return
                       label: "IST",
                       backgroundColor: "rgba(220,220,220,0.2)",
                       borderColor: "rgba(120,155,120,1)",
-                      data: [0,]]>{$ist}<![CDATA[]
+                      data: []]>{$ist}<![CDATA[]
                   },
                   {
                       label: "SOLL",
                       backgroundColor: "rgba(220,220,220,0.2)",
                       borderColor: "rgba(155,120,120,1)",
-                      data: [0, ]]>{$soll}<![CDATA[]
-                  },
-                  {
-                      label: "Andere",
-                      backgroundColor: "rgba(220,220,220,0.2)",
-                      borderColor: "rgba(220,220,220,1)",
-                      data: [0, ]]>{$andere}<![CDATA[]
+                      data: []]>{$soll}<![CDATA[]
                   }
               ]
           };
 
           var radarOptions = {
-              responsive: true
+              responsive: false,
+                  maintainAspectRatio: true,
+              scale: {
+                         ticks: {
+                             beginAtZero: true,
+                             max: 5
+                         }
+              }
           };
 
           var ctx5 = document.getElementById("radarChart").getContext("2d");
           new Chart(ctx5, {type: 'radar', data: radarData, options:radarOptions});
           //]]></script>
+          </bla>/node() else ()}
     </div>
 </div>
 };

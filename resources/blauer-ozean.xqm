@@ -69,18 +69,11 @@ as element(schema){
         <label>Lieferfähigkeit SOLL</label>
     </element>
 
-    <element name="lieferfähigkeit-andere" type="number">
-        <label>Lieferfähigkeit Wettbewerb</label>
-    </element>
-
  <element name="vertragsqualität-ist" type="number">
    <label>Vertragsqualität IST</label>
  </element>
  <element name="vertragsqualität-soll" type="number">
    <label>Vertragsqualität SOLL</label>
- </element>
- <element name="vertragsqualität-andere" type="number">
-   <label>Vertragsqualität Wettbewerb</label>
  </element>
  <element name="ökonomie-ist" type="number">
    <label>Ökonomie IST</label>
@@ -88,17 +81,11 @@ as element(schema){
  <element name="ökonomie-soll" type="number">
    <label>Ökonomie SOLL</label>
  </element>
- <element name="ökonomie-andere" type="number">
-   <label>Ökonomie Wettbewerb</label>
- </element>
  <element name="informationsweitergabe-ist" type="number">
    <label>Informationsweitergabe IST</label>
  </element>
  <element name="informationsweitergabe-soll" type="number">
    <label>Informationsweitergabe SOLL</label>
- </element>
- <element name="informationsweitergabe-andere" type="number">
-   <label>Informationsweitergabe Wettbewerb</label>
  </element>
  <element name="gesprächsangebot-ist" type="number">
    <label>Gesprächsangebot IST</label>
@@ -106,17 +93,11 @@ as element(schema){
  <element name="gesprächsangebot-soll" type="number">
    <label>Gesprächsangebot SOLL</label>
  </element>
- <element name="gesprächsangebot-andere" type="number">
-   <label>Gesprächsangebot Wettbewerb</label>
- </element>
  <element name="one-face-to-the-customoer-ist" type="number">
-   <label>One-Face-to-The-Customoer IST</label>
+   <label>One-Face-to-The-Customer IST</label>
  </element>
  <element name="one-face-to-the-customoer-soll" type="number">
-   <label>One-Face-to-The-Customoer SOLL</label>
- </element>
- <element name="one-face-to-the-customoer-andere" type="number">
-   <label>One-Face-to-The-Customoer Wettbewerb</label>
+   <label>One-Face-to-The-Customer SOLL</label>
  </element>
 
    <element name="kv" type="foreign-key" required="">
