@@ -29,6 +29,10 @@ as element(xhtml:div)
 </div>
 };
 
+declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
+<pre>{serialize($Item)}</pre>
+};
+
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
@@ -64,9 +68,39 @@ as element(schema){
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
-     <element name="username" type="text">
+     <element name="username" type="username">
           <label>Username</label>
       </element>
  </schema>
 };
 
+declare %plugin:provide("schema/render/form/field/username")
+ function _:schema-render-field-username-key-accounter(
+     $Item as element()?,
+     $Element as element(element),
+     $Context)
+     as element(xhtml:select)
+{
+     let $schema := $Element/ancestor::schema
+     let $assigned-username := $Item/username/string()
+     let $key-accounters := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
+     let $assigned-usernames := $key-accounters/username/string()
+     let $type := $Element/@type
+     let $name := $Element/@name
+     let $usernames := (plugin:lookup("usernames")!.())[not(.=$assigned-usernames)]
+     let $enums := $usernames!<enum key="{.}">{.}</enum>
+     let $class := $Element/class/string()
+     let $required := $Element/@required
+     let $value := $Item/node()[name()=$name]
+     return
+     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
+     <option value="">Nicht zugewiesen</option>
+     {
+       for $enum in $enums
+       return <option value="{$enum/@key}">
+                    {if ($enum/@key=$value) then attribute selected {} else ()}
+                    {$enum/string()}
+              </option>
+     }
+     </select>
+};

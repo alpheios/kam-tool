@@ -21,7 +21,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/modal/debug/item") function _:debug-kv ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -71,7 +71,7 @@ as element(schema){
     </element>
     <element name="zuständig" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
-                <key>username/string()</key>
+                <key>@id/string()</key>
                 <display-name>name/string()</display-name>
                 <label>Zuständig</label>
                 <class>col-md-6</class>
@@ -97,3 +97,34 @@ as element(schema){
 
 </schema>
 };
+
+declare %plugin:provide("schema/render/form/page")
+function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
+{
+let $form-id := "id-"||random:uuid()
+let $title := $Schema/*:modal/*:title/string()
+let $provider := $Schema/@provider
+return
+<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
+  <div class="ibox float-e-margins">
+      <div class="tabs-container">
+          <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
+          </ul>
+          <div class="tab-content">
+              <div id="tab-1" class="tab-pane active">
+                  <div class="panel-body">
+                     {plugin:provider-lookup($provider,"schema/render/form/standard")!.($Item,$Schema,$Context)}
+                  </div>
+              </div>
+              <div id="tab-2" class="tab-pane">
+                  <div class="panel-body">
+                    {plugin:provider-lookup("sanofi/views/kam-top-4-kv","content/view")!.($Item,$Schema,$Context)}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+ </div>
+ };

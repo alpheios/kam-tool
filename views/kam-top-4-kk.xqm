@@ -22,9 +22,12 @@ declare %plugin:provide("ui/page/content","sanofi/kam-top-4-kk")
 function _:sanofi-kam-top-4($map)
 as element(xhtml:div)
 {
+let $id := $map => map:get("id")
+let $id := if (not($id)) then "1234" else $id
+
 let $context := map{"context":"sanofi/kam-top-4-kk"}
 let $schema := plugin:provider-lookup("sanofi/kk","schema")!.()
-let $kven := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$context)
+let $kken := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
         <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
@@ -35,7 +38,8 @@ return
               <div class="ibox-title">
                   <h5>Krankenkassen TOP 4 Überblick</h5>
                   <select class="chosen pull-right btn">
-                    {$kk:kk/*:a ! <option>{.}</option>}
+                    <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
+                    {$kken ! <option value="{@id/string()}">{./*:name/string()}</option>}
                   </select>
               </div>
               <div class="ibox-content">
@@ -46,30 +50,7 @@ return
                             <h5>Versichertenzahl 2017, Verteilung auf Bundesländer</h5>
                         </div>
                         <div class="ibox-content">
-                            <div>
-                                <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                <canvas id="doughnutChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                            </div>
-                             <script>//<![CDATA[
-                                      var doughnutData = {
-                                          labels: []]>{string-join($kk:land ! ('"'||.||'"'),",")} <![CDATA[],
-                                          datasets: [{
-                                              data: []]>{string-join($kk:land ! (random:integer(25)),",")} <![CDATA[],
-                                              backgroundColor: []]>{string-join(for $i in 2 to count($kk:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
-                                          }]
-                                      } ;
-
-
-                                      var doughnutOptions = {
-                                          responsive: true
-                                      };
-
-
-                                      var ctx4 = document.getElementById("doughnutChart").getContext("2d");
-                                      new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-
-
-                                      //]]></script>
+                         {plugin:provider-lookup("sanofi/kam-top-4-kk","content/view")!.($kken,$schema,$context)}
                         </div>
                     </div>
                 </div>
@@ -192,4 +173,29 @@ return
 
 </div>
 
+};
+
+
+declare %plugin:provide("content/view") function _:content-view($Item, $Schema, $Context){
+
+<div>
+    <div>
+        <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+        <canvas id="doughnutChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+    </div>
+     <script>//<![CDATA[
+              var doughnutData = {
+                  labels: []]>{string-join($kk:land ! ('"'||.||'"'),",")} <![CDATA[],
+                  datasets: [{
+                      data: []]>{string-join($kk:land ! (random:integer(25)),",")} <![CDATA[],
+                      backgroundColor: []]>{string-join(for $i in 2 to count($kk:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
+                  }]
+              } ;
+              var doughnutOptions = {
+                  responsive: true
+              };
+              var ctx4 = document.getElementById("doughnutChart").getContext("2d");
+              new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
+              //]]></script>
+</div>
 };

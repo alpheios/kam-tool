@@ -55,7 +55,7 @@ return
               </div>
           </div>
       </div>
-      { if ($id) then <bla>
+      { if ($item) then <div>
       <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
       <script>//<![CDATA[
       var radarData = {
@@ -90,7 +90,7 @@ return
           var ctx5 = document.getElementById("radarChart").getContext("2d");
           new Chart(ctx5, {type: 'radar', data: radarData, options:radarOptions});
           //]]></script>
-          </bla>/node() else ()}
+          </div> else ()}
     </div>
 </div>
 };

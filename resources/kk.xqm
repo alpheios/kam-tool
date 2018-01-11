@@ -161,7 +161,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/modal/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -181,12 +181,12 @@ as element(xhtml:div)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
-for $item in $Items order by $item/kk return $item
+for $item in $Items order by $item/name return $item
 };
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("kk","land","zuständig")
+    let $columns := ("name","zuständig")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -205,24 +205,17 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
-    <element name="kk" type="enum">
+    <element name="name" type="enum">
     {$_:kk//a ! <enum key="{.}">{.}</enum>}
-    <label>KK Dachverband</label>
-    </element>
-    <element name="name" type="text">
-        <label>Name:</label>
+    <label>Name</label>
     </element>
     <element name="zuständig" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
-                <key>username/string()</key>
+                <key>@id/string()</key>
                 <display-name>name/string()</display-name>
                 <label>Zuständig</label>
                 <class>col-md-6</class>
     </element>
-    <element name="bundesland" type="enum">
-            {$_:land ! <enum key="{.}">{.}</enum>}
-            <label>Bundesland</label>
-        </element>
     <element name="ansprechpartner" type="foreign-key" required="">
             <provider>sanofi/ansprechpartner</provider>
             <key>@id</key>
@@ -252,174 +245,112 @@ as element(schema){
   </schema>
 };
 
-declare %plugin:provide("ui/page/content","sanofi/kam-top-4")
-function _:sanofi-kam-top-4($map)
-as element(xhtml:div)
+declare %plugin:provide("schema/render/form/field/enum","name")
+ function _:schema-render-field-kk-name(
+     $Item as element()?,
+     $Element as element(element),
+     $Context)
+     as element(xhtml:select)
 {
+     let $schema := $Element/ancestor::schema
+     let $assigned-username := $Item/username/string()
+     let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
+     let $assigned-names := $kks/name/string()
+     let $type := $Element/@type
+     let $name := $Element/@name
+     let $names := $_:kk//a/text()[not(.=$assigned-names)]
+     let $enums := $names!<enum key="{.}">{.}</enum>
+     let $class := $Element/class/string()
+     let $required := $Element/@required
+     let $value := $Item/node()[name()=$name]
+     return
+     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
+     <option value="">Nicht zugewiesen</option>
+     {
+       for $enum in $enums
+       return <option value="{$enum/@key}">
+                    {if ($enum/@key=$value) then attribute selected {} else ()}
+                    {$enum/string()}
+              </option>
+     }
+     </select>
+};
+declare %plugin:provide("schema/render/form/field/username")
+ function _:schema-render-field-username-key-accounter(
+     $Item as element()?,
+     $Element as element(element),
+     $Context)
+     as element(xhtml:select)
+{
+     let $schema := $Element/ancestor::schema
+     let $assigned-username := $Item/username/string()
+     let $key-accounters := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
+     let $assigned-usernames := $key-accounters/username/string()
+     let $type := $Element/@type
+     let $name := $Element/@name
+     let $usernames := (plugin:lookup("usernames")!.())[not(.=$assigned-usernames)]
+     let $enums := $usernames!<enum key="{.}">{.}</enum>
+     let $class := $Element/class/string()
+     let $required := $Element/@required
+     let $value := $Item/node()[name()=$name]
+     return
+     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
+     <option value="">Nicht zugewiesen</option>
+     {
+       for $enum in $enums
+       return <option value="{$enum/@key}">
+                    {if ($enum/@key=$value) then attribute selected {} else ()}
+                    {$enum/string()}
+              </option>
+     }
+     </select>
+};
+
+declare %plugin:provide("schema/render/form/page")
+function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
+{
+let $form-id := "id-"||random:uuid()
+let $title := $Schema/*:modal/*:title/string()
+let $provider := $Schema/@provider
+return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-        <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
-
-  <div class="row">
-      <div class="col-lg-12">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>Krankenkassen TOP 4 Überblick</h5>
-                  <select class="chosen pull-right btn">
-                    {$_:kk/*:a ! <option>{.}</option>}
-                  </select>
-              </div>
-              <div class="ibox-content">
-              <div class="row">
-                <div class="col-lg-6">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Versichertenzahl 2017, Verteilung auf Bundesländer</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <div>
-                                <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                <canvas id="doughnutChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                            </div>
-                             <script>//<![CDATA[
-                                      var doughnutData = {
-                                          labels: []]>{string-join($_:land ! ('"'||.||'"'),",")} <![CDATA[],
-                                          datasets: [{
-                                              data: []]>{string-join($_:land ! (random:integer(25)),",")} <![CDATA[],
-                                              backgroundColor: []]>{string-join(for $i in 2 to count($_:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
-                                          }]
-                                      } ;
-
-
-                                      var doughnutOptions = {
-                                          responsive: true
-                                      };
-
-
-                                      var ctx4 = document.getElementById("doughnutChart").getContext("2d");
-                                      new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-
-
-                                      //]]></script>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Arzneimittelausgaben 2017, Verteilung auf Bundesländer</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <div>
-                                <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                <canvas id="doughnutChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                            </div>
-                             <script>//<![CDATA[
-                                      var doughnutData = {
-                                          labels: []]>{string-join($_:land ! ('"'||.||'"'),",")} <![CDATA[],
-                                          datasets: [{
-                                              data: []]>{string-join($_:land ! (random:integer(25)),",")} <![CDATA[],
-                                              backgroundColor: []]>{string-join(for $i in 2 to count($_:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
-                                          }]
-                                      } ;
-
-
-                                      var doughnutOptions = {
-                                          responsive: true
-                                      };
-
-
-                                      var ctx4 = document.getElementById("doughnutChart2").getContext("2d");
-                                      new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-
-
-                                      //]]></script>
-                        </div>
-                    </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="ibox float-e-margins">
-                      <div class="ibox-title">
-                          <h5>Versicherten-Entwicklung 2007-2017</h5>
-                      </div>
-                      <div class="ibox-content">
-                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                                          <canvas id="lineChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                                                      </div>
-                           <script>//<![CDATA[
-                                    var lineData = {
-                                            labels: ["2007", "2008", "2009", "2010", "2011", "2012", "2013","2014","2015","2016"],
-                                            datasets: [
-
-                                                {
-                                                    label: "2007-2016",
-                                                    backgroundColor: 'rgba(26,179,148,0.5)',
-                                                    borderColor: "rgba(26,179,148,0.7)",
-                                                    pointBackgroundColor: "rgba(26,179,148,1)",
-                                                    pointBorderColor: "#fff",
-                                                    data: [280000, 290000, 320000, 280000, 270000, 300000, 330000,360000,350000]
-                                                }
-                                            ]
-                                        };
-
-                                        var lineOptions = {
-                                            responsive: true
-                                        };
-
-
-                                        var ctx = document.getElementById("lineChart").getContext("2d");
-                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
-                                    //]]></script>
-                      </div>
+  <div class="ibox float-e-margins">
+      <div class="tabs-container">
+          <ul class="nav nav-tabs">
+              <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-5">Stakeholder</a></li>
+          </ul>
+          <div class="tab-content">
+              <div id="tab-1" class="tab-pane active">
+                  <div class="panel-body">
+                     {plugin:provider-lookup($provider,"schema/render/form/standard")!.($Item,$Schema,$Context)}
                   </div>
               </div>
-                <div class="col-lg-6">
-                  <div class="ibox float-e-margins">
-                      <div class="ibox-title">
-                          <h5>Marktanteil Entwicklung 2007-2017</h5>
-                      </div>
-                      <div class="ibox-content">
-                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                                          <canvas id="lineChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                                                      </div>
-                           <script>//<![CDATA[
-                                    var lineData = {
-                                            labels: ["2007", "2008", "2009", "2010", "2011", "2012", "2013","2014","2015","2016"],
-                                            datasets: [
-
-                                                {
-                                                    label: "2007-2016",
-                                                    backgroundColor: 'rgba(26,179,148,0.5)',
-                                                    borderColor: "rgba(26,179,148,0.7)",
-                                                    pointBackgroundColor: "rgba(26,179,148,1)",
-                                                    pointBorderColor: "#fff",
-                                                    data: [10, 12, 14, 11, 9, 12, 14,16,17]
-                                                }
-                                            ]
-                                        };
-
-                                        var lineOptions = {
-                                            responsive: true
-                                        };
-
-
-                                        var ctx = document.getElementById("lineChart2").getContext("2d");
-                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
-                                    //]]></script>
-                      </div>
+              <div id="tab-2" class="tab-pane">
+                  <div class="panel-body">
+                    {plugin:provider-lookup("sanofi/views/kam-top-4-kk","content/view")!.($Item,$Schema,$Context)}
                   </div>
               </div>
+              <div id="tab-3" class="tab-pane">
+                  <div class="panel-body">
+                    {plugin:provider-lookup("sanofi/views/blauer-ozean","content/view")!.($Item,$Schema,$Context)}
+                  </div>
               </div>
-            </div>
+              <div id="tab-4" class="tab-pane">
+                  <div class="panel-body">
+                    {plugin:provider-lookup("sanofi/views/projekte-gantt","content/view")!.($Item,$Schema,$Context)}
+                  </div>
+              </div>
+              <div id="tab-4" class="tab-pane">
+                  <div class="panel-body">
+                    {plugin:provider-lookup("sanofi/views/stakeholder","content/view")!.($Item,$Schema,$Context)}
+                  </div>
+              </div>
           </div>
       </div>
   </div>
-
-</div>
-
-};
+ </div>
+ };

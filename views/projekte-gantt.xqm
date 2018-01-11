@@ -33,15 +33,15 @@ let $context := map{"context":"sanofi/projekt"}
 let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
 let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
 let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
-let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)
 let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($id,$kk-schema,$context)
+let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk/@id]
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="row">
       <div class="col-lg-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <h5>Gantt Test</h5>
+                  <h5>Projekte einer Krankenkasse im Überblick</h5>
                   <select class="chosen pull-right" onchange="window.location='/influx/sanofi/projekt?id='+$(this).val()">
                     <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
                     {$kks ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
@@ -54,6 +54,7 @@ return
               </div>
           </div>
       </div>
+      { if ($projekte) then <div>
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript">//<![CDATA[
           google.charts.load('current', {'packages':['gantt']});
@@ -80,8 +81,7 @@ return
 
             data.addRows([
             ]]>{
-            let $projekt-list := $projekte[*:kk=$kk/@id]
-            return string-join($projekt-list!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, 100, null]'),",")
+                string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, 100, null]'),",")
             }<![CDATA[
 
             ]);
@@ -117,6 +117,7 @@ $.ajax({
             chart.draw(data, options);
           }
         ]]></script>
+        </div> else ()}
     </div>
 </div>
 };
