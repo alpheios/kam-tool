@@ -5,6 +5,7 @@
     <t id="import-products-success">Produkte wurden erfolgreich importiert.</t>
     <t id="import-products-failed-during-db-operation">Produkte konnten nicht in die Datenbank importiert werden.</t>
     <t id="import-products-failed-no-products">Es wurden keine zu importierenden Produkte gefunden.</t>
+    <t id="side-navigation-import-products">Produktimport</t>
   </lang>
   <lang id="en_US">
     <t id="drop-products-csv-here">Drop products.csv here</t>
@@ -12,5 +13,6 @@
     <t id="import-products-success">Products successfully imported.</t>
     <t id="import-products-failed-during-db-operation">Import of products failed due to database operations.</t>
     <t id="import-products-failed-no-products">No products to import.</t>
+    <t id="side-navigation-import-products">Import Products</t>
   </lang>
 </translations>

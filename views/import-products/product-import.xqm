@@ -15,8 +15,8 @@ declare %plugin:provide('side-navigation')
         %plugin:allow("admin")
   function _:nav-item-kam()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AA1">
-      <a href="{$global:servlet-prefix}/sanofi/import-products"><i class="fa fa-area-chart"></i> <span class="nav-label">Import Products</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="M">
+      <a href="{$global:servlet-prefix}/sanofi/import-products"><i class="fa fa-download"></i> <span data-i18n="side-navigation-import-products" class="nav-label">Produktimport</span></a>
   </li>
 };
 
@@ -37,9 +37,7 @@ function _:sanofi-product-importer(
                         _:render-products-dropzone()
                       }
                     </div>
-                  <div id="products-list">
-                    
-                  </div>
+                  <div id="products-list"></div>
                 </div>
             </div>
         </div>
