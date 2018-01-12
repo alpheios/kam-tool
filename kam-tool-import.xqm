@@ -1,7 +1,7 @@
 module namespace _="sales-management";
 
-import module namespace providers               = "sales-management/providers" at "sales-cockpit-providers.xqm";
-import module namespace requests                = "sales-management/requests" at "sales-cockpit-requests.xqm";
+import module namespace providers               = "sales-management/providers" at "kam-tool-providers.xqm";
+import module namespace requests                = "sales-management/requests" at "kam-tool-requests.xqm";
 
 import module namespace kv                      = "sanofi/kv" at "resources/kv.xqm";
 import module namespace ansprechpartner         = "sanofi/ansprechpartner" at "resources/ansprechpartner.xqm";
@@ -26,4 +26,5 @@ import module namespace projekte-gantt          = "sanofi/views/projekte" at "vi
 
 import module namespace blauer-ozean-task       = "sanofi/task/blauer-ozean/edit/reusable" at "tasks/blauer-ozean-edit-reusable.xqm";
 
-import module namespace importer       = "sanofi/views/importer" at "views/importer.xqm";
+import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
+import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";

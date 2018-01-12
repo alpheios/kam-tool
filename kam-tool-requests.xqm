@@ -33,14 +33,14 @@ function _:page1() {
 };
 
 declare
-  %rest:path("sanofi/importer")
+  %rest:path("sanofi/import-products")
   %rest:GET
   %output:method("html")
   %output:version("5.0")
-function _:page-importer() {
+function _:page-product-importer() {
   ui:page(map{
-    "title": "Importer"
-    },"sanofi/importer")
+    "title": "Produkte Importieren"
+    },"sanofi/import-products")
 };
 
 declare
