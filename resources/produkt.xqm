@@ -78,13 +78,13 @@ as element(schema){
         <label>Indikation</label>
     </element>
     <element name="atc-c" type="text">
-        <label>Indikation</label>
+        <label>ATC-C.__ADV_</label>
     </element>
     <element name="atc-4-steller" type="text">
-        <label>Indikation</label>
+        <label>ATC_4_Steller</label>
     </element>
     <element name="stoffklasse" type="text">
-        <label>Indikation</label>
+        <label>Stoffklasse</label>
     </element>
     <element name="notizen" type="text">
         <label>Notizen</label>
