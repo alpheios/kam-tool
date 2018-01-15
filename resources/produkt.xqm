@@ -60,19 +60,20 @@ as element(schema){
     <element name="name" type="text">
         <label>Produktname</label>
     </element>
-    <element name="wirkstoff" type="foreign-key" required="">
-            <provider>sanofi/wirkstoff</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
-            <label>Wirkstoff</label>
-            <class>col-md-6</class>
+    <element name="wirkstoff" type="text">
+        <label>Wirkstoff</label>
     </element>
-    <element name="indikation" type="foreign-key" required="">
-            <provider>sanofi/indikation</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
+    <element name="indikation" type="text">
             <label>Indikation</label>
-            <class>col-md-6</class>
+    </element>
+    <element name="atc-c" type="text">
+            <label>Indikation</label>
+    </element>
+    <element name="atc-4-steller" type="text">
+            <label>Indikation</label>
+    </element>
+    <element name="stoffklasse" type="text">
+            <label>Indikation</label>
     </element>
     <element name="notizen" type="text">
          <label>Notizen</label>
