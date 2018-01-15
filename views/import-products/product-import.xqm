@@ -16,7 +16,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-kam()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="M">
-      <a href="{$global:servlet-prefix}/sanofi/import-products"><i class="fa fa-download"></i> <span data-i18n="side-navigation-import-products" class="nav-label">Produktimport</span></a>
+      <a href="{$global:servlet-prefix}/admin/sanofi/import-products"><i class="fa fa-download"></i> <span data-i18n="side-navigation-import-products" class="nav-label">Produktimport</span></a>
   </li>
 };
 
