@@ -47,9 +47,18 @@ let $userid := $Item/userid/string()
 return
     if ($userid="" and $username!="")
         then
-            let $userid := plugin:lookup("api/user-manager/users/create")!.(map{'username':$username,'firstName':$firstname,'lastName':$lastname,'email':$email,'enabled':'true','requiredActions':'UPDATE_PASSWORD','realmRoles':$role})
-            return $Item update insert node element userid {$userid} into .
-        else $Item
+            let $userid := plugin:lookup("api/user-manager/users/create")!.(map {
+              'username':$username,
+              'firstName':$firstname,
+              'lastName':$lastname,
+              'email':$email,
+              'enabled':'true',
+              'requiredActions':
+              'UPDATE_PASSWORD',
+              'realmRoles':$role
+            })
+            return $Item update replace value of node ./userid with $userid
+        else trace($Item, 'Put User: ')
 };
 
 (: provide sorting for items :)
