@@ -58,7 +58,23 @@ return
               'realmRoles':$role
             })
             return $Item update replace value of node ./userid with $userid
-        else trace($Item, 'Put User: ')
+        else 
+          let $keycloakUser := plugin:lookup('api/user-manager/users/id')!.($userid)
+          let $userMap := map {
+            'username': $username,
+            'firstName': $firstname,
+            'lastName': $lastname,
+            'email': $email
+          }
+          let $updatedKeycloakUserItem := $keycloakUser update {
+              for $node in map:keys($userMap)
+              return replace value of node ./element()[name() = $node] with $userMap($node)
+            }
+
+          let $updateUserInKeycloak := plugin:lookup('api/user-manager/users/put/json')!.($updatedKeycloakUserItem)
+          let $deleteOldRealmRole := plugin:lookup('api/user-manager/users/delete/realm-role')!.($userid)
+          let $updateRealmRoleOfKeycloakUser := plugin:lookup('api/user-manager/users/add/realm-role')!.($userid, $role)
+          return $Item
 };
 
 (: provide sorting for items :)

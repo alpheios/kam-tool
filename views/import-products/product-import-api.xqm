@@ -59,7 +59,7 @@ function _:api-import-products() {
     else ()
 
   return
-    if (trace($products))
+    if ($products)
     then
       let $importProducts := _:import-products($products)
       return
