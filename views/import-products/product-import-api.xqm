@@ -4,6 +4,7 @@ import module namespace plugin='influx/plugin';
 import module namespace rest = "http://exquery.org/ns/restxq";
 import module namespace global ='influx/global';
 import module namespace ui='influx/ui2';
+import module namespace db='influx/db';
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
@@ -58,12 +59,15 @@ function _:api-import-products() {
     else ()
 
   return
-    if ($products)
+    if (trace($products))
     then
       let $importProducts := _:import-products($products)
       return
         if ($importProducts)
-        then ui:info(<span data-i18n="import-products-success">Products successfully imported.</span>)
+        then (
+          ui:info(<span data-i18n="import-products-success">Products successfully imported.</span>),
+          <div data-remove="#products-list" data-animation="fadeOutRight"></div>
+        )
         else ui:error(<span data-i18n="import-products-failed-during-db-operation">Import of products failed due to database operations.</span>)
     else
       ui:error(<span data-i18n="import-products-failed-no-products">No products to import.</span>)
@@ -72,14 +76,57 @@ function _:api-import-products() {
 declare function _:import-products(
   $Products as element(record)*
 ) as xs:boolean {
-  true()
+  let $provider := "sanofi/produkt"
+  let $schema := plugin:provider-lookup($provider,"schema")!.()
+  let $prods :=
+    for $product in $Products
+    let $name := $product/Artikelname/string()
+    let $wirkstoff := $product/Wirkstoffe/string()
+    let $herstellername := $product/Anbietername/string()
+    let $atc-c := $product/ATC-C.__ADV_/string()
+    let $atc-4-steller := $product/ATC_4_Steller/string()
+    let $stoffklasse := $product/Stoffklasse/string()
+    return map {
+      'name': $name,
+      'wirkstoff': $wirkstoff,
+      'herstellername': $herstellername,
+      'atc-c': $atc-c,
+      'atc-4-steller': $atc-4-steller,
+      'stoffklasse': $stoffklasse
+    }
+  let $schemaProds :=
+    for $product in $prods
+    return plugin:lookup('schema/instance/new/from/form')!.($schema, $product)
+
+  let $elementName := $schema/@name/string()
+  let $dbPaths := $schemaProds ! $elementName
+
+  let $dbName := plugin:provider-lookup($provider,"datastore/name")!.($schema, map {})
+  let $dbQuery := "
+    let $dropDb :=
+      if (db:exists('"||$dbName||"'))
+      then
+        db:drop('"||$dbName||"')
+      else ()
+
+    return db:create('"||$dbName||"', $products, $paths)
+  "
+
+  let $dbVariables := map {
+    'products': $schemaProds,
+    'paths': $dbPaths
+  }
+
+  let $execQuery := db:eval($dbQuery, $dbVariables)
+
+  return true()
 };
 
 declare function _:render-products(
   $Products as element(record)*,
   $Header as xs:string*
 ) {
-  <div id="products-list" data-replace="#products-list" class="clearfix">
+  <div id="products-list" data-replace="#products-list" data-animation="fadeInLeft" class="clearfix">
     <h2>Produkte</h2>
     <table style="margin-top:15px" class="table table-hover table-striped table-borderless">
       <thead>

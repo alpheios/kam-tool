@@ -33,7 +33,7 @@ function _:page1() {
 };
 
 declare
-  %rest:path("sanofi/import-products")
+  %rest:path("admin/sanofi/import-products")
   %rest:GET
   %output:method("html")
   %output:version("5.0")
