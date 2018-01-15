@@ -33,6 +33,24 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 <pre>{serialize($Item)}</pre>
 };
 
+(:
+ If there is no user-id but a username, that means: no user has been created so far
+:)
+declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
+function _:schema-datastore-dataobject-put-pre-hook($Item as element(),$Schema as element(schema), $Context as map(*)){
+let $username := $Item/username/string()
+let $firstname := $Item/vorname/string()
+let $lastname := $Item/nachname/string()
+let $role := $Item/role/string()
+let $email := $Item/email/string()
+let $userid := $Item/userid/string()
+return
+    if ($userid="" and $username!="")
+        then
+            let $userid := plugin:lookup("api/user-manager/users/create")!.(map{'username':$username,'firstName':$firstname,'lastName':$lastname,'email':$email,'enabled':'true','requiredActions':'UPDATE_PASSWORD','realmRoles':$role})
+            return $Item update insert node element userid {$userid} into .
+        else $Item
+};
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
@@ -63,13 +81,28 @@ as element(schema){
         <label>Interessen/Alerts</label>
     </element>
     <element name="name" type="text">
-        <label>Name</label>
+        <label>Anzeigename</label>
+    </element>
+    <element name="vorname" type="text">
+        <label>Vorname</label>
+    </element>
+    <element name="nachname" type="text">
+        <label>Nachname</label>
     </element>
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
-     <element name="username" type="username">
+     <element name="username" type="text">
           <label>Username</label>
+      </element>
+     <element name="role" type="enum">
+          <label>Rolle</label>
+        {("admin","user") ! <enum key="{.}">{.}</enum>}
+      </element>
+     <element name="email" type="text">
+          <label>E-Mail</label>
+      </element>
+      <element name="userid" type="hidden">
       </element>
  </schema>
 };

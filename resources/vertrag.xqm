@@ -30,6 +30,25 @@ as element(xhtml:div)
 </div>
 };
 
+declare %plugin:provide("schema/render/page/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+<pre>{serialize($Item)}</pre>
+};
+
+declare %plugin:provide("profile/dashboard/widget")
+function _:profile-dashboard-widget-vertraege($Profile as element())
+{
+<div class="col-md-6">
+  {
+    let $context := map{}
+    let $schema := plugin:provider-lookup("sanofi/vertrag","schema")!.()
+    let $items  := plugin:provider-lookup("sanofi/vertrag","datastore/dataobject/all")!.($schema,$context)
+    let $items  := $items[*:verantwortlich=$Profile/@id/string()]
+    return
+        plugin:lookup("schema/render/table/page")!.($items,$schema,$context)
+  }
+</div>
+};
+
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
@@ -37,7 +56,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","indikationen","vertragspartner","produkt")
+    let $columns := ("name","indikationen","kk","kv","produkt")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -57,6 +76,13 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
+    <element name="verantwortlich" type="foreign-key" required="">
+                 <provider>sanofi/key-accounter</provider>
+                 <key>@id/string()</key>
+                 <display-name>name/string()</display-name>
+                 <label>Verantwortlich</label>
+                 <class>col-md-6</class>
+     </element>
     <element name="name" type="text">
         <label>Bezeichnung</label>
     </element>
@@ -71,25 +97,21 @@ as element(schema){
         <label>Produkt</label>
         <class>col-md-6</class>
     </element>
-    <element name="indikation" type="foreign-key" required="">
-            <provider>sanofi/indikation</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
+    <element name="indikation" type="text">
             <label>Indikation</label>
-            <class>col-md-6</class>
     </element>
     <element name="kk" type="foreign-key" required="">
-                <provider>sanofi/kk</provider>
-                <key>@id</key>
-                <display-name>name/string()</display-name>
-                <label>KK-Vertragspartner</label>
-                <class>col-md-6</class>
+            <provider>sanofi/kk</provider>
+            <key>@id</key>
+            <display-name>name/string()</display-name>
+            <label>KK-Vertragspartner</label>
+            <class>col-md-6</class>
     </element>
     <element name="kv" type="foreign-key" required="">
-                <provider>sanofi/kv</provider>
-                <key>@id</key>
-                <display-name>name/string()</display-name>
-                <label>KV-Vertragspartner</label>
+            <provider>sanofi/kv</provider>
+            <key>@id</key>
+            <display-name>name/string()</display-name>
+            <label>KV-Vertragspartner</label>
                 <class>col-md-6</class>
     </element>
     <element name="lav" type="foreign-key" required="">

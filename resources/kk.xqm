@@ -11,7 +11,6 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:land := ("Nordrhein-Westfalen","Baden-Württemberg","Bayern","Mecklenburg-Vorpommern",
                              "Sachsen","Sachsen-Anhalt", "Thüringen", "Brandenburg", "Berlin", "Hessen", "Niedersachsen",
                              "Bremen","Hamburg","Schleswig-Holstein","Saarland","Rheinland-Pfalz");
-declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
 
 declare variable $_:kk := <kk><a href="250-BARMER.html">BARMER</a>
                               <a href="251-DAK-Gesundheit.html">DAK Gesundheit</a>
@@ -161,7 +160,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -209,11 +208,11 @@ as element(schema){
     {$_:kk//a ! <enum key="{.}">{.}</enum>}
     <label>Name</label>
     </element>
-    <element name="zuständig" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id/string()</key>
                 <display-name>name/string()</display-name>
-                <label>Zuständig</label>
+                <label>Verantwortlich</label>
                 <class>col-md-6</class>
     </element>
     <element name="ansprechpartner" type="foreign-key" required="">
@@ -304,6 +303,23 @@ declare %plugin:provide("schema/render/form/field/username")
               </option>
      }
      </select>
+};
+
+declare %plugin:provide("profile/dashboard/widget")
+function _:profile-dashboard-widget-kk($Profile as element())
+{
+
+    let $context := map{}
+    let $schema := plugin:provider-lookup("sanofi/kk","schema")!.()
+    let $items  := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$context)
+    let $items  := $items[*:verantwortlich=$Profile/@id/string()]
+    return
+        if (count($items)>0) then
+        <div class="col-md-6">
+         {plugin:lookup("schema/render/table/page")!.($items,$schema,$context)}
+        </div>
+        else ()
+
 };
 
 declare %plugin:provide("schema/render/form/page")

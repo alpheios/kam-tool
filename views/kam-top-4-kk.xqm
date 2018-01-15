@@ -176,26 +176,134 @@ return
 };
 
 
-declare %plugin:provide("content/view") function _:content-view($Item, $Schema, $Context){
+declare %plugin:provide("content/view") function _:content-view($kken, $schema, $context){
+let $id:="1234"
+return
+<div xmlns="http://www.w3.org/1999/xhtml">
+    <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
 
-<div>
-    <div>
-        <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-        <canvas id="doughnutChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-    </div>
-     <script>//<![CDATA[
-              var doughnutData = {
-                  labels: []]>{string-join($kk:land ! ('"'||.||'"'),",")} <![CDATA[],
-                  datasets: [{
-                      data: []]>{string-join($kk:land ! (random:integer(25)),",")} <![CDATA[],
-                      backgroundColor: []]>{string-join(for $i in 2 to count($kk:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
-                  }]
-              } ;
-              var doughnutOptions = {
-                  responsive: true
-              };
-              var ctx4 = document.getElementById("doughnutChart").getContext("2d");
-              new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-              //]]></script>
-</div>
+              <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Versichertenzahl 2017, Verteilung auf Bundesländer</h5>
+                        </div>
+                        <div class="ibox-content">
+                         {plugin:provider-lookup("sanofi/kam-top-4-kk","content/view")!.($kken,$schema,$context)}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Arzneimittelausgaben 2017, Verteilung auf Bundesländer</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div>
+                                <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                                <canvas id="doughnutChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+                            </div>
+                             <script>//<![CDATA[
+                                      var doughnutData = {
+                                          labels: []]>{string-join($kk:land ! ('"'||.||'"'),",")} <![CDATA[],
+                                          datasets: [{
+                                              data: []]>{string-join($kk:land ! (random:integer(25)),",")} <![CDATA[],
+                                              backgroundColor: []]>{string-join(for $i in 2 to count($kk:land) return ('"rgb('||$i*6||','||$i*9||','||$i*12||')"'),',')} <![CDATA[]
+                                          }]
+                                      } ;
+
+
+                                      var doughnutOptions = {
+                                          responsive: true
+                                      };
+
+
+                                      var ctx4 = document.getElementById("doughnutChart2").getContext("2d");
+                                      new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
+
+
+                                      //]]></script>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="ibox float-e-margins">
+                      <div class="ibox-title">
+                          <h5>Versicherten-Entwicklung 2007-2017</h5>
+                      </div>
+                      <div class="ibox-content">
+                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                                                          <canvas id="lineChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+                                                      </div>
+                           <script>//<![CDATA[
+                                    var lineData = {
+                                            labels: ["2007", "2008", "2009", "2010", "2011", "2012", "2013","2014","2015","2016"],
+                                            datasets: [
+
+                                                {
+                                                    label: "2007-2016",
+                                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                                    borderColor: "rgba(26,179,148,0.7)",
+                                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                                    pointBorderColor: "#fff",
+                                                    data: [280000, 290000, 320000, 280000, 270000, 300000, 330000,360000,350000]
+                                                }
+                                            ]
+                                        };
+
+                                        var lineOptions = {
+                                            responsive: true
+                                        };
+
+
+                                        var ctx = document.getElementById("lineChart").getContext("2d");
+                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                                    //]]></script>
+                      </div>
+                  </div>
+              </div>
+                <div class="col-lg-6">
+                  <div class="ibox float-e-margins">
+                      <div class="ibox-title">
+                          <h5>Marktanteil Entwicklung 2007-2017</h5>
+                      </div>
+                      <div class="ibox-content">
+                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                                                          <canvas id="lineChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+                                                      </div>
+                           <script>//<![CDATA[
+                                    var lineData = {
+                                            labels: ["2007", "2008", "2009", "2010", "2011", "2012", "2013","2014","2015","2016"],
+                                            datasets: [
+
+                                                {
+                                                    label: "2007-2016",
+                                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                                    borderColor: "rgba(26,179,148,0.7)",
+                                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                                    pointBorderColor: "#fff",
+                                                    data: [10, 12, 14, 11, 9, 12, 14,16,17]
+                                                }
+                                            ]
+                                        };
+
+                                        var lineOptions = {
+                                            responsive: true
+                                        };
+
+
+                                        var ctx = document.getElementById("lineChart2").getContext("2d");
+                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                                    //]]></script>
+                      </div>
+                  </div>
+              </div>
+              </div>
+            </div>
 };

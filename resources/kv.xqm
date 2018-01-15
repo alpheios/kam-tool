@@ -69,7 +69,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Name</label>
     </element>
-    <element name="zuständig" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id/string()</key>
                 <display-name>name/string()</display-name>
@@ -96,6 +96,23 @@ as element(schema){
         </element>
 
 </schema>
+};
+
+declare %plugin:provide("profile/dashboard/widget")
+function _:profile-dashboard-widget-kv($Profile as element())
+{
+
+    let $context := map{}
+    let $schema := plugin:provider-lookup("sanofi/kv","schema")!.()
+    let $items  := plugin:provider-lookup("sanofi/kv","datastore/dataobject/all")!.($schema,$context)
+    let $items  := $items[*:verantwortlich=$Profile/@id/string()]
+    return
+        if (count($items)>0) then
+        <div class="col-md-6">
+         {plugin:lookup("schema/render/table/page")!.($items,$schema,$context)}
+        </div>
+        else ()
+
 };
 
 declare %plugin:provide("schema/render/form/page")

@@ -64,7 +64,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Name:</label>
     </element>
-    <element name="zuständig" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id</key>
                 <display-name>name/string()</display-name>

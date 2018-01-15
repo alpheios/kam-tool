@@ -20,10 +20,26 @@ declare %plugin:provide("ui/page/content","stammdaten/blauer-ozean")
 function _:stammdaten-blauer-ozean($map)
 as element(xhtml:div)
 {
+let $items := $map("items")
+let $provider := $map("provider")
+let $id := $map("id")
+let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context=page",<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="row">
       <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/blauer-ozean","stammdaten/blauer-ozean")}
+          <div class="ibox float-e-margins">
+              <div class="ibox-title">
+                  <h5>{$modal-button} Der Blaue Ozean (SWAT Alternative) als Radar Chart</h5>
+                  <select class="chosen pull-right" onchange="window.location='/influx/sanofi/blauer-ozean?id='+$(this).val()">
+                    <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
+                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
+                  </select>
+              </div>
+              <div class="ibox-content">
+                {plugin:lookup("schema/ibox/table")!.("sanofi/blauer-ozean","stammdaten/blauer-ozean")}
+              </div>
+          </div>
       </div>
   </div>
 </div>
@@ -123,7 +139,6 @@ as element(schema){
               <label>Produkt</label>
               <class>col-md-6</class>
    </element>
-
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
