@@ -37,6 +37,14 @@ as element(xhtml:div)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
 
+declare %plugin:provide("datastore/name")
+function _:set-datastore-name(
+  $Schema as element(schema),
+  $Context as map(*)
+) as xs:string {
+  'datastore-sanofi-products'
+};
+
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
     let $columns := ("name","indikationen")
@@ -63,20 +71,23 @@ as element(schema){
     <element name="wirkstoff" type="text">
         <label>Wirkstoff</label>
     </element>
+    <element name="herstellername" type="text">
+        <label>Herstellername</label>
+    </element>
     <element name="indikation" type="text">
-            <label>Indikation</label>
+        <label>Indikation</label>
     </element>
     <element name="atc-c" type="text">
-            <label>Indikation</label>
+        <label>Indikation</label>
     </element>
     <element name="atc-4-steller" type="text">
-            <label>Indikation</label>
+        <label>Indikation</label>
     </element>
     <element name="stoffklasse" type="text">
-            <label>Indikation</label>
+        <label>Indikation</label>
     </element>
     <element name="notizen" type="text">
-         <label>Notizen</label>
+        <label>Notizen</label>
      </element>
  </schema>
 };
