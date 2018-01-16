@@ -132,16 +132,158 @@ as element(schema){
               <class>col-md-6</class>
    </element>
 
-   <element name="produkt" type="foreign-key" required="">
-              <provider>sanofi/produkt</provider>
-              <key>@id</key>
-              <display-name>name/string()</display-name>
-              <label>Produkt</label>
-              <class>col-md-6</class>
-   </element>
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
  </schema>
 };
 
+declare %plugin:provide("schema/render/form/field/foreign-key","kk")
+function _:sanofi-blauer-ozean-kk-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kk"))
+        then
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("kk")}" type="hidden"/>
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+};
+declare %plugin:provide("schema/render/form/field/label","kk")
+function _:sanofi-blauer-ozean-kk-input-label($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kk"))
+        then ()
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
+};
+
+declare %plugin:provide("schema/render/form/field/foreign-key","kv")
+function _:sanofi-blauer-ozean-kv-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kv"))
+        then
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("kv")}" type="hidden"/>
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+};
+declare %plugin:provide("schema/render/form/field/label","kv")
+function _:sanofi-blauer-ozean-kv-input-label($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kv"))
+        then ()
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
+};
+
+declare %plugin:provide("schema/render/button/modal/edit/link")
+function _:blauer-ozean-render-button-page-edit-link($Item as element(), $Schema as element(schema), $Context as map(*))
+as xs:string
+{
+let $context := $Context => map:get("context")
+let $kk := $Context("item")
+return
+    if ($kk)
+        then "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context||"&amp;kk="||$kk/@id/string()
+        else "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context
+};
+
+declare %plugin:provide("content/view")
+function _:sanofi-blauer-ozean-content-view($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+let $id := $Item/@id/string()
+let $kk := $Context("item")/@id/string()
+let $provider := "sanofi/blauer-ozean"
+let $context := map{"context":"sanofi/blauer-ozean"}
+let $schema := plugin:provider-lookup($provider,"schema")!.()
+let $items := plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$context)[kk=$kk]
+let $item := $Item
+let $name := $item/name/string()
+let $ist-names := $schema/element[ends-with(@name,"-ist")]/@name/string()
+let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
+let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()
+let $ist := string-join(for $x in $ist-names return $item/element()[name()=$x]/string(),",")
+let $soll := string-join(for $x in $soll-names return $item/element()[name()=$x]/string(),",")
+let $labels := '"'||string-join($schema/element[ends-with(@name,"-ist")]/label/substring-before(string()," IST"),'","')||'"'
+let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
+let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+return
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <div class="row">
+      <div class="col-lg-12 col-md-12">
+          <div class="ibox float-e-margins">
+              <div class="ibox-title">
+                  <div class="col-md-9">{$edit-button} Werte bearbeiten</div>
+                  <div class="col-md-1"><label class="form-label pull-right">{$add-button}</label></div>
+                  <div class="col-md-2">
+                    <select id="content-view-select" class="form-control" onchange="Influx.restxq('{$global:servlet-prefix}/sanofi/blauer-ozean/radar-chart/'+$(this).val())">
+                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
+                    </select>
+                  </div>
+              </div>
+              {_:ibox-radar-chart($Item,$Schema,$Context)}
+          </div>
+      </div>
+    </div>
+</div>
+};
+
+declare %plugin:provide("sanofi/blauer-ozean/radar-chart") function _:ibox-radar-chart($Item,$Schema,$Context){
+let $id := $Item/@id/string()
+let $kk := $Context("item")/@id/string()
+let $provider := "sanofi/blauer-ozean"
+let $context := map{"context":"sanofi/blauer-ozean"}
+let $schema := plugin:provider-lookup($provider,"schema")!.()
+let $items := plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$context)[kk=$kk]
+let $item := $Item
+let $name := $item/name/string()
+let $ist-names := $schema/element[ends-with(@name,"-ist")]/@name/string()
+let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
+let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()
+let $ist := string-join(for $x in $ist-names return $item/element()[name()=$x]/string(),",")
+let $soll := string-join(for $x in $soll-names return $item/element()[name()=$x]/string(),",")
+let $labels := '"'||string-join($schema/element[ends-with(@name,"-ist")]/label/substring-before(string()," IST"),'","')||'"'
+let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
+let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+return
+<div class="ibox-content" id="blauer-ozean-kk-view-chart" data-replace="#blauer-ozean-kk-view-chart">
+   <canvas id="radarChart" width="730" height="720"></canvas>
+       { if ($item) then <div>
+      <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
+      <script>//<![CDATA[
+      var radarData = {
+              labels: []]>{$labels}<![CDATA[],
+              datasets: [
+                  {
+                      label: "IST",
+                      backgroundColor: "rgba(220,220,220,0.2)",
+                      borderColor: "rgba(120,155,120,1)",
+                      data: []]>{$ist}<![CDATA[]
+                  },
+                  {
+                      label: "SOLL",
+                      backgroundColor: "rgba(220,220,220,0.2)",
+                      borderColor: "rgba(155,120,120,1)",
+                      data: []]>{$soll}<![CDATA[]
+                  }
+              ]
+          };
+
+          var radarOptions = {
+              responsive: false,
+                  maintainAspectRatio: true,
+              scale: {
+                         ticks: {
+                             beginAtZero: true,
+                             max: 5
+                         }
+              }
+          };
+
+          var ctx5 = document.getElementById("radarChart").getContext("2d");
+          new Chart(ctx5, {type: 'radar', data: radarData, options:radarOptions});
+          //]]></script>
+          </div> else ()
+          }
+    <script>$("select").select2();</script>
+    </div>
+};

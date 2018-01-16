@@ -19,8 +19,6 @@ declare variable $_:module-static := $global:module-path||"/"||$_:module/mod:ins
 
 declare variable $_:status := ("angeboten","beauftragt","offen","abgelehnt");
 
-
-
 declare  
   %rest:path("sanofi/blauer-ozean")
   %rest:GET
@@ -30,6 +28,21 @@ function _:page1() {
   ui:page(map{"id":request:parameter("id"),
     "title": "Blauer Ozean"
     },"sanofi/blauer-ozean")
+};
+
+declare
+  %rest:path("sanofi/blauer-ozean/radar-chart/{$Id}")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-radar-chart($Id) {
+    let $provider := "sanofi/blauer-ozean"
+    let $request-parameter := map:merge(request:parameter-names() ! map{. : request:parameter(.)})
+    let $context := $request-parameter => map:get("context")
+    let $schema  := plugin:provider-lookup($provider,"schema")!.()
+    let $item    := plugin:provider-lookup($provider,"datastore/dataobject",$context)!.($Id, $schema, $request-parameter)
+    return
+    plugin:provider-lookup("sanofi/blauer-ozean","sanofi/blauer-ozean/radar-chart")($item,$schema,$request-parameter)
 };
 
 declare
@@ -208,12 +221,12 @@ declare
   };
 
 declare
-    %rest:path("sanofi/stammdaten/vertrag")
-    %rest:GET
-    %output:method("html")
-    %output:version("5.0")
-  function _:page-stammdaten-vertrag() {
-    ui:page(map{
-      "title": "Stammdaten Verträge"
-      },"stammdaten/vertrag")
-  };
+        %rest:path("sanofi/stammdaten/vertrag")
+        %rest:GET
+        %output:method("html")
+        %output:version("5.0")
+      function _:page-stammdaten-vertrag() {
+        ui:page(map{
+          "title": "Stammdaten Verträge"
+          },"stammdaten/vertrag")
+      };

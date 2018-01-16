@@ -17,6 +17,21 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+
+declare %plugin:provide('ui/page/custom-css',"stammdaten/vertrag") function _:page-custom-css(
+    $Params as map(*)
+) as element(xhtml:link)* {
+    <link href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
+
+};
+
+declare %plugin:provide('ui/page/custom-js',"stammdaten/vertrag") function _:page-custom-js(
+    $Params as map(*)
+) as element(xhtml:link)* {
+    <script src="{$global:inspinia-path}/js/plugins/select2/select2.full.min.js"></script>
+
+};
+
 declare %plugin:provide("ui/page/content","stammdaten/vertrag")
 function _:stammdaten-vertrag($map)
 as element(xhtml:div)

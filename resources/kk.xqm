@@ -263,7 +263,7 @@ declare %plugin:provide("schema/render/form/field/enum","name")
      let $required := $Element/@required
      let $value := $Item/node()[name()=$name]
      return
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
+     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
      <option value="">Nicht zugewiesen</option>
      {
        for $enum in $enums
@@ -293,7 +293,7 @@ declare %plugin:provide("schema/render/form/field/username")
      let $required := $Element/@required
      let $value := $Item/node()[name()=$name]
      return
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
+     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
      <option value="">Nicht zugewiesen</option>
      {
        for $enum in $enums
@@ -352,7 +352,18 @@ return
               </div>
               <div id="tab-3" class="tab-pane">
                   <div class="panel-body">
-                    {plugin:provider-lookup("sanofi/views/blauer-ozean","content/view")!.($Item,$Schema,$Context)}
+                    {
+                    let $provider := "sanofi/blauer-ozean"
+                    let $schema := plugin:provider-lookup($provider,"schema")!.()
+                    let $blauer-ozean-items :=
+                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                        let $date := $item/@last-modified-date
+                        order by $date descending
+                        return $item
+                    let $blauer-ozean-item-latest := $blauer-ozean-items[1]
+                    return
+                    plugin:provider-lookup($provider,"content/view")!.($blauer-ozean-item-latest,$schema,$Context)
+                    }
                   </div>
               </div>
               <div id="tab-4" class="tab-pane">
