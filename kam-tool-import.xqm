@@ -16,6 +16,7 @@ import module namespace stakeholder             = "sanofi/stakeholder" at "resou
 import module namespace ka                      = "sanofi/key-accounter" at "resources/key-accounter.xqm";
 import module namespace summary                 = "sanofi/summary" at "resources/summary.xqm";
 import module namespace blauer-ozean-resource   = "sanofi/blauer-ozean" at "resources/blauer-ozean.xqm";
+import module namespace kk-history-mitglieder   = "sanofi/kk-history-mitglieder" at "resources/kk-history-mitglieder.xqm";
 
 
 import module namespace blauer-ozean            = "sanofi/views/blauer-ozean" at "views/blauer-ozean.xqm";
@@ -23,8 +24,6 @@ import module namespace kam-top-4-kk            = "sanofi/views/kam-top-4-kk" at
 import module namespace kam-top-4-kv            = "sanofi/views/kam-top-4-kv" at "views/kam-top-4-kv.xqm";
 import module namespace projekte-gantt          = "sanofi/views/projekte" at "views/projekte-gantt.xqm";
 
-
-import module namespace blauer-ozean-task       = "sanofi/task/blauer-ozean/edit/reusable" at "tasks/blauer-ozean-edit-reusable.xqm";
 
 import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
 import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";

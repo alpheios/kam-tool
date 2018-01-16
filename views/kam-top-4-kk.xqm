@@ -305,5 +305,6 @@ return
                   </div>
               </div>
               </div>
+              {plugin:provider-lookup("sanofi/kk-history-mitglieder","schema/ibox/table")!.("sanofi/kk-history-mitglieder","")}
             </div>
 };

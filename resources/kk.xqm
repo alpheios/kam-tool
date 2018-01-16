@@ -249,10 +249,8 @@ declare %plugin:provide("schema/render/form/field/enum","name")
      $Item as element()?,
      $Element as element(element),
      $Context)
-     as element(xhtml:select)
 {
      let $schema := $Element/ancestor::schema
-     let $assigned-username := $Item/username/string()
      let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
      let $assigned-names := $kks/name/string()
      let $type := $Element/@type
@@ -263,6 +261,9 @@ declare %plugin:provide("schema/render/form/field/enum","name")
      let $required := $Element/@required
      let $value := $Item/node()[name()=$name]
      return
+      if ($Item/name!="")
+             then (<br/>,$Item/name/string())
+             else
      <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
      <option value="">Nicht zugewiesen</option>
      {
@@ -274,36 +275,7 @@ declare %plugin:provide("schema/render/form/field/enum","name")
      }
      </select>
 };
-declare %plugin:provide("schema/render/form/field/username")
- function _:schema-render-field-username-key-accounter(
-     $Item as element()?,
-     $Element as element(element),
-     $Context)
-     as element(xhtml:select)
-{
-     let $schema := $Element/ancestor::schema
-     let $assigned-username := $Item/username/string()
-     let $key-accounters := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
-     let $assigned-usernames := $key-accounters/username/string()
-     let $type := $Element/@type
-     let $name := $Element/@name
-     let $usernames := (plugin:lookup("usernames")!.())[not(.=$assigned-usernames)]
-     let $enums := $usernames!<enum key="{.}">{.}</enum>
-     let $class := $Element/class/string()
-     let $required := $Element/@required
-     let $value := $Item/node()[name()=$name]
-     return
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
-     <option value="">Nicht zugewiesen</option>
-     {
-       for $enum in $enums
-       return <option value="{$enum/@key}">
-                    {if ($enum/@key=$value) then attribute selected {} else ()}
-                    {$enum/string()}
-              </option>
-     }
-     </select>
-};
+
 
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())
@@ -329,7 +301,7 @@ let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
+<div xmlns="http://www.w3.org/1999/xhtml" class="sanofi-kk-page" data-replace=".sanofi-kk-page">
   <div class="ibox float-e-margins">
       <div class="tabs-container">
           <ul class="nav nav-tabs">
@@ -368,12 +340,34 @@ return
               </div>
               <div id="tab-4" class="tab-pane">
                   <div class="panel-body">
-                    {plugin:provider-lookup("sanofi/views/projekte-gantt","content/view")!.($Item,$Schema,$Context)}
+                    {
+                        let $provider := "sanofi/projekt"
+                        let $schema := plugin:provider-lookup($provider,"schema")!.()
+                        let $items :=
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            let $date := $item/@last-modified-date
+                            order by $date descending
+                            return $item
+                        let $item-latest := $items[1]
+                        return
+                        plugin:provider-lookup($provider,"content/view")!.($item-latest,$schema,$Context)
+                    }
                   </div>
               </div>
-              <div id="tab-4" class="tab-pane">
+              <div id="tab-5" class="tab-pane">
                   <div class="panel-body">
-                    {plugin:provider-lookup("sanofi/views/stakeholder","content/view")!.($Item,$Schema,$Context)}
+                    {
+                        let $provider := "sanofi/stakeholder"
+                        let $schema := plugin:provider-lookup($provider,"schema")!.()
+                        let $items :=
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            let $date := $item/@last-modified-date
+                            order by $date descending
+                            return $item
+                        let $item-latest := $items[1]
+                        return
+                        plugin:provider-lookup($provider,"content/view")!.($item-latest,$schema,$Context)
+                    }
                   </div>
               </div>
           </div>

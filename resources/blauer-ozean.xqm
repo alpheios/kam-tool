@@ -8,7 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigationXXX')
   function _:nav-item-stammdaten-blauer-ozean()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
@@ -30,7 +30,7 @@ return
       <div class="col-lg-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <h5>{$modal-button} Der Blaue Ozean (SWAT Alternative) als Radar Chart</h5>
+                  <h5>{$modal-button} Der Blaue Ozean</h5>
                   <select class="chosen pull-right" onchange="window.location='/influx/sanofi/blauer-ozean?id='+$(this).val()">
                     <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
                     {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
@@ -138,6 +138,12 @@ as element(schema){
  </schema>
 };
 
+
+(:
+
+ Plugins to render responses in context "kk"   #####################################
+
+:)
 declare %plugin:provide("schema/render/form/field/foreign-key","kk")
 function _:sanofi-blauer-ozean-kk-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
 as element()?
@@ -155,6 +161,30 @@ as element()?
         then ()
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
 };
+
+declare %plugin:provide("schema/render/new","kk")
+function _:kk-blauer-ozean-render-table-thead-table-add-tr($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+let $context := $Context=>map:get('context')
+let $id := $Item/kk/string()
+let $kk-provider := "sanofi/kk"
+let $kk-schema := plugin:provider-lookup($kk-provider,"schema")!.()
+let $kk-item   := plugin:provider-lookup($kk-provider,"datastore/dataobject",$context)!.($id,$kk-schema,$Context)
+return
+    plugin:provider-lookup("schema/kk","schema/render/form/page","kk")!.($kk-item,$kk-schema,$Context) 
+};
+
+
+
+
+
+(:
+
+ Plugins to render responses in context "kv"   #####################################
+
+:)
+
 
 declare %plugin:provide("schema/render/form/field/foreign-key","kv")
 function _:sanofi-blauer-ozean-kv-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
@@ -205,7 +235,7 @@ let $ist := string-join(for $x in $ist-names return $item/element()[name()=$x]/s
 let $soll := string-join(for $x in $soll-names return $item/element()[name()=$x]/string(),",")
 let $labels := '"'||string-join($schema/element[ends-with(@name,"-ist")]/label/substring-before(string()," IST"),'","')||'"'
 let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $add-button := ui:modal-button('schema/form/modal?context=kk&amp;provider='||$provider||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 return
 <div xmlns="http://www.w3.org/1999/xhtml">
   <div class="row">

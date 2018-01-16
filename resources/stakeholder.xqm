@@ -37,7 +37,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("stakeholder","kv","produkt")
+    let $columns := ("ansprechpartner","produkt","einfluss")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -85,3 +85,22 @@ as element(schema){
  </schema>
 };
 
+declare %plugin:provide("content/view")
+function _:sanofi-stakeholder($Item as element()*,$Schema as element(schema), $Context)
+as element(xhtml:div)
+{
+let $id := $Context("item")/@id/string()
+let $provider := "sanofi/stakeholder"
+let $context := map{"context":"sanofi/stakeholder"}
+let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
+let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
+let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
+let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($id,$kk-schema,$context)
+let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$id]
+let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
+let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context=modal&amp;kk="||$id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+return
+<div xmlns="http://www.w3.org/1999/xhtml">
+    {plugin:provider-lookup($provider,"schema/ibox/table")!.($provider,"")}
+</div>
+};

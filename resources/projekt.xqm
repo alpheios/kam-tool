@@ -32,6 +32,42 @@ as element(xhtml:div)
 </div>
 };
 
+declare %plugin:provide("schema/render/form/field/foreign-key","kk")
+function _:sanofi-projekte-kk-input($Item as element(), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kk"))
+        then
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("kk")}" type="hidden"/>
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+};
+declare %plugin:provide("schema/render/form/field/label","kk")
+function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kk"))
+        then ()
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
+};
+
+declare %plugin:provide("schema/render/form/field/foreign-key","kv")
+function _:sanofi-projekte-kv-input($Item as element(), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kv"))
+        then
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("kk")}" type="hidden"/>
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+};
+declare %plugin:provide("schema/render/form/field/label","kv")
+function _:sanofi-projekte-kv-input-label($Item as element(), $Element as element(element), $Context as map(*))
+as element()?
+{
+    if ($Context("kv"))
+        then ()
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
+};
+
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
@@ -80,9 +116,88 @@ as element(schema){
     <element name="ende" type="date">
         <label>Ende</label>
     </element>
+    <element name="fertigstellung" type="number" min="0" max="100">
+        <label>Fertigstellung in %</label>
+    </element>
+
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
  </schema>
 };
 
+declare %plugin:provide("content/view")
+function _:sanofi-projekte($Item as element()*,$Schema as element(schema), $Context)
+as element(xhtml:div)
+{
+let $id := $Context("item")/@id/string()
+let $provider := "sanofi/projekt"
+let $context := map{"context":"sanofi/projekt"}
+let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
+let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
+let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
+let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($id,$kk-schema,$context)
+let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$id]
+let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
+let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+return
+<div xmlns="http://www.w3.org/1999/xhtml">
+  <div class="row">
+      <div class="col-lg-12">
+          <div class="ibox float-e-margins">
+              <div class="ibox-title">
+                  <h5>{$add-button} Projekte hinuzufügen </h5>
+              </div>
+              <div class="ibox-content">
+                  <div class="gantt-container" style="overflow: scroll">
+                  	<div id="chart_div"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      { if ($projekte) then <div>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">//<![CDATA[
+          google.charts.load('current', {'packages':['gantt']});
+          google.charts.setOnLoadCallback(drawChart);
+
+          function drawChart() {
+
+            var data = new google.visualization.DataTable();
+]]>
+            {(:
+                for $element in $projekt-schema/*:element
+                let $type:= if ($element/@type="text") then "string" else if ($element/@type="date") then "date" else "string"
+                return "data.addColumn('"||$type||"', '"||$element/*:label/string()||"');&#x0a;"
+            :)}
+            <![CDATA[
+            data.addColumn('string', 'Task ID');
+            data.addColumn('string', 'Task Name');
+            data.addColumn('string', 'Resource');
+            data.addColumn('date', 'Start Date');
+            data.addColumn('date', 'End Date');
+            data.addColumn('number', 'Duration');
+            data.addColumn('number', 'Percent Complete');
+            data.addColumn('string', 'Dependencies');
+
+            data.addRows([
+            ]]>{
+                string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
+            }<![CDATA[
+
+            ]);
+
+
+            var options = {
+                fontName : "open sans"
+            };
+
+            var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+          }
+        ]]></script>
+        </div> else ()}
+    </div>
+</div>
+};
