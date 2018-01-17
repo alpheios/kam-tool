@@ -18,6 +18,9 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+declare %plugin:provide("schema/render/page/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+<pre>{serialize($Item)}</pre>
+};
 
 declare %plugin:provide("ui/page/content","stammdaten/projekt")
 function _:stammdaten-projekt($map)
@@ -130,7 +133,7 @@ declare %plugin:provide("content/view")
 function _:sanofi-projekte($Item as element()*,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-let $id := $Context("item")/@id/string()
+let $id := $Item/@id/string()
 let $provider := "sanofi/projekt"
 let $context := map{"context":"sanofi/projekt"}
 let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()

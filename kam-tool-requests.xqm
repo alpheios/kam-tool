@@ -42,7 +42,7 @@ function _:page-radar-chart($Id) {
     let $schema  := plugin:provider-lookup($provider,"schema")!.()
     let $item    := plugin:provider-lookup($provider,"datastore/dataobject",$context)!.($Id, $schema, $request-parameter)
     return
-    plugin:provider-lookup("sanofi/blauer-ozean","sanofi/blauer-ozean/radar-chart")($item,$schema,$request-parameter)
+    plugin:provider-lookup("sanofi/blauer-ozean","content/view","kk")($item,$schema,$request-parameter)
 };
 
 declare

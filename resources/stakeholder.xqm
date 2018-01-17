@@ -89,7 +89,7 @@ declare %plugin:provide("content/view")
 function _:sanofi-stakeholder($Item as element()*,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-let $id := $Context("item")/@id/string()
+let $id := $Item/@id/string()
 let $provider := "sanofi/stakeholder"
 let $context := map{"context":"sanofi/stakeholder"}
 let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()

@@ -132,7 +132,7 @@ return
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/form/standard")!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/page/form")!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">

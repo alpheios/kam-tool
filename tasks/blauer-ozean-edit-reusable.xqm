@@ -37,7 +37,7 @@ function _:render-product-info-reusable-task-tab(
  <tab status="active" sortkey="BM">
       <title>Schema erstellen</title>
       <content>{
-          plugin:provider-lookup($provider,"schema/render/form/standard")!.($item,$schema,$context)
+          plugin:provider-lookup($provider,"schema/render/page/form")!.($item,$schema,$context)
           }
           </content>
   </tab>
@@ -62,7 +62,7 @@ function _:render-product-info-reusable-task-tab-read(
       <content>
         <div class="col-md-12">
         {
-          plugin:provider-lookup($provider,"schema/render/form/standard")!.($item,$schema,$context)
+          plugin:provider-lookup($provider,"schema/render/page/form")!.($item,$schema,$context)
         }
         </div>
       </content>

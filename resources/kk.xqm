@@ -160,7 +160,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -295,13 +295,18 @@ function _:profile-dashboard-widget-kk($Profile as element())
 };
 
 declare %plugin:provide("schema/render/form/page")
+ %plugin:provide("refresh/callback","kk")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
+let $context := "kk"
+let $Context := map:remove($Context,"context")
+let $Context := map:put($Context,"context",$context)
+let $Context := if (map:contains($Context,"kk")) then $Context else map:put($Context,"kk",$Item/@id/string())
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="sanofi-kk-page" data-replace=".sanofi-kk-page">
+<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar sanofi-kk-page" data-replace=".sanofi-kk-page">
   <div class="ibox float-e-margins">
       <div class="tabs-container">
           <ul class="nav nav-tabs">
@@ -314,7 +319,7 @@ return
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/form/standard")!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/page/form" (: do not use context here :))!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">
@@ -328,13 +333,13 @@ return
                     let $provider := "sanofi/blauer-ozean"
                     let $schema := plugin:provider-lookup($provider,"schema")!.()
                     let $blauer-ozean-items :=
-                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
                         let $date := $item/@last-modified-date
                         order by $date descending
                         return $item
                     let $blauer-ozean-item-latest := $blauer-ozean-items[1]
                     return
-                    plugin:provider-lookup($provider,"content/view")!.($blauer-ozean-item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view","kk")!.($blauer-ozean-item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -342,6 +347,7 @@ return
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/projekt"
+                        let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema")!.()
                         let $items :=
                             for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
@@ -350,7 +356,7 @@ return
                             return $item
                         let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view")!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -358,6 +364,7 @@ return
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/stakeholder"
+                        let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema")!.()
                         let $items :=
                             for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
@@ -366,7 +373,7 @@ return
                             return $item
                         let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view")!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>
