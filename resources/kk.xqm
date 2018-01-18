@@ -295,7 +295,6 @@ function _:profile-dashboard-widget-kk($Profile as element())
 };
 
 declare %plugin:provide("schema/render/form/page")
- %plugin:provide("refresh/callback","kk")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
@@ -319,12 +318,23 @@ return
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/page/form" (: do not use context here :))!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/page/form")!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">
                   <div class="panel-body">
-                    {plugin:provider-lookup("sanofi/views/kam-top-4-kk","content/view")!.($Item,$Schema,$Context)}
+                  {
+                      let $provider := "sanofi/kk-kam-top-4"
+                      let $schema := plugin:provider-lookup($provider,"schema")!.()
+                      let $items :=
+                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                          let $date := $item/@last-modified-date
+                          order by $date descending
+                          return $item
+                      let $item-latest := $items[1]
+                      return
+                          plugin:provider-lookup($provider,"content/view/context","kk")!.($item-latest,$schema,$Context)
+                  }
                   </div>
               </div>
               <div id="tab-3" class="tab-pane">

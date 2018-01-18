@@ -173,18 +173,7 @@ declare
 function _:kk-blauer-ozean-render-new($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
 as element(xhtml:div)
 {
-let $context := "" (: show default sanofi/kk views, not the "kk" context :)
-let $kk-id := if ($Item/kk/string()) then $Item/kk/string() else $Context("kk")
-let $kk-provider := "sanofi/kk"
-let $kk-schema := plugin:provider-lookup($kk-provider,"schema",$context)!.()
-let $kk-item   := plugin:provider-lookup($kk-provider,"datastore/dataobject",$context)!.($kk-id,$kk-schema,$Context)
-return
-    let $page := plugin:provider-lookup($kk-provider,"schema/render/form/page",$context)!.($kk-item,$kk-schema,$Context)
-    let $page := $page update replace value of node .//xhtml:li[xhtml:a/@href="#tab-1"]/@class with ""
-    let $page := $page update replace value of node .//xhtml:li[xhtml:a/@href="#tab-3"]/@class with "active"
-    let $page := $page update replace value of node .//xhtml:div[@id="tab-1"]/@class with "tab-pane"
-    let $page := $page update replace value of node .//xhtml:div[@id="tab-3"]/@class with "tab-pane active"
-    return $page
+plugin:provider-lookup("sanofi/blauer-ozean","content/view","kk")!.($Item,$Schema,$Context)
 };
 
 
@@ -223,7 +212,6 @@ as xs:string
 let $context := $Context("context")
 let $kk-id := $Context("kk")
 return
-
 "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context||"&amp;kk="||$kk-id
 };
 
@@ -281,16 +269,16 @@ return
       <div class="col-lg-12 col-md-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <div class="col-md-9">{$edit-button} Werte bearbeiten</div>
-                  <div class="col-md-1"><label class="form-label pull-right">{$add-button}</label></div>
-                  <div class="col-md-2">
+                  <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
+                  <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
+                  <div class="col-xs-2">
                     <select id="content-view-select" class="form-control" onchange="Influx.restxq('{$global:servlet-prefix}/sanofi/blauer-ozean/radar-chart/'+$(this).val(),'get',{{'kk':'{$kk-id}','context':'{$context}'}})">
                     {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
                     </select>
                   </div>
               </div>
               <div class="ibox-content" id="blauer-ozean-kk-view-chart" data-replace="#blauer-ozean-kk-view-chart">
-                 <canvas id="radarChart" width="730" height="720"></canvas>
+                 <canvas id="radarChart" width="640" height="720"></canvas>
                      { if ($item) then <div>
                     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
                     <script>//<![CDATA[
@@ -328,7 +316,7 @@ return
                         //]]></script>
                         </div> else ()
                         }
-                  <script>$("select").select2();</script>
+                  <script class="rxq-js-eval">$("select").select2();</script>
                   </div>
           </div>
       </div>

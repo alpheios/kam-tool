@@ -25,7 +25,7 @@ declare %plugin:provide('ui/page/custom-css',"stammdaten/vertrag") function _:pa
 
 };
 
-declare %plugin:provide('ui/page/custom-js',"stammdaten/vertrag") function _:page-custom-js(
+declare %plugin:provide('ui/page/custom-js') function _:page-custom-js(
     $Params as map(*)
 ) as element(xhtml:link)* {
     <script src="{$global:inspinia-path}/js/plugins/select2/select2.full.min.js"></script>
