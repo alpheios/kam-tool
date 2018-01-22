@@ -280,7 +280,6 @@ return
               <div class="ibox-content" id="blauer-ozean-kk-view-chart" data-replace="#blauer-ozean-kk-view-chart">
                  <canvas id="radarChart" width="640" height="720"></canvas>
                      { if ($item) then <div>
-                    <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
                     <script>//<![CDATA[
                     var radarData = {
                             labels: []]>{$labels}<![CDATA[],
@@ -316,7 +315,6 @@ return
                         //]]></script>
                         </div> else ()
                         }
-                  <script class="rxq-js-eval">$("select").select2();</script>
                   </div>
           </div>
       </div>

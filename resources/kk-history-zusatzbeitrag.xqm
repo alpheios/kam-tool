@@ -1,4 +1,4 @@
-module namespace _ = "sanofi/kk-history-mitglieder";
+module namespace _ = "sanofi/kk-history-zusatzbeitrag";
 
 (: import repo modules :)
 import module namespace global	= "influx/global";
@@ -29,7 +29,7 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
 };
 
 declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-kk-history-mitglieder-kk-input($Item as element(kk-history-mitglieder), $Element as element(element), $Context as map(*))
+function _:sanofi-kk-history-zusatzbeitrag-kk-input($Item as element(kk-history-zusatzbeitrag), $Element as element(element), $Context as map(*))
 as element()?
 {
     let $kk-id := $Context("kk")
@@ -37,7 +37,7 @@ as element()?
 };
 
 declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-kk-history-mitglieder-kk-input-label($Item as element(kk-history-mitglieder), $Element as element(element), $Context as map(*))
+function _:sanofi-kk-history-zusatzbeitrag-kk-input-label($Item as element(kk-history-zusatzbeitrag), $Element as element(element), $Context as map(*))
 as element()?
 {
     (: Label für Feld "kk" löschen :)
@@ -94,7 +94,7 @@ return
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){
-<schema xmlns="" name="kk-history-mitglieder" domain="sanofi" provider="sanofi/kk-history-mitglieder">
+<schema xmlns="" name="kk-history-zusatzbeitrag" domain="sanofi" provider="sanofi/kk-history-zusatzbeitrag">
     <modal>
         <title>KK Versicherte</title>
         <button>
@@ -110,11 +110,8 @@ as element(schema){
     <element name="datum" type="date">
         <label>Datum</label>
     </element>
-    <element name="anzahl" type="number">
+    <element name="zusatzbeitrag" type="number">
         <label>Mitglieder Anzahl</label>
-    </element>
-    <element name="marktanteil" type="number">
-        <label>Mitglieder Marktanteil</label>
     </element>
     <element name="kk" type="foreign-key" required="">
             <provider>sanofi/kk</provider>

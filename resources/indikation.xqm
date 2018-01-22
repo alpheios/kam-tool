@@ -9,7 +9,7 @@ import module namespace ui =" influx/ui2";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigationX')
   function _:nav-item-stammdaten-indikation()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">

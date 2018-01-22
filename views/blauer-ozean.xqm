@@ -44,7 +44,7 @@ return
       <div class="col-lg-12 col-md-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <h5>{$edit-button} Der Blaue Ozean (SWAT Alternative) als Radar Chart</h5>
+                  <h5>{$edit-button} Der Blaue Ozean </h5>
                   <select class="chosen pull-right" onchange="window.location='/influx/sanofi/blauer-ozean?id='+$(this).val()">
                     <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
                     {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}

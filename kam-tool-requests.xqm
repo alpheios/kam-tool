@@ -90,7 +90,7 @@ function _:page-top-4-kv() {
 };
 
 declare
-  %rest:path("sanofi/summary")
+  %rest:path("sanofi/stammdaten/summary")
   %rest:GET
   %output:method("html")
   %output:version("5.0")

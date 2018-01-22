@@ -185,7 +185,7 @@ for $item in $Items order by $item/name return $item
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","zuständig")
+    let $columns := ("name","verantwortlich","ansprechpartner", "dachverband", "stakeholder")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -208,6 +208,9 @@ as element(schema){
     {$_:kk//a ! <enum key="{.}">{.}</enum>}
     <label>Name</label>
     </element>
+    <element name="dachverband" type="text">
+        <label>Dachverband</label>
+    </element>
     <element name="verantwortlich" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id/string()</key>
@@ -222,16 +225,16 @@ as element(schema){
             <label>Ansprechpartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="ziele" type="text">
+    <element name="ziele" type="html">
         <label>Ziele</label>
     </element>
-    <element name="strategien" type="text">
+    <element name="strategien" type="html">
         <label>Strategien</label>
     </element>
-    <element name="meilensteine" type="text">
+    <element name="meilensteine" type="html">
         <label>Meilensteine/Schlüsselaktionen</label>
     </element>
-    <element name="anforderungen" type="text">
+    <element name="anforderungen" type="html">
         <label>Anforderungen</label>
     </element>
     <element name="stakeholder" type="foreign-key" required="">
@@ -314,6 +317,7 @@ return
               <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Stakeholder</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-6">Verträge</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
@@ -366,7 +370,7 @@ return
                             return $item
                         let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -383,7 +387,24 @@ return
                             return $item
                         let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
+                    }
+                  </div>
+              </div>
+              <div id="tab-6" class="tab-pane">
+                  <div class="panel-body">
+                    {
+                        let $provider := "sanofi/vertrag"
+                        let $context := "kk"
+                        let $schema := plugin:provider-lookup($provider,"schema")!.()
+                        let $items :=
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            let $date := $item/@last-modified-date
+                            order by $date descending
+                            return $item
+                        let $item-latest := $items[1]
+                        return
+                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)[kk=$Item/@id]
                     }
                   </div>
               </div>

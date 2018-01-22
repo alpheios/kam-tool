@@ -18,7 +18,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/page/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -78,7 +78,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","beginn")
+    let $columns := ("name","beginn", "ende", "kk", "kv")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -129,20 +129,20 @@ as element(schema){
  </schema>
 };
 
-declare %plugin:provide("content/view")
-function _:sanofi-projekte($Item as element()*,$Schema as element(schema), $Context)
+declare %plugin:provide("content/context/view")
+function _:sanofi-projekte($Item as element(projekt),$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-let $id := $Item/@id/string()
+let $kk-id := $Item/kk/string()
 let $provider := "sanofi/projekt"
 let $context := map{"context":"sanofi/projekt"}
 let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
 let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
 let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
-let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($id,$kk-schema,$context)
-let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$id]
+let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context)
+let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
 let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 return
 <div xmlns="http://www.w3.org/1999/xhtml">
   <div class="row">

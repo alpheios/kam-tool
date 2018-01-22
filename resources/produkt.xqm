@@ -10,7 +10,7 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigationX')
   function _:nav-item-stammdaten-products()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">

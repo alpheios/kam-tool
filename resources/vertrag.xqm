@@ -21,7 +21,7 @@ declare %plugin:provide('side-navigation')
 declare %plugin:provide('ui/page/custom-css',"stammdaten/vertrag") function _:page-custom-css(
     $Params as map(*)
 ) as element(xhtml:link)* {
-    <link href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
+    <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
 
 };
 
@@ -45,7 +45,7 @@ as element(xhtml:div)
 </div>
 };
 
-declare %plugin:provide("schema/render/page/debug/item") function _:debug-kk ($Item,$Schema,$Context){
+declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
 
@@ -122,13 +122,7 @@ as element(schema){
             <label>KK-Vertragspartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="kv" type="foreign-key" required="">
-            <provider>sanofi/kv</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
-            <label>KV-Vertragspartner</label>
-                <class>col-md-6</class>
-    </element>
+
     <element name="lav" type="foreign-key" required="">
             <provider>sanofi/lav</provider>
             <key>@id</key>
@@ -148,6 +142,70 @@ as element(schema){
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
+     <element name="sharepoint-link" type="text">
+        <label>Dokument in Sharepoint</label>
+     </element>
  </schema>
 };
 
+declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
+function _:sanofi-stakeholder-kk-input($Item as element(vertrag), $Element as element(element), $Context as map(*))
+as element()?
+{
+    let $kk-id := $Context("kk")
+    return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
+};
+
+declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
+function _:sanofi-stakeholder-kk-input-label($Item as element(vertrag), $Element as element(element), $Context as map(*))
+as element()?
+{
+    (: Label für Feld "kk" löschen :)
+};
+
+
+declare %plugin:provide("schema/render/form/action","kk") function _:schema-render-form-action($Item as element(), $Schema as element(schema), $Context as map(*))
+as xs:string{
+let $provider := $Schema/@provider/string()
+let $context := $Context("context")
+let $kk-id := $Context("kk")
+return
+string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context||"&amp;kk="||$kk-id)
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","kk")
+function _:schema-render-table-tbody-tr-td-actions($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:td)
+{
+let $context := $Context => map:get("context")
+let $provider := $Schema/@provider/string()
+return
+(:edit-button:) <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+}</td>
+};
+
+declare %plugin:provide("content/context/view","kk")
+function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+let $form-id := "id-"||random:uuid()
+let $title := $Schema/*:modal/*:title/string()
+let $provider := $Schema/@provider/string()
+let $context := $Context("context")
+let $kk := $Context("kk")
+let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $title := $Schema/modal/title/string()
+return
+<div xmlns="http://www.w3.org/1999/xhtml" class="ibox float-e-margins">
+    <div class="ibox-title">
+        <h5>{$title}</h5>
+        <div class="ibox-tools">
+        {$modal-button}
+        </div>
+    </div>
+    <div class="ibox-content">
+    {
+        plugin:provider-lookup($provider,"schema/render/table",$context)!.($Items,$Schema,$Context)
+     }
+    </div>
+</div>
+ };

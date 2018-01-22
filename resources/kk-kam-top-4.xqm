@@ -38,7 +38,7 @@ return
       <div class="col-lg-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <h5>{$modal-button} Der Blaue Ozean</h5>
+                  <h5>{$modal-button} KAM TOP 4</h5>
                   <select class="chosen pull-right" onchange="window.location='/influx/sanofi/kk-kam-top-4?id='+$(this).val()">
                     <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
                     {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
@@ -70,7 +70,7 @@ declare %plugin:provide("schema") function _:schema-()
 as element(schema){
 <schema xmlns="" name="kk-kam-top-4" domain="sanofi" provider="sanofi/kk-kam-top-4">
     <modal>
-        <title>Der Blaue Ozean</title>
+        <title>KAM TOP 4</title>
         <button>
             <add>hinzufügen</add>
             <cancel>abbrechen</cancel>
@@ -197,7 +197,7 @@ let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$conte
 let $name := $Item/name/string()
 let $kk-history-provider := "sanofi/kk-history-mitglieder"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
-let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($schema,$Context)/kk-history-mitglieder[kk=$kk-id]
+let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($kk-history-schema,$Context)
 let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
 let $add-button := ui:modal-button('schema/form/modal?context='||$context||'&amp;provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 return
@@ -343,6 +343,7 @@ return
 };
 
 (: Beware, this is the context switch. We are in "no" Context and switch to "kk" context :)
+(:
 declare %plugin:provide("schema/render/button/modal/edit/link")
 function _:kk-kam-top-4-render-button-page-edit-link($Item as element(), $Schema as element(schema), $Context as map(*))
 as xs:string
@@ -353,5 +354,5 @@ return
     if ($kk-id)
         then "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider/string()||"&amp;context="||$context||"&amp;kk="||$kk-id
         else "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider/string()||"&amp;context="||$context
-};
+};:)
 
