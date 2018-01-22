@@ -10,9 +10,7 @@
     <url/>
   </config>
   <setup>
-    <collection name="influx-sales-todos"/>
-    <collection name="influx-sales-opportunities"/>
-    <collection name="influx-sales-customers"/>
+    <collection name="datastore-sanofi-products"/>
   </setup>
   <icon>
     <div class="manage-icon">
