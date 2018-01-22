@@ -33,10 +33,19 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 <pre>{serialize($Item)}</pre>
 };
 
+declare %plugin:provide("datastore/name")
+function _:set-datastore-name(
+  $Schema as element(schema),
+  $Context as map(*)
+) as xs:string {
+  'datastore-sanofi-key-accounter'
+};
+
 (:
  If there is no user-id but a username, that means: no user has been created so far
 :)
 declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
+        %plugin:provide("datastore/dataobject/put/pre-hook")
 function _:schema-datastore-dataobject-put-pre-hook($Item as element(),$Schema as element(schema), $Context as map(*)){
 let $username := $Item/username/string()
 let $firstname := $Item/vorname/string()
@@ -44,6 +53,7 @@ let $lastname := $Item/nachname/string()
 let $role := $Item/role/string()
 let $email := $Item/email/string()
 let $userid := $Item/userid/string()
+let $trace := trace($Item, "User: ")
 return
     if ($userid="" and $username!="")
         then

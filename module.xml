@@ -11,6 +11,7 @@
   </config>
   <setup>
     <collection name="datastore-sanofi-products"/>
+    <collection name="datastore-sanofi-key-accounter"/>
   </setup>
   <icon>
     <div class="manage-icon">

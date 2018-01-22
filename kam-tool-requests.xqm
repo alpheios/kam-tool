@@ -57,6 +57,17 @@ function _:page-product-importer() {
 };
 
 declare
+  %rest:path("admin/sanofi/import-users")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-user-importer() {
+  ui:page(map{
+    "title": "Benutzer Importieren"
+    },"sanofi/import-users")
+};
+
+declare
   %rest:path("sanofi/projekt")
   %rest:GET
   %output:method("html")
