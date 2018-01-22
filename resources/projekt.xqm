@@ -114,6 +114,7 @@ as element(schema){
                     <class>col-md-6</class>
     </element>
     <element name="beginn" type="date">
+        <class></class>
         <label>Beginn</label>
     </element>
     <element name="ende" type="date">
@@ -130,77 +131,77 @@ as element(schema){
 };
 
 declare %plugin:provide("content/context/view")
-function _:sanofi-projekte($Item as element(projekt),$Schema as element(schema), $Context)
+function _:sanofi-projekte($Item as element(projekt)? ,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-let $kk-id := $Item/kk/string()
-let $provider := "sanofi/projekt"
-let $context := map{"context":"sanofi/projekt"}
-let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
-let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
-let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
-let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context)
-let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
-let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
-return
-<div xmlns="http://www.w3.org/1999/xhtml">
-  <div class="row">
-      <div class="col-lg-12">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>{$add-button} Projekte hinuzufügen </h5>
-              </div>
-              <div class="ibox-content">
-                  <div class="gantt-container" style="overflow: scroll">
-                  	<div id="chart_div"></div>
+  let $kk-id := $Context("kk")
+  let $provider := "sanofi/projekt"
+  let $context := map{"context":"sanofi/projekt"}
+  let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
+  let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
+  let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
+  let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context)
+  let $projekte := trace(plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id], 'projekte: ')
+  let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
+  let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+  return
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="ibox float-e-margins">
+                  <div class="ibox-title">
+                      <h5>{$add-button} Projekte hinzufügen </h5>
+                  </div>
+                  <div class="ibox-content">
+                      <div class="gantt-container" style="overflow: scroll">
+                      	<div id="chart_div"></div>
+                      </div>
                   </div>
               </div>
           </div>
-      </div>
-      { if ($projekte) then <div>
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript">//<![CDATA[
-          google.charts.load('current', {'packages':['gantt']});
-          google.charts.setOnLoadCallback(drawChart);
+          { if ($projekte) then <div>
+          <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script type="text/javascript">//<![CDATA[
+              google.charts.load('current', {'packages':['gantt']});
+              google.charts.setOnLoadCallback(drawChart);
 
-          function drawChart() {
+              function drawChart() {
 
-            var data = new google.visualization.DataTable();
-]]>
-            {(:
-                for $element in $projekt-schema/*:element
-                let $type:= if ($element/@type="text") then "string" else if ($element/@type="date") then "date" else "string"
-                return "data.addColumn('"||$type||"', '"||$element/*:label/string()||"');&#x0a;"
-            :)}
-            <![CDATA[
-            data.addColumn('string', 'Task ID');
-            data.addColumn('string', 'Task Name');
-            data.addColumn('string', 'Resource');
-            data.addColumn('date', 'Start Date');
-            data.addColumn('date', 'End Date');
-            data.addColumn('number', 'Duration');
-            data.addColumn('number', 'Percent Complete');
-            data.addColumn('string', 'Dependencies');
+                var data = new google.visualization.DataTable();
+    ]]>
+                {(:
+                    for $element in $projekt-schema/*:element
+                    let $type:= if ($element/@type="text") then "string" else if ($element/@type="date") then "date" else "string"
+                    return "data.addColumn('"||$type||"', '"||$element/*:label/string()||"');&#x0a;"
+                :)}
+                <![CDATA[
+                data.addColumn('string', 'Task ID');
+                data.addColumn('string', 'Task Name');
+                data.addColumn('string', 'Resource');
+                data.addColumn('date', 'Start Date');
+                data.addColumn('date', 'End Date');
+                data.addColumn('number', 'Duration');
+                data.addColumn('number', 'Percent Complete');
+                data.addColumn('string', 'Dependencies');
 
-            data.addRows([
-            ]]>{
-                string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
-            }<![CDATA[
+                data.addRows([
+                ]]>{
+                    string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
+                }<![CDATA[
 
-            ]);
+                ]);
 
 
-            var options = {
-                fontName : "open sans"
-            };
+                var options = {
+                    fontName : "open sans"
+                };
 
-            var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+                var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
 
-            chart.draw(data, options);
-          }
-        ]]></script>
-        </div> else ()}
-    </div>
-</div>
+                chart.draw(data, options);
+              }
+            ]]></script>
+            </div> else ()}
+        </div>
+    </div>  
 };
