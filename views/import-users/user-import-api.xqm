@@ -120,7 +120,7 @@ declare function _:render-users(
   $Header as xs:string*
 ) {
   <div id="users-list" data-replace="#users-list" data-animation="fadeInLeft" class="clearfix">
-    <h2>Produkte</h2>
+    <h2>Benutzer</h2>
     <table style="margin-top:15px" class="table table-hover table-striped table-borderless">
       <thead>
       <tr>
