@@ -184,7 +184,7 @@ declare
     %output:version("5.0")
   function _:page-stammdaten-kv() {
     ui:page(map{
-      "title": "Stammdaten Kassenärtzliche Vereinigungen"
+      "title": "Stammdaten Kassenärztliche Vereinigungen"
       },"stammdaten/kv")
   };
 
