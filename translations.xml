@@ -9,7 +9,8 @@
     <t id="side-navigation-import-products">Produktimport</t>
     <t id="side-navigation-import-users">Benutzerimport</t>
     <t id="import-users-success">Benutzer wurden erfolgreich importiert.</t>
-    <t id="import-users-failed-during-db-operation">Benutzer konnten nicht in die Datenbank importiert werden.</t>
+    <t id="import-users-failed-during-db-operation">Nicht alle Benutzer konnten in die Datenbank importiert werden. 
+    Wurde ein username womöglich schon verwendet?</t>
     <t id="import-users-failed-no-products">Es wurden keine zu importierenden Benutzer gefunden.</t>
   </lang>
   <lang id="en_US">

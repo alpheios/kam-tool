@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-key-accounter()
   as element(xhtml:li) {
@@ -53,21 +54,29 @@ let $lastname := $Item/nachname/string()
 let $role := $Item/role/string()
 let $email := $Item/email/string()
 let $userid := $Item/userid/string()
-let $trace := trace($Item, "User: ")
 return
     if ($userid="" and $username!="")
         then
-            let $userid := plugin:lookup("api/user-manager/users/create")!.(map {
-              'username':$username,
-              'firstName':$firstname,
-              'lastName':$lastname,
-              'email':$email,
-              'enabled':'true',
-              'requiredActions':
-              'UPDATE_PASSWORD',
-              'realmRoles':$role
-            })
-            return $Item update replace value of node ./userid with $userid
+            let $userid := try {
+              plugin:lookup("api/user-manager/users/create")!.(map {
+                'username':$username,
+                'firstName':$firstname,
+                'lastName':$lastname,
+                'email':$email,
+                'enabled':'true',
+                'requiredActions':
+                'UPDATE_PASSWORD',
+                'realmRoles':$role
+              })
+            } catch Q{http://influx.adesso.de/error}IN0002 {
+              if (contains($err:description, "User exists with same username"))
+              then ()
+              else global:error(IN0002, $err:description)
+            }
+            return
+              if ($userid)
+              then $Item update replace value of node ./userid with $userid
+              else ()
         else 
           let $keycloakUser := plugin:lookup('api/user-manager/users/id')!.($userid)
           let $userMap := map {

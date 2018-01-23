@@ -61,9 +61,9 @@ function _:api-import-users() {
   return
     if ($users)
     then
-      let $importusers := _:import-users($users)
+      let $importUsersFailed := _:import-users($users)
       return
-        if ($importusers)
+        if (not($importUsersFailed))
         then (
           ui:info(<span data-i18n="import-users-success">users successfully imported.</span>),
           <div data-remove="#users-list" data-animation="fadeOutRight"></div>
@@ -112,7 +112,7 @@ declare function _:import-users(
     for $user in $schemaUsers
     return plugin:lookup('datastore/dataobject/put')!.($user, $schema, map {})
 
-  return true()
+  return $importUsers = false()
 };
 
 declare function _:render-users(
@@ -125,19 +125,20 @@ declare function _:render-users(
       <thead>
       <tr>
       {
-        for $columnTitle in $Header
+        for $columnTitle in ("Username", "Vorname", "Nachname", "Rolle")
         return <th><div><span>{$columnTitle}</span></div></th>
       }
       </tr>
       </thead>
       <tbody>
       {
-        for $user in subsequence($users, 1, 5)
-        return _:render-user-row($user)
+        for $user in $users
+          let $username := _:extract-username($user)
+          let $firstname := $user/Vorname/string()
+          let $lastname := $user/Name/string()
+          let $role := _:extract-userrole($user)
+          return _:render-user-row($username, $firstname, $lastname, $role)
       }
-      <tr>
-        <td>...</td>
-      </tr>
       </tbody>
     </table>
     <h4><strong>Insgesamt: </strong>{count($users)}</h4>
@@ -146,12 +147,15 @@ declare function _:render-users(
 };
 
 declare function _:render-user-row(
-  $user as element(record)
+  $username as xs:string, 
+  $firstname as xs:string, 
+  $lastname as xs:string,
+  $role as xs:string
 ) {
   <tr>
-    {
-      for $column in $user/*
-      return <td>{$column/string()}</td>
-    }
+    <td>{$username}</td>
+    <td>{$firstname}</td>
+    <td>{$lastname}</td>
+    <td>{$role}</td>
   </tr>
 };

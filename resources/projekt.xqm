@@ -141,7 +141,7 @@ as element(xhtml:div)
   let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
   let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
   let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context)
-  let $projekte := trace(plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id], 'projekte: ')
+  let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
   let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
   let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
   return
