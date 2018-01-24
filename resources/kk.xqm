@@ -247,6 +247,7 @@ as element(schema){
   </schema>
 };
 
+
 declare %plugin:provide("schema/render/form/field/enum","name")
  function _:schema-render-field-kk-name(
      $Item as element()?,
@@ -291,7 +292,7 @@ function _:profile-dashboard-widget-kk($Profile as element())
     return
         if (count($items)>0) then
         <div class="col-md-6">
-         {plugin:lookup("schema/render/table/page")!.($items,$schema,$context)}
+         {plugin:provider-lookup("sanofi/kk","schema/render/table/page")!.($items,$schema,$context)}
         </div>
         else ()
 
