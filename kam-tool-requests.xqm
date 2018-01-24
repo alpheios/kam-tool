@@ -145,17 +145,6 @@ declare
     };
 
 declare
-    %rest:path("sanofi/stammdaten/stakeholder")
-    %rest:GET
-    %output:method("html")
-    %output:version("5.0")
-  function _:page-stammdaten-stakeholder() {
-    ui:page(map{
-      "title": "Stammdaten Stakeholder"
-      },"stammdaten/stakeholder")
-  };
-
-declare
     %rest:path("sanofi/stammdaten/ansprechpartner")
     %rest:GET
     %output:method("html")
