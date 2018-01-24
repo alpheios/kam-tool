@@ -33,7 +33,15 @@ as element(xhtml:div)
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
+function _:schema-render-table-prepare-rows(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+    for $item in $Items 
+    order by $item/name, $item/priority 
+    return $item
+};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
@@ -58,12 +66,8 @@ as element(schema){
     <element name="name" type="text">
         <label>Name</label>
     </element>
-     <element name="gremien" type="enum">
-         {("Gremium1","Gremium2","Gremium3","Gremium4","Gremium5") ! <enum key="{.}">{.}</enum>}
-         <label>Vertreten in den folgenden Gremien</label>
-     </element>
-   <element name="rolle" type="text">
-        <label>Rolle</label>
+    <element name="gremien" type="text">
+        <label>Vertreten in den folgenden Gremien</label>
     </element>
     <element name="abteilung" type="text">
         <label>Abteilung</label>
@@ -71,18 +75,41 @@ as element(schema){
     <element name="position" type="text">
         <label>Position</label>
     </element>
-     <element name="einfluss" type="text">
-         <label>Einfluss</label>
-     </element>
-     <element name="institutionen" type="text">
-         <label>Institutionen</label>
-     </element>
-     <element name="fachrichtung" type="text">
-         <label>Fachrichtung</label>
-     </element>
-     <element name="notizen" type="text">
-         <label>Notizen</label>
-     </element>
+    <element name="kontaktintensitaet" type="text">
+        <label>Kontaktintensität</label>
+    </element>
+    <element name="kv" type="foreign-key" render="dropdown" required="">
+              <provider>sanofi/kv</provider>
+              <key>@id</key>
+              <display-name>name/string()</display-name>
+              <label>KV</label>
+              <class>col-md-6</class>
+    </element>
+    <element name="kk" type="foreign-key" render="dropdown" required="">
+              <provider>sanofi/kk</provider>
+              <key>@id</key>
+              <display-name>name/string()</display-name>
+              <label>KK</label>
+              <class>col-md-6</class>
+    </element>
+    <element name="lav" type="foreign-key" render="dropdown" required="">
+      <provider>sanofi/lav</provider>
+      <key>@id</key>
+      <display-name>name/string()</display-name>
+      <label>LAV</label>
+      <class>col-md-6</class>
+    </element>
+    <element name="fachrichtung" type="text">
+        <label>Fachrichtung</label>
+    </element>
+    <element name="notizen" type="text">
+        <label>Notizen</label>
+    </element>
+    <element name="einfluss" type="foreign-key" render="table">
+        <provider>sanofi/ansprechpartner/einfluss</provider>
+        <key>@id</key>
+        <label>Einfluss</label>
+    </element>
  </schema>
 };
 

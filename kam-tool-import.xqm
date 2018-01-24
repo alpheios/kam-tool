@@ -5,6 +5,7 @@ import module namespace requests                = "sales-management/requests" at
 
 import module namespace kv                      = "sanofi/kv" at "resources/kv.xqm";
 import module namespace ansprechpartner         = "sanofi/ansprechpartner" at "resources/ansprechpartner.xqm";
+import module namespace ansprechpartner-einfluss= "sanofi/ansprechpartner/einfluss" at "resources/ansprechpartner-einfluss.xqm";
 import module namespace kk                      = "sanofi/kk" at "resources/kk.xqm";
 import module namespace lav                     = "sanofi/lav" at "resources/lav.xqm";
 import module namespace produkt                 = "sanofi/produkt" at "resources/produkt.xqm";
@@ -29,3 +30,5 @@ import module namespace projekte-gantt          = "sanofi/views/projekte" at "vi
 
 import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
 import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";
+import module namespace user-importer        = "sanofi/views/user-import" at "views/import-users/user-import.xqm";
+import module namespace user-importer-api    = "sanofi/api/user-import" at "views/import-users/user-import-api.xqm";

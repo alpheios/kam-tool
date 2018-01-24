@@ -10,7 +10,10 @@
     <url/>
   </config>
   <setup>
-    <collection name="datastore-sanofi-products"/>
+    <collection name="datastore-sanofi-produkt"/>
+    <collection name="datastore-sanofi-ansprechpartner"/>
+    <collection name="datastore-sanofi-ansprechpartner-einfluss"/>
+    <collection name="datastore-sanofi-key-accounter"/>
   </setup>
   <icon>
     <div class="manage-icon">

@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-key-accounter()
   as element(xhtml:li) {
@@ -37,6 +38,7 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
  If there is no user-id but a username, that means: no user has been created so far
 :)
 declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
+        %plugin:provide("datastore/dataobject/put/pre-hook")
 function _:schema-datastore-dataobject-put-pre-hook($Item as element(),$Schema as element(schema), $Context as map(*)){
 let $username := $Item/username/string()
 let $firstname := $Item/vorname/string()
@@ -47,17 +49,26 @@ let $userid := $Item/userid/string()
 return
     if ($userid="" and $username!="")
         then
-            let $userid := plugin:lookup("api/user-manager/users/create")!.(map {
-              'username':$username,
-              'firstName':$firstname,
-              'lastName':$lastname,
-              'email':$email,
-              'enabled':'true',
-              'requiredActions':
-              'UPDATE_PASSWORD',
-              'realmRoles':$role
-            })
-            return $Item update replace value of node ./userid with $userid
+            let $userid := try {
+              plugin:lookup("api/user-manager/users/create")!.(map {
+                'username':$username,
+                'firstName':$firstname,
+                'lastName':$lastname,
+                'email':$email,
+                'enabled':'true',
+                'requiredActions':
+                'UPDATE_PASSWORD',
+                'realmRoles':$role
+              })
+            } catch Q{http://influx.adesso.de/error}IN0002 {
+              if (contains($err:description, "User exists with same username"))
+              then ()
+              else global:error(IN0002, $err:description)
+            }
+            return
+              if ($userid)
+              then $Item update replace value of node ./userid with $userid
+              else ()
         else 
           let $keycloakUser := plugin:lookup('api/user-manager/users/id')!.($userid)
           let $userMap := map {

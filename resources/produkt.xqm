@@ -37,14 +37,6 @@ as element(xhtml:div)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
 
-declare %plugin:provide("datastore/name")
-function _:set-datastore-name(
-  $Schema as element(schema),
-  $Context as map(*)
-) as xs:string {
-  'datastore-sanofi-products'
-};
-
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
     let $columns := ("name","indikationen")
