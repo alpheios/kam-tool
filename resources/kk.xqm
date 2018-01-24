@@ -185,7 +185,7 @@ for $item in $Items order by $item/name return $item
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","verantwortlich","ansprechpartner", "dachverband", "stakeholder")
+    let $columns := ("name","verantwortlich","ansprechpartner", "dachverband")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -236,13 +236,6 @@ as element(schema){
     </element>
     <element name="anforderungen" type="html">
         <label>Anforderungen</label>
-    </element>
-    <element name="stakeholder" type="foreign-key" required="">
-            <provider>sanofi/stakeholder</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
-            <label>Stakeholder</label>
-            <class>col-md-6</class>
     </element>
   </schema>
 };
@@ -317,8 +310,7 @@ return
               <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
               <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-5">Stakeholder</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-6">Verträge</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
@@ -376,23 +368,6 @@ return
                   </div>
               </div>
               <div id="tab-5" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                        let $provider := "sanofi/stakeholder"
-                        let $context := "kk"
-                        let $schema := plugin:provider-lookup($provider,"schema")!.()
-                        let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-                            let $date := $item/@last-modified-date
-                            order by $date descending
-                            return $item
-                        let $item-latest := $items[1]
-                        return
-                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
-                    }
-                  </div>
-              </div>
-              <div id="tab-6" class="tab-pane">
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/vertrag"

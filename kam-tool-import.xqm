@@ -13,7 +13,6 @@ import module namespace projekt                 = "sanofi/projekt" at "resources
 import module namespace wirkstoff               = "sanofi/wirkstoff" at "resources/wirkstoff.xqm";
 import module namespace indikation              = "sanofi/indikation" at "resources/indikation.xqm";
 import module namespace vertrag                 = "sanofi/vertrag" at "resources/vertrag.xqm";
-import module namespace stakeholder             = "sanofi/stakeholder" at "resources/stakeholder.xqm";
 import module namespace ka                      = "sanofi/key-accounter" at "resources/key-accounter.xqm";
 import module namespace summary                 = "sanofi/summary" at "resources/summary.xqm";
 import module namespace blauer-ozean-resource   = "sanofi/blauer-ozean" at "resources/blauer-ozean.xqm";

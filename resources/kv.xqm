@@ -87,14 +87,6 @@ as element(schema){
             <label>Ansprechpartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="stakeholder" type="foreign-key" required="">
-                <provider>sanofi/stakeholder</provider>
-                <key>@id</key>
-                <display-name>name/string()</display-name>
-                <label>Stakeholder</label>
-                <class>col-md-6</class>
-        </element>
-
 </schema>
 };
 
