@@ -132,7 +132,7 @@ as element(schema){
      <element name="username" type="text">
           <label>Username</label>
       </element>
-     <element name="rolle" type="enum">
+     <element name="role" type="enum">
           <label>Rolle</label>
         {("admin","user") ! <enum key="{.}">{.}</enum>}
       </element>

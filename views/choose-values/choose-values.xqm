@@ -51,7 +51,7 @@ function _:sanofi-choose-values(
                       <select class="form-control" id="felder" onchange="replaceValueEditor('{$global:servlet-prefix}', this)">
                       <option disabled="" selected="">Wähle ein Auswahlfeld</option>
                       {
-                        let $felder := plugin:lookup("plato/schema/enums/get")!.("felder")
+                        let $felder := plugin:lookup("plato/schema/enums/get")!.("Felder")
                         return
                           for $feld in $felder
                           return <option>{$feld}</option>
