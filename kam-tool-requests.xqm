@@ -68,6 +68,17 @@ function _:page-user-importer() {
 };
 
 declare
+  %rest:path("admin/sanofi/choose-values")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-choose-values() {
+  ui:page(map{
+    "title": "Auswahlwerte für Auswahlfelder festlegen"
+    },"sanofi/choose-values")
+};
+
+declare
   %rest:path("sanofi/projekt")
   %rest:GET
   %output:method("html")

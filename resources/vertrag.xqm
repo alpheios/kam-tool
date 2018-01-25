@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contracts()
@@ -102,7 +103,7 @@ as element(schema){
         <label>Bezeichnung</label>
     </element>
     <element name="vertragsart" type="enum">
-        {("130a","130b","130c","140a","73","84","speziell") ! <enum key="{.}">{.}</enum>}
+        {$_:vertragsarten ! <enum key="{.}">{.}</enum>}
         <label>Vertragsart</label>
     </element>
     <element name="produkt" type="foreign-key" required="">

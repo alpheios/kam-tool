@@ -8,9 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare variable $_:land := ("Nordrhein","Westfalen-Lippe","Baden-Württemberg","Bayern","Mecklenburg-Vorpommern",
-                             "Sachsen","Sachsen-Anhalt", "Thüringen", "Brandenburg", "Berlin", "Hessen", "Niedersachsen",
-                             "Bremen","Hamburg","Schleswig-Holstein","Saarland","Rheinland-Pfalz");
+declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundesländer");
 declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
 
 declare %plugin:provide('side-navigation')

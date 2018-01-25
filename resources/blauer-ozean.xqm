@@ -8,6 +8,8 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:aspekte := plugin:lookup("plato/schema/enums/get")!.("Blauer Ozean Aspekte");
+
 declare %plugin:provide('side-navigationXXX')
   function _:nav-item-stammdaten-blauer-ozean()
   as element(xhtml:li) {
@@ -93,37 +95,19 @@ as element(schema){
         <label>Lieferfähigkeit SOLL</label>
     </element>
 
- <element name="vertragsqualität-ist" type="number">
-   <label>Vertragsqualität IST</label>
- </element>
- <element name="vertragsqualität-soll" type="number">
-   <label>Vertragsqualität SOLL</label>
- </element>
- <element name="ökonomie-ist" type="number">
-   <label>Ökonomie IST</label>
- </element>
- <element name="ökonomie-soll" type="number">
-   <label>Ökonomie SOLL</label>
- </element>
- <element name="informationsweitergabe-ist" type="number">
-   <label>Informationsweitergabe IST</label>
- </element>
- <element name="informationsweitergabe-soll" type="number">
-   <label>Informationsweitergabe SOLL</label>
- </element>
- <element name="gesprächsangebot-ist" type="number">
-   <label>Gesprächsangebot IST</label>
- </element>
- <element name="gesprächsangebot-soll" type="number">
-   <label>Gesprächsangebot SOLL</label>
- </element>
- <element name="one-face-to-the-customoer-ist" type="number">
-   <label>One-Face-to-The-Customer IST</label>
- </element>
- <element name="one-face-to-the-customoer-soll" type="number">
-   <label>One-Face-to-The-Customer SOLL</label>
- </element>
-
+    {
+      for $aspekt in $_:aspekte
+      let $aspekt-name := translate(lower-case($aspekt), " ", "-")
+      return (
+        <element name="{$aspekt-name}-ist" type="number">
+          <label>{$aspekt} IST</label>
+        </element>,
+        <element name="{$aspekt-name}-soll" type="number">
+          <label>{$aspekt} SOLL</label>
+        </element>
+      )
+    }
+    
    <element name="kv" type="foreign-key" required="">
               <provider>sanofi/kv</provider>
               <key>@id</key>

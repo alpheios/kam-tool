@@ -12,6 +12,7 @@
     <t id="import-users-failed-during-db-operation">Nicht alle Benutzer konnten in die Datenbank importiert werden. 
     Wurde ein username womöglich schon verwendet?</t>
     <t id="import-users-failed-no-products">Es wurden keine zu importierenden Benutzer gefunden.</t>
+    <t id="side-navigation-choose-values">Auswahlwerte festlegen</t>
   </lang>
   <lang id="en_US">
     <t id="drop-products-csv-here">Drop products.csv here</t>
@@ -25,5 +26,6 @@
     <t id="import-users-success">Users successfully imported.</t>
     <t id="import-users-failed-during-db-operation">Import of users failed due to database operations.</t>
     <t id="import-users-failed-no-products">No users to import.</t>
+    <t id="side-navigation-choose-values">Choose Select Values</t>
   </lang>
 </translations>
