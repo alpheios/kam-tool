@@ -86,15 +86,6 @@ as element(schema){
     <element name="datum" type="text">
         <label>Datum</label>
     </element>
-
-    <element name="lieferfähigkeit-ist" type="number">
-        <label>Lieferfähigkeit IST</label>
-    </element>
-
-    <element name="lieferfähigkeit-soll" type="number">
-        <label>Lieferfähigkeit SOLL</label>
-    </element>
-
     {
       for $aspekt in $_:aspekte
       let $aspekt-name := translate(lower-case($aspekt), " ", "-")
