@@ -45,7 +45,7 @@ for $item in $Items order by $item/land return $item
 
 declare %plugin:provide("schema/set/elements","stammdaten/kv")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","bundesland","verantwortlich")
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("kv")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .

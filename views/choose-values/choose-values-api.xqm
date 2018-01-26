@@ -19,7 +19,7 @@ declare %rest:path("/api/sanofi/choose-values/{$Field}")
 function _:replace-editor-field(
   $Field as xs:string
 ) {
-  let $file := trace(plugin:lookup("plato/schema/enums/get/filecontent")!.($Field), "File content: ")
+  let $file := plugin:lookup("plato/schema/enums/get/filecontent")!.($Field)
   let $paramMap := trace(map {
     "id": $Field||"-editor",
     "filename": $Field,

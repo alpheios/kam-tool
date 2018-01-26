@@ -13,6 +13,7 @@
     Wurde ein username womöglich schon verwendet?</t>
     <t id="import-users-failed-no-products">Es wurden keine zu importierenden Benutzer gefunden.</t>
     <t id="side-navigation-choose-values">Auswahlwerte festlegen</t>
+    <t id="side-navigation-choose-columns">Spalten festlegen</t>
   </lang>
   <lang id="en_US">
     <t id="drop-products-csv-here">Drop products.csv here</t>
@@ -27,5 +28,6 @@
     <t id="import-users-failed-during-db-operation">Import of users failed due to database operations.</t>
     <t id="import-users-failed-no-products">No users to import.</t>
     <t id="side-navigation-choose-values">Choose Select Values</t>
+    <t id="side-navigation-choose-columns">Choose Columns for list views</t>
   </lang>
 </translations>

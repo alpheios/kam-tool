@@ -79,6 +79,17 @@ function _:page-choose-values() {
 };
 
 declare
+  %rest:path("admin/sanofi/choose-columns")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-choose-columns() {
+  ui:page(map{
+    "title": "Spalten für Entitäten festlegen"
+    },"sanofi/choose-columns")
+};
+
+declare
   %rest:path("sanofi/projekt")
   %rest:GET
   %output:method("html")

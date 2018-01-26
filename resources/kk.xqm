@@ -45,7 +45,7 @@ for $item in $Items order by $item/name return $item
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","verantwortlich","ansprechpartner", "dachverband")
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("kk")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
