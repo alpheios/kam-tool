@@ -40,18 +40,23 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 :)
 declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
         %plugin:provide("datastore/dataobject/put/pre-hook")
-function _:schema-datastore-dataobject-put-pre-hook($Item as element(),$Schema as element(schema), $Context as map(*)){
+function _:schema-datastore-dataobject-put-pre-hook(
+  $Item as element(),
+  $Schema as element(schema),
+  $Context as map(*)
+) {
 let $username := $Item/username/string()
 let $firstname := $Item/vorname/string()
 let $lastname := $Item/nachname/string()
 let $role := $Item/role/string()
 let $userid := $Item/userid/string()
 return
-    if ($userid="" and $username!="")
+    if ($userid="" and $username="")
         then
+            let $newUsername := _:extract-username($firstname, $lastname)
             let $userid := try {
               plugin:lookup("api/user-manager/users/create")!.(map {
-                'username':$username,
+                'username': $newUsername,
                 'firstName':$firstname,
                 'lastName':$lastname,
                 'email':"",
@@ -63,11 +68,15 @@ return
             } catch Q{http://influx.adesso.de/error}IN0002 {
               if (contains($err:description, "User exists with same username"))
               then ()
-              else global:error(IN0002, $err:description)
+              else global:error("IN0002", $err:description)
             }
             return
               if ($userid)
-              then $Item update replace value of node ./userid with $userid
+              then $Item update {
+                  replace value of node ./userid with $userid 
+                } update {
+                  replace value of node ./username with $newUsername
+                } 
               else ()
         else 
           let $keycloakUser := plugin:lookup('api/user-manager/users/id')!.($userid)
@@ -87,9 +96,22 @@ return
           return $Item
 };
 
+declare function _:extract-username(
+  $Firstname as xs:string,
+  $Lastname as xs:string
+) as xs:string {
+  lower-case(substring($Firstname, 1, 1)||$Lastname)
+};
+
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
+function _:schema-render-table-prepare-rows(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  for $item in $Items order by $item/name, $item/priority return $item
+};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
@@ -128,7 +150,6 @@ as element(schema){
          <label>Notizen</label>
      </element>
      <element name="username" type="hidden">
-          <label>Username</label>
       </element>
      <element name="role" type="enum">
           <label>Rolle</label>
@@ -137,35 +158,4 @@ as element(schema){
       <element name="userid" type="hidden">
       </element>
  </schema>
-};
-
-declare %plugin:provide("schema/render/form/field/username")
- function _:schema-render-field-username-key-accounter(
-     $Item as element()?,
-     $Element as element(element),
-     $Context)
-     as element(xhtml:select)
-{
-     let $schema := $Element/ancestor::schema
-     let $assigned-username := $Item/username/string()
-     let $key-accounters := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
-     let $assigned-usernames := $key-accounters/username/string()
-     let $type := $Element/@type
-     let $name := $Element/@name
-     let $usernames := (plugin:lookup("usernames")!.())[not(.=$assigned-usernames)]
-     let $enums := $usernames!<enum key="{.}">{.}</enum>
-     let $class := $Element/class/string()
-     let $required := $Element/@required
-     let $value := $Item/node()[name()=$name]
-     return
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control chosen-select">{$required}
-     <option value="">Nicht zugewiesen</option>
-     {
-       for $enum in $enums
-       return <option value="{$enum/@key}">
-                    {if ($enum/@key=$value) then attribute selected {} else ()}
-                    {$enum/string()}
-              </option>
-     }
-     </select>
 };
