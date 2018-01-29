@@ -378,9 +378,9 @@ return
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
-                        let $item-latest := $items[1]
+                        let $item-latest := trace($items)[1]
                         return
-                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)[kk=$Item/@id]
+                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>

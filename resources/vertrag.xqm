@@ -9,6 +9,14 @@ import module namespace ui =" influx/ui2";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
+
+(: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
+
+(:
+
+ Menü-Eintrag in der side-navigation für "vertrag"
+
+:)
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
@@ -17,21 +25,9 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-
-declare %plugin:provide('ui/page/custom-css',"stammdaten/vertrag") function _:page-custom-css(
-    $Params as map(*)
-) as element(xhtml:link)* {
-    <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
-
-};
-
-declare %plugin:provide('ui/page/custom-js') function _:page-custom-js(
-    $Params as map(*)
-) as element(xhtml:link)* {
-    <script src="{$global:inspinia-path}/js/plugins/select2/select2.full.min.js"></script>
-
-};
-
+(:
+  Provider für die Stammdaten Seite
+:)
 declare %plugin:provide("ui/page/content","stammdaten/vertrag")
 function _:stammdaten-vertrag($map)
 as element(xhtml:div)
@@ -45,9 +41,25 @@ as element(xhtml:div)
 </div>
 };
 
+
+(: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
+
+
+
+
+(:
+    Debug ein/aus Schalter
+:)
 declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
+
+
+
+
+(:
+  Provider für die Profilseiten Widgets
+:)
 
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-vertraege($Profile as element())
@@ -65,13 +77,17 @@ function _:profile-dashboard-widget-vertraege($Profile as element())
 };
 
 
+(:
+   Sortierung und Filterung für die Stammdaten
+:)
+
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
+function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/vertragsbeginn, $item/priority return $item};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","indikationen","kk","kv","produkt")
+    let $columns := ("name","indikationen","produkt","vertragsbeginn","vertragsende")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -148,22 +164,29 @@ as element(schema){
  </schema>
 };
 
+
+
+(:
+
+ Item im Kontext einer "KK" anzeigen/bearbeiten   #####################################
+
+:)
 declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-stakeholder-kk-input($Item as element(vertrag), $Element as element(element), $Context as map(*))
+function _:sanofi-vertrag-kk-input($Item as element(vertrag), $Element as element(element), $Context as map(*))
 as element()?
 {
-    let $kk-id := $Context("kk")
+
+    let $kk-id := $Context("item")/@id
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
+
 };
 
 declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-stakeholder-kk-input-label($Item as element(vertrag), $Element as element(element), $Context as map(*))
+function _:sanofi-vertrag-kk-input-label($Item as element(vertrag), $Element as element(element), $Context as map(*))
 as element()?
 {
     (: Label für Feld "kk" löschen :)
 };
-
-
 declare %plugin:provide("schema/render/form/action","kk") function _:schema-render-form-action($Item as element(), $Schema as element(schema), $Context as map(*))
 as xs:string{
 let $provider := $Schema/@provider/string()
@@ -191,21 +214,46 @@ let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
-let $kk := $Context("kk")
-let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $kk-id := $Context("kk")[1]
+let $vertrag-130-140 := $Items[kk=$kk-id][vertragsart=("130a","130b","130c","140a")]
+let $vertrag-sonstige := $Items[kk=$kk-id][vertragsart!=("130a","130b","130c","140a")]
+let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 let $title := $Schema/modal/title/string()
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="ibox float-e-margins">
-    <div class="ibox-title">
-        <h5>{$title}</h5>
-        <div class="ibox-tools">
-        {$modal-button}
+<div xmlns="http://www.w3.org/1999/xhtml" class="row">
+    <div class="col-md-6">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Verträge: §§130a-c und §140</h5>
+                <div class="ibox-tools">
+                {$modal-button}
+                </div>
+            </div>
+            <div class="ibox-content">
+            {
+                let $items := $vertrag-130-140
+                return
+                plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+             }
+            </div>
         </div>
     </div>
-    <div class="ibox-content">
-    {
-        plugin:provider-lookup($provider,"schema/render/table",$context)!.($Items,$Schema,$Context)
-     }
+    <div class="col-md-6">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>Verträge: §73,§84 und speziell</h5>
+                <div class="ibox-tools">
+                {$modal-button}
+                </div>
+            </div>
+            <div class="ibox-content">
+            {
+                let $items := $vertrag-sonstige
+                return
+                plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+             }
+            </div>
+        </div>
     </div>
-</div>
+ </div>
  };
