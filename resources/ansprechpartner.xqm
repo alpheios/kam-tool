@@ -45,7 +45,7 @@ function _:schema-render-table-prepare-rows(
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","position","fachrichtung")
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("ansprechpartner")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .

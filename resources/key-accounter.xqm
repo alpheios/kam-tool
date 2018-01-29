@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:interessen := plugin:lookup("plato/schema/enums/get")!.("Interessen");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-key-accounter()
@@ -94,7 +95,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","interessen")
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("key-accounter")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -113,7 +114,7 @@ as element(schema){
         </button>
     </modal>
     <element name="interessen" type="enum">
-        {("Neue Verträge","Personalien","Neue Richtlinien","Neue Gesetze","Produktänderungen") ! <enum key="{.}">{.}</enum>}
+        {$_:interessen ! <enum key="{.}">{.}</enum>}
         <label>Interessen/Alerts</label>
     </element>
     <element name="name" type="text">

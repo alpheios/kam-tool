@@ -31,3 +31,11 @@ import module namespace product-importer        = "sanofi/views/product-import" 
 import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";
 import module namespace user-importer        = "sanofi/views/user-import" at "views/import-users/user-import.xqm";
 import module namespace user-importer-api    = "sanofi/api/user-import" at "views/import-users/user-import-api.xqm";
+
+import module namespace choose-values    = "sanofi/views/choose-values" at "views/choose-values/choose-values.xqm";
+import module namespace choose-values-provider    = "sanofi/provider/choose-values" at "views/choose-values/choose-values-provider.xqm";
+import module namespace choose-values-api    = "sanofi/api/choose-values" at "views/choose-values/choose-values-api.xqm";
+
+import module namespace choose-columns    = "sanofi/views/choose-columns" at "views/choose-columns/choose-column.xqm";
+import module namespace choose-columns-provider    = "sanofi/provider/choose-columns" at "views/choose-columns/choose-column-provider.xqm";
+import module namespace choose-columns-api    = "sanofi/api/choose-columns" at "views/choose-columns/choose-column-api.xqm";

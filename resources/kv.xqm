@@ -8,9 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare variable $_:land := ("Nordrhein","Westfalen-Lippe","Baden-Württemberg","Bayern","Mecklenburg-Vorpommern",
-                             "Sachsen","Sachsen-Anhalt", "Thüringen", "Brandenburg", "Berlin", "Hessen", "Niedersachsen",
-                             "Bremen","Hamburg","Schleswig-Holstein","Saarland","Rheinland-Pfalz");
+declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundesländer");
 declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
 
 declare %plugin:provide('side-navigation')
@@ -47,7 +45,7 @@ for $item in $Items order by $item/land return $item
 
 declare %plugin:provide("schema/set/elements","stammdaten/kv")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","bundesland","verantwortlich")
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("kv")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .

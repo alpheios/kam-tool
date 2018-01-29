@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
 
 
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
@@ -87,7 +88,8 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","indikationen","produkt","vertragsbeginn","vertragsende")
+
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("vertrag")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -118,7 +120,7 @@ as element(schema){
         <label>Bezeichnung</label>
     </element>
     <element name="vertragsart" type="enum">
-        {("130a","130b","130c","140a","73","84","speziell") ! <enum key="{.}">{.}</enum>}
+        {$_:vertragsarten ! <enum key="{.}">{.}</enum>}
         <label>Vertragsart</label>
     </element>
     <element name="produkt" type="foreign-key" required="">

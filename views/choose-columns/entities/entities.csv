@@ -1,0 +1,7 @@
+label;provider
+Krankenkasse;sanofi/kk
+Kassenärztliche Vereinigung;sanofi/kv
+Landesapothekerverbände;sanofi/lav
+Ansprechpartner;sanofi/ansprechpartner
+Key Accounter;sanofi/key-accounter
+Verträge;sanofi/vertrag

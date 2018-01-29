@@ -2,8 +2,7 @@ module namespace _ = "sanofi/ansprechpartner/einfluss";
 
 import module namespace plugin  = "influx/plugin";
 
-
-
+declare variable $_:rollen := plugin:lookup("plato/schema/enums/get")!.("Rollen");
 
 declare %plugin:provide("schema") 
 function _:schema-customer-influence()
@@ -25,7 +24,7 @@ as element(schema){
               <label>Produkt</label>
     </element>
     <element name="rolle" type="enum" required="">
-      {("Entscheider", "Beeinflusser", "Nutzer/Anwender", "Gatekeeper") ! <enum key="{.}">{.}</enum>}
+      {$_:rollen ! <enum key="{.}">{.}</enum>}
       <label>Rolle</label>
     </element>
  </schema>

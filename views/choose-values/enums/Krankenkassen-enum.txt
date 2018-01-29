@@ -1,0 +1,138 @@
+BARMER
+DAK Gesundheit
+HEK - Hanseatische Krankenkasse
+hkk Krankenkasse
+KKH Kaufmännische Krankenkasse
+KNAPPSCHAFT
+Techniker Krankenkasse (TK)
+BIG direkt gesund
+IKK Brandenburg und Berlin
+IKK classic
+IKK gesund plus
+IKK Nord
+IKK Südwest
+AOK Baden-Württemberg
+AOK Bayern
+AOK Bremen/Bremerhaven
+AOK Hessen
+AOK Niedersachsen
+AOK Nordost
+AOK Nordwest
+AOK PLUS
+AOK Rheinland-Pfalz/Saarland
+AOK Rheinland/Hamburg
+AOK Sachsen-Anhalt
+actimonda krankenkasse
+atlas BKK ahlmann
+Audi BKK
+BAHN-BKK
+BERGISCHE Krankenkasse
+Bertelsmann BKK
+BKK Achenbach Buschhütten
+BKK Akzo Nobel Bayern
+BKK Diakonie
+BKK DürkoppAdler
+BKK EUREGIO
+BKK exklusiv
+BKK Faber-Castell & Partner
+BKK firmus
+BKK Freudenberg
+BKK GILDEMEISTER SEIDENSTICKER
+BKK HENSCHEL plus
+BKK HERKULES
+BKK HMR
+BKK Linde
+BKK Melitta Plus
+BKK Mobil Oil
+BKK PFAFF
+BKK Pfalz
+BKK ProVita
+BKK Public
+BKK SBH
+BKK Scheufelen
+BKK Technoform
+BKK Textilgruppe Hof
+BKK VBU
+BKK VDN
+BKK VerbundPlus
+BKK Vital
+BKK Werra-Meissner
+BKK WIRTSCHAFT & FINANZEN
+BKK ZF & Partner
+BKK24
+Bosch BKK
+Brandenburgische BKK
+Continentale BKK
+Debeka BKK
+energie-BKK
+Heimat Krankenkasse
+Metzinger BKK
+mhplus Krankenkasse
+Novitas BKK
+pronova BKK
+R+V Betriebskrankenkasse
+Salus BKK
+SBK
+Schwenninger Krankenkasse
+SECURVITA Krankenkasse
+SIEMAG BKK
+SKD BKK
+TBK (Thüringer Betriebskrankenkasse)
+TUI BKK
+VIACTIV Krankenkasse
+WMF BKK
+BKK Aesculap
+BKK B. Braun
+BKK BPW Bergische Achsen KG
+BKK evm
+BKK EWE
+BKK GRILLO-WERKE AG
+BKK Groz-Beckert
+BKK KARL MAYER
+BKK KBA
+BKK MAHLE
+BKK Merck
+BKK Miele
+BKK MTU Friedrichshafen GmbH
+BKK PwC
+BKK Rieker.Ricosta.Weisser
+BKK RWE
+BKK Salzgitter
+BKK Stadt Augsburg
+BKK Voralb HELLER*INDEX*LEUZE
+BKK Würth
+BMW BKK
+Daimler BKK
+Ernst & Young BKK
+Krones BKK
+Südzucker-BKK
+Wieland BKK
+BKK advita - jetzt: BKK24
+BKK AXEL SPRINGER - jetzt: DAK Gesundheit
+BKK Basell - jetzt: BKK VBU
+BKK Beiersdorf AG - jetzt: DAK Gesundheit
+BKK BJB - jetzt: BKK Gildemeister Seidensticker
+BKK Braun-Gillette - jetzt: pronova BKK
+BKK Demag Krauss-Maffei - jetzt: BKK VBU
+BKK ESSANELLE - jetzt: BARMER
+BKK family - jetzt: BKK ProVita
+BKK futur - jetzt BKK VBU
+BKK Gesundheit - jetzt: DAK Gesundheit
+BKK Heimbach - jetzt: actimonda
+BKK Kassana - jetzt: BKK VerbundPlus
+BKK MAN und MTU - jetzt: Audi BKK
+BKK MEDICUS - jetzt: BKK VBU
+BKK MEM - jetzt Metzinger BKK
+BKK PHOENIX - jetzt: Novitas BKK
+BKK S-H - jetzt: BKK VBU
+BKK Schwesternschaft v. BRK - jetzt: BKK ProVita
+BKK VICTORIA D.A.S. - jetzt: BIG direkt gesund
+DEUTSCHE BKK - jetzt: BARMER
+E.ON Betriebskrankenkasse - jetzt: energie-BKK
+ESSO BKK - jetzt: Novitas BKK
+HEAG BKK - jetzt: Linde BKK
+Hypovereinsbank BKK - jetzt: BKK Mobil Oil
+SAINT-GOBAIN BKK
+Shell BKK/LIFE - jetzt: DAK Gesundheit
+Vaillant BKK - jetzt: pronova BKK
+Vereinigte BKK - jetzt: BKK VBU
