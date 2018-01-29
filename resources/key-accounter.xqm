@@ -45,7 +45,6 @@ let $username := $Item/username/string()
 let $firstname := $Item/vorname/string()
 let $lastname := $Item/nachname/string()
 let $role := $Item/role/string()
-let $email := $Item/email/string()
 let $userid := $Item/userid/string()
 return
     if ($userid="" and $username!="")
@@ -55,7 +54,7 @@ return
                 'username':$username,
                 'firstName':$firstname,
                 'lastName':$lastname,
-                'email':$email,
+                'email':"",
                 'enabled':'true',
                 'requiredActions':
                 'UPDATE_PASSWORD',
@@ -75,8 +74,7 @@ return
           let $userMap := map {
             'username': $username,
             'firstName': $firstname,
-            'lastName': $lastname,
-            'email': $email
+            'lastName': $lastname
           }
           let $updatedKeycloakUserItem := $keycloakUser update {
               for $node in map:keys($userMap)
@@ -129,15 +127,12 @@ as element(schema){
     <element name="notizen" type="text">
          <label>Notizen</label>
      </element>
-     <element name="username" type="text">
+     <element name="username" type="hidden">
           <label>Username</label>
       </element>
      <element name="role" type="enum">
           <label>Rolle</label>
         {("admin","user") ! <enum key="{.}">{.}</enum>}
-      </element>
-     <element name="email" type="text">
-          <label>E-Mail</label>
       </element>
       <element name="userid" type="hidden">
       </element>

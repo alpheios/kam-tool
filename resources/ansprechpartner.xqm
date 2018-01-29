@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:gremien := plugin:lookup("plato/schema/enums/get")!.("Gremien");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contacs()
@@ -63,10 +64,14 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
+    <element name="vorname" type="text">
+        <label>Vorname</label>
+    </element>
     <element name="name" type="text">
         <label>Name</label>
     </element>
-    <element name="gremien" type="text">
+    <element name="gremien" type="enum">
+        {$_:gremien ! <enum key="{.}">{.}</enum>}
         <label>Vertreten in den folgenden Gremien</label>
     </element>
     <element name="abteilung" type="text">

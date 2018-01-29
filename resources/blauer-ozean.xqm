@@ -248,7 +248,7 @@ return
                   <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
                   <div class="col-xs-2">
                     <select id="content-view-select" class="form-control" onchange="Influx.restxq('{$global:servlet-prefix}/sanofi/blauer-ozean/radar-chart/'+$(this).val(),'get',{{'kk':'{$kk-id}','context':'{$context}'}})">
-                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
+                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{string-join((./*:name/string(), ./*:datum/string()), " - ")}</option>}
                     </select>
                   </div>
               </div>
