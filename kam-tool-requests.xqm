@@ -252,3 +252,14 @@ declare
           "title": "Stammdaten Verträge"
           },"stammdaten/vertrag")
       };
+
+declare
+        %rest:path("sanofi/stammdaten/regelung")
+        %rest:GET
+        %output:method("html")
+        %output:version("5.0")
+      function _:page-stammdaten-regelung() {
+        ui:page(map{
+          "title": "Stammdaten Regelungen"
+          },"stammdaten/regelung")
+      };
