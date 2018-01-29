@@ -119,7 +119,7 @@ declare %plugin:provide("schema/render/form/field/enum","name")
      let $value := $Item/node()[name()=$name]
      return
       if ($Item/name!="")
-             then (<br/>,$Item/name/string())
+             then (<span xmlns="http://www.w3.org/1999/xhtml"><br/>{$Item/name/string()}</span>)
              else
      <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
      <option value="">Nicht zugewiesen</option>
@@ -151,7 +151,7 @@ function _:profile-dashboard-widget-kk($Profile as element())
 
 };
 
-declare %plugin:provide("schema/render/form/page")
+declare %plugin:provide("schema/ui/page/adapter")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
