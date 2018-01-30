@@ -134,10 +134,10 @@ as element(schema){
     <element name="regelungsende" type="date">
         <label>Ende</label>
     </element>
-    <element name="produkt" type="foreign-key" render="multiselect" required="">
+    <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="1" required="">
         <provider>sanofi/produkt</provider>
         <key>@id</key>
-        <display-name>name/string()</display-name>
+        <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
         <label>Produkt</label>
         <class>col-md-6</class>
     </element>
