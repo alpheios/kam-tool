@@ -51,7 +51,7 @@ let $lastname := $Item/nachname/string()
 let $role := $Item/role/string()
 let $userid := $Item/userid/string()
 return
-    if ($userid="" and $username="")
+    if ($userid="")
         then
             let $newUsername := _:extract-username($firstname, $lastname)
             let $userid := try {

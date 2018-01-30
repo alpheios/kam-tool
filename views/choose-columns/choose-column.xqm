@@ -45,11 +45,11 @@ function _:sanofi-choose-columns(
         <div class="col-lg-12 col-md-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>Auswahlwerte für Auswahlfelder festlegen</h5>
+                    <h5>Spalten für Listendarstellungen festlegen</h5>
                 </div>
                 <div class="ibox-content">
                     <div class="m-b">
-                      <label for="felder">Felder:</label>
+                      <label for="felder">Entitäten:</label>
                       <select class="form-control" id="felder" onchange="replaceValueEditor('{$global:servlet-prefix}', this)">
                       <option disabled="" selected="">Wähle ein Auswahlfeld</option>
                       {
