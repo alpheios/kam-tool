@@ -43,7 +43,7 @@ return
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
+function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/datum return $item};
 
 (: provide for columns :)
 declare %plugin:provide("schema/set/elements")
@@ -142,6 +142,11 @@ let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($kk-history-schema,$Context)
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
+let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/name/string()!('"'||.||'"')),',')
+let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
+let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return $i/anzahl/string()!('"'||.||'"')),',')
+let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
+let $rest-marktanteil := 100 - xs:decimal($latest-marktanteil)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
@@ -176,7 +181,7 @@ return
                                       var doughnutData = {
                                           labels: []]>{'"Anteil KK","Andere KKen"'} <![CDATA[],
                                           datasets: [{
-                                              data: []]>{'33,67'} <![CDATA[],
+                                              data: []]>{$latest-marktanteil},{$rest-marktanteil} <![CDATA[],
                                               backgroundColor: []]>{'"rgba(26,179,148,1)","rgba(26,179,148,0.5)"'} <![CDATA[]
                                           }]
                                       } ;
@@ -208,7 +213,7 @@ return
                                                       </div>
                            <script>//<![CDATA[
                                     var lineData = {
-                                            labels: []]>{string-join(($kk-history-items/*:name/string()!('"'||.||'"')),',')}<![CDATA[],
+                                            labels: []]>{$marktanteil-names}<![CDATA[],
                                             datasets: [
 
                                                 {
@@ -217,7 +222,7 @@ return
                                                     borderColor: "rgba(26,179,148,0.7)",
                                                     pointBackgroundColor: "rgba(26,179,148,1)",
                                                     pointBorderColor: "#fff",
-                                                    data: []]>{string-join(($kk-history-items/*:marktanteil/string()!('"'||.||'"')),',')}<![CDATA[]
+                                                    data: []]>{$marktanteil-values}<![CDATA[]
                                                 }
                                             ]
                                         };
@@ -246,7 +251,7 @@ return
                                                       </div>
                            <script>//<![CDATA[
                                     var lineData = {
-                                            labels: ["2007", "2008", "2009", "2010", "2011", "2012", "2013","2014","2015","2016"],
+                                            labels: []]>{$marktanteil-names}<![CDATA[],
                                             datasets: [
 
                                                 {
@@ -255,7 +260,7 @@ return
                                                     borderColor: "rgba(26,179,148,0.7)",
                                                     pointBackgroundColor: "rgba(26,179,148,1)",
                                                     pointBorderColor: "#fff",
-                                                    data: [10, 12, 14, 11, 9, 12, 14,16,17]
+                                                    data: []]>{$mitglieder-values}<![CDATA[]
                                                 }
                                             ]
                                         };
