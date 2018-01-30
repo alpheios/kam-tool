@@ -32,7 +32,7 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung:
 function _:sanofi-kk-history-zusatzbeitrag-kk-input($Item as element(kk-history-zusatzbeitrag), $Element as element(element), $Context as map(*))
 as element()?
 {
-    let $kk-id := $Context("kk")
+    let $kk-id := $Context("item")/@id/string()
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
 };
 
@@ -49,9 +49,9 @@ declare %plugin:provide("schema/render/form/action","kk") function _:schema-rend
 as xs:string{
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
-let $kk-id := $Context("kk")
+let $kk-id := $Context("item")/@id/string()
 return
-string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context||"&amp;kk="||$kk-id)
+string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context||"&amp;context-item-id="||$kk-id)
 };
 
 declare %plugin:provide("schema/render/table/tbody/tr/actions","kk")
@@ -72,8 +72,8 @@ let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
-let $kk := $Context("kk")
-let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;kk="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $kk := $Context("item")/@id/string()
+let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;context-item-id="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 let $title := $Schema/modal/title/string()
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="ibox float-e-margins">

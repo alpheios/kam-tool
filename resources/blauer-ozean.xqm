@@ -130,7 +130,7 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung:
 function _:sanofi-blauer-ozean-kk-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
 as element()?
 {
-    let $kk-id := $Context("kk")
+    let $kk-id := $Context("item")/@id/string()
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
 };
 
@@ -141,97 +141,22 @@ as element()?
     (: Label für Feld "kk" löschen :)
 };
 
-declare
-    %plugin:provide("schema/render/new","kk")
-    %plugin:provide("schema/render/update","kk")
-    %plugin:provide("schema/render/delete","kk")
-function _:kk-blauer-ozean-render-new($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-plugin:provider-lookup("sanofi/blauer-ozean","content/view","kk")!.($Item,$Schema,$Context)
-};
 
 
-declare %plugin:provide("schema/render/modal/form/buttons","kk") function _:kk-blauer-ozean-render-form-buttons($Item, $Schema, $Context, $Form-id){
-    let $provider := $Schema/@provider/string()
-    let $modify-button := $Schema/modal/button/modify/node()
-    let $add-button := $Schema/modal/button/add/node()
-    let $delete-button :=$Schema/modal/button/delete/node()
-    let $cancel-button :=$Schema/modal/button/cancel/node()
-    let $item-id := $Item/@id/string()
-    let $context := $Context("context")
-    let $new := $Item/@last-modified-date=""
-    let $button-text := if ($new) then <span data-i18n="modify-item">{$add-button}</span> else <span data-i18n="add-item">{$modify-button}</span>
-    return
-        <div xmlns="http://www.w3.org/1999/xhtml">
-         {if (not($new)) then <a href="{$global:servlet-prefix}/datastore/dataobject/delete/{$item-id}?provider={$provider}&amp;context={$context}&amp;kk={$Item/@id}" data-method="DELETE" type="button" class="btn btn-outline btn-sm btn-warning ajax" data-dismiss="modal"><span class="fa fa-times"/><span data-i18n="close">{$delete-button}</span></a> else ()}
-         <button type="button" class="btn btn-white btn-sm" data-dismiss="modal"><span class="fa fa-times"/><span data-i18n="cancel">{$cancel-button}</span></button>
-         <button type="submit" onClick="$('#{$Form-id}').submit();" class="btn btn-primary btn-sm ajax" data-dismiss="modal"><span class="fa fa-plus"/>{$button-text}</button>
-        </div>/*
-};
-
-declare %plugin:provide("schema/render/form/action","kk") function _:schema-render-form-action($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
-as xs:string{
-let $provider := $Schema/@provider/string()
-let $context := $Context("context")
-let $kk-id := $Context("kk")
-return
-string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context)
-};
-
-
-declare %plugin:provide("schema/render/button/modal/edit/link","kk")
-function _:schema-render-button-page-modal-link($Item as element(), $Schema as element(schema), $Context as map(*))
-as xs:string
-{
-let $context := $Context("context")
-let $kk-id := $Context("kk")
-return
-"schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context||"&amp;kk="||$kk-id
-};
-
-(:
-
- Plugins to render responses in context "kv"   #####################################
-
-:)
-
-
-declare %plugin:provide("schema/render/form/field/foreign-key","kv")
-function _:sanofi-blauer-ozean-kv-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("kv"))
-        then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("kv")}" type="hidden"/>
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
-};
-declare %plugin:provide("schema/render/form/field/label","kv")
-function _:sanofi-blauer-ozean-kv-input-label($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("kv"))
-        then ()
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
-};
-
-
-
-declare %plugin:provide("content/view","kk")
+declare %plugin:provide("content/view/context","kk")
 
 function _:sanofi-blauer-ozean-content-view($Item as element(blauer-ozean)?, $Schema as element(schema), $Context as map(*))
 as element(xhtml:div)
 {
 let $id := $Item/@id/string()
-let $kk-id := $Context("kk")
+let $kk-id := $Context("context-item")/@id/string()
 let $provider := "sanofi/blauer-ozean"
 let $context := "kk"
 let $schema := plugin:provider-lookup($provider,"schema")!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
 let $item := $Item
-let $name := $item/name/string()
-let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?context='||$context||'&amp;provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
 let $ist-names := $schema/element[ends-with(@name,"-ist")]/@name/string()
 let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
 let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()
@@ -247,9 +172,7 @@ return
                   <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
                   <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
                   <div class="col-xs-2">
-                    <select id="content-view-select" class="form-control" onchange="Influx.restxq('{$global:servlet-prefix}/sanofi/blauer-ozean/radar-chart/'+$(this).val(),'get',{{'kk':'{$kk-id}','context':'{$context}'}})">
-                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{string-join((./*:name/string(), ./*:datum/string()), " - ")}</option>}
-                    </select>
+                   {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
                   </div>
               </div>
               <div class="ibox-content" id="blauer-ozean-kk-view-chart" data-replace="#blauer-ozean-kk-view-chart">
@@ -297,16 +220,4 @@ return
 </div>
 };
 
-(: Beware, this is the context switch. We are in "no" Context and switch to "kk" context :)
-declare %plugin:provide("schema/render/button/modal/edit/link")
-function _:blauer-ozean-render-button-page-edit-link($Item as element(), $Schema as element(schema), $Context as map(*))
-as xs:string
-{
-let $context := $Context => map:get("context")
-let $kk-id := $Context("kk")
-return
-    if ($kk-id)
-        then "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context||"&amp;kk="||$kk-id
-        else "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context
-};
 

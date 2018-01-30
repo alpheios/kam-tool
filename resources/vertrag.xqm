@@ -46,18 +46,6 @@ as element(xhtml:div)
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
 
 
-
-
-(:
-    Debug ein/aus Schalter
-:)
-declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
-<pre>{serialize($Item)}</pre>
-};
-
-
-
-
 (:
   Provider für die Profilseiten Widgets
 :)
@@ -177,10 +165,8 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung:
 function _:sanofi-vertrag-kk-input($Item as element(vertrag), $Element as element(element), $Context as map(*))
 as element()?
 {
-
-    let $kk-id := $Context("item")/@id
+    let $kk-id := $Context("context-item")/@id/string()
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
-
 };
 
 declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
@@ -189,47 +175,23 @@ as element()?
 {
     (: Label für Feld "kk" löschen :)
 };
-declare %plugin:provide("schema/render/form/action","kk") function _:schema-render-form-action($Item as element(), $Schema as element(schema), $Context as map(*))
-as xs:string{
-let $provider := $Schema/@provider/string()
-let $context := $Context("context")
-let $kk-id := $Context("kk")
-return
-string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context||"&amp;kk="||$kk-id)
-};
 
-declare %plugin:provide("schema/render/table/tbody/tr/actions","kk")
-function _:schema-render-table-tbody-tr-td-actions($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:td)
-{
-let $context := $Context => map:get("context")
-let $provider := $Schema/@provider/string()
-return
-(:edit-button:) <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
-}</td>
-};
-
-declare %plugin:provide("content/context/view","kk")
+declare %plugin:provide("content/view/context","kk")
 function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
 {
-let $form-id := "id-"||random:uuid()
-let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
-let $kk-id := $Context("kk")[1]
+let $kk-id := $Context("context-item")/@id/string()
 let $vertrag-130-140 := $Items[kk=$kk-id][vertragsart=("130a","130b","130c","140a")]
 let $vertrag-sonstige := $Items[kk=$kk-id][vertragsart!=("130a","130b","130c","140a")]
-let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
-let $title := $Schema/modal/title/string()
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="row">
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
                 <h5>Verträge: §§130a-c und §140</h5>
-                <div class="ibox-tools">
-                {$modal-button}
-                </div>
+                <div class="ibox-tools">{$add-button}</div>
             </div>
             <div class="ibox-content">
             {
@@ -244,9 +206,7 @@ return
         <div class="ibox float-e-margins">
             <div class="ibox-title">
                 <h5>Verträge: §73,§84 und speziell</h5>
-                <div class="ibox-tools">
-                {$modal-button}
-                </div>
+                <div class="ibox-tools">{$add-button}</div>
             </div>
             <div class="ibox-content">
             {
@@ -259,3 +219,13 @@ return
     </div>
  </div>
  };
+
+(:
+Use modal buttons in table views in context "kk".
+ :)
+declare %plugin:provide("schema/render/button/page/edit","kk")
+function _:schema-render-button-page-edit($Item as element(), $Schema as element(schema), $Context as map(*))
+as element()
+{
+    plugin:lookup("schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+};

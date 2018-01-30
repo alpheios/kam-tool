@@ -105,7 +105,7 @@ function _:profile-dashboard-widget-kv($Profile as element())
 
 };
 
-declare %plugin:provide("schema/ui/page/adapter")
+declare %plugin:provide("schema/ui/page/content")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()

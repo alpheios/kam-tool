@@ -165,7 +165,7 @@ as element(schema){
 declare %plugin:provide("content/view/context","kk")
 function _:content-view($Item as element(kk-kam-top-4)?, $Schema as element(schema), $Context as map(*)){
 let $id := $Item/@id/string()
-let $kk-id := if ($Context("context-id")) then $Context("context-id") else $Context("kk")
+let $kk-id := if ($Context("context-id")) then $Context("context-id") else $Context("item")/@id/string()
 let $context := $Context("context")
 let $provider := "sanofi/kk-kam-top-4"
 let $schema := plugin:provider-lookup($provider,"schema")!.()
@@ -175,7 +175,7 @@ let $kk-history-provider := "sanofi/kk-history-mitglieder"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($kk-history-schema,$Context)
 let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?context='||$context||'&amp;provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $add-button := ui:modal-button('schema/form/modal?context='||$context||'&amp;provider='||$provider||"&amp;context-item-id="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>

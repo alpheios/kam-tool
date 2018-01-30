@@ -39,16 +39,16 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk")
 function _:sanofi-projekte-kk-input($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("kk"))
+    if ($Context("item")/@id/string())
         then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("kk")}" type="hidden"/>
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("item")/@id/string()}" type="hidden"/>
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kk")
 function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("kk"))
+    if ($Context("item")/@id/string())
         then ()
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
 };
@@ -59,7 +59,7 @@ as element()?
 {
     if ($Context("kv"))
         then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("kk")}" type="hidden"/>
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("item")/@id/string()}" type="hidden"/>
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kv")
@@ -130,20 +130,20 @@ as element(schema){
  </schema>
 };
 
-declare %plugin:provide("content/context/view")
+declare %plugin:provide("content/view/context")
 function _:sanofi-projekte($Item as element(projekt)? ,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-  let $kk-id := $Context("kk")
+  let $kk-id := $Context("item")/@id/string()
   let $provider := "sanofi/projekt"
   let $context := map{"context":"sanofi/projekt"}
   let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
   let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
   let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
-  let $kk := plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context)
+  let $kk := $Context("item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
   let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
-  let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+  let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context-item-id="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
   return
     <div xmlns="http://www.w3.org/1999/xhtml">
       <div class="row">

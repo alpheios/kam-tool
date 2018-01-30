@@ -151,7 +151,7 @@ function _:profile-dashboard-widget-kk($Profile as element())
 
 };
 
-declare %plugin:provide("schema/ui/page/adapter")
+declare %plugin:provide("schema/ui/page/content")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
@@ -184,7 +184,7 @@ return
                       let $provider := "sanofi/kk-kam-top-4"
                       let $schema := plugin:provider-lookup($provider,"schema")!.()
                       let $items :=
-                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[*:kk=$Item/@id]
                           let $date := $item/@last-modified-date
                           order by $date descending
                           return $item
@@ -206,7 +206,7 @@ return
                         return $item
                     let $blauer-ozean-item-latest := $blauer-ozean-items[1]
                     return
-                        plugin:provider-lookup($provider,"content/view","kk")!.($blauer-ozean-item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context","kk")!.($blauer-ozean-item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -223,7 +223,7 @@ return
                             return $item
                         let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -240,7 +240,7 @@ return
                             return $item
                         let $item-latest := trace($items)[1]
                         return
-                        plugin:provider-lookup($provider,"content/context/view",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
                     }
                   </div>
               </div>

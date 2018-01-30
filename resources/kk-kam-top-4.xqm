@@ -8,22 +8,9 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare %plugin:provide('side-navigationXXX')
-  function _:nav-item-stammdaten-kk-kam-top-4()
-  as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/kk-kam-top-4"><i class="fa fa-users"></i> <span class="nav-label">Blauer Ozean</span></a>
-  </li>
-};
-
-declare %plugin:provide("schema/render/modal/debug/itemX") function _:debug-kk-kam-top-4 ($Item as element(kk-kam-top-4),$Schema as element(schema),$Context){
-<pre>{serialize($Item)}
-<ul>{for $key in map:keys($Context)
-return <li>{$key} : {$Context($key)}</li>
-}</ul>
-</pre>
-};
-
+(:
+UI page adapter
+:)
 declare %plugin:provide("ui/page/content","stammdaten/kk-kam-top-4")
 function _:stammdaten-kk-kam-top-4($map)
 as element(xhtml:div)
@@ -58,13 +45,15 @@ return
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
 
+(: provide for columns :)
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
     let $columns := ("name","kk","kv","datum")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
-    return $schema};
+    return $schema
+};
 
 declare %plugin:provide("schema") function _:schema-()
 as element(schema){
@@ -103,7 +92,6 @@ as element(schema){
     <element name="position" type="html">
         <label>Wie positioniert sich der Kunde?</label>
     </element>
-
    <element name="kk" type="foreign-key" required="">
               <provider>sanofi/kk</provider>
               <key>@id</key>
@@ -127,7 +115,7 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung:
 function _:sanofi-kk-kam-top-4-kk-input($Item as element(kk-kam-top-4), $Element as element(element), $Context as map(*))
 as element()?
 {
-    let $kk-id := $Context("kk")
+    let $kk-id := $Context("context-item")/@id/string()
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
 };
 
@@ -138,59 +126,13 @@ as element()?
     (: Label für Feld "kk" löschen :)
 };
 
-declare %plugin:provide("schema/render/modal/form/buttons","kk") function _:kk-kk-kam-top-4-render-form-buttons($Item, $Schema, $Context, $Form-id){
-    let $provider := $Schema/@provider/string()
-    let $modify-button := $Schema/modal/button/modify/node()
-    let $add-button := $Schema/modal/button/add/node()
-    let $delete-button :=$Schema/modal/button/delete/node()
-    let $cancel-button :=$Schema/modal/button/cancel/node()
-    let $item-id := $Item/@id/string()
-    let $context := $Context("context")
-    let $new := $Item/@last-modified-date=""
-    let $button-text := if ($new) then <span data-i18n="modify-item">{$add-button}</span> else <span data-i18n="add-item">{$modify-button}</span>
-    return
-        <div xmlns="http://www.w3.org/1999/xhtml">
-         {if (not($new)) then <a href="{$global:servlet-prefix}/datastore/dataobject/delete/{$item-id}?provider={$provider}&amp;context={$context}&amp;kk={$Item/@id}" data-method="DELETE" type="button" class="btn btn-outline btn-sm btn-warning ajax" data-dismiss="modal"><span class="fa fa-times"/><span data-i18n="close">{$delete-button}</span></a> else ()}
-         <button type="button" class="btn btn-white btn-sm" data-dismiss="modal"><span class="fa fa-times"/><span data-i18n="cancel">{$cancel-button}</span></button>
-         <button type="submit" onClick="$('#{$Form-id}').submit();" class="btn btn-primary btn-sm ajax" data-dismiss="modal"><span class="fa fa-plus"/>{$button-text}</button>
-        </div>/*
-};
-
-declare %plugin:provide("schema/render/form/action","kk") function _:schema-render-form-action($Item as element(kk-kam-top-4), $Schema as element(schema), $Context as map(*))
-as xs:string{
-let $provider := $Schema/@provider/string()
-let $context := $Context("context")
-let $kk-id := $Context("kk")
-return
-string($global:servlet-prefix||"/datastore/dataobject/put/"||$Item/@id||"?provider="||$provider||"&amp;context="||$context)
-};
-
-
-declare %plugin:provide("schema/render/button/modal/edit/link","kk")
-function _:schema-render-button-page-modal-link($Item as element(), $Schema as element(schema), $Context as map(*))
-as xs:string
-{
-let $context := $Context("context")
-let $kk-id := $Context("kk")
-return
-"schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider||"&amp;context="||$context||"&amp;kk="||$kk-id
-};
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions","kk")
-function _:schema-render-table-tbody-tr-td-actions($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:td)
-{
-let $context := $Context => map:get("context")
-let $provider := $Schema/@provider/string()
-return
-(:edit-button:) <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,"schema/render/button/modal/edit","kk")!.($Item,$Schema,$Context)}</td>
-};
 
 declare %plugin:provide("content/view/context","kk")
 function _:content-view($Item as element(kk-kam-top-4)?, $Schema as element(schema), $Context as map(*)){
 let $id := $Item/@id/string()
-let $kk-id := if ($Context("context-id")) then $Context("context-id") else $Context("kk")
+let $kk-id := $Context("context-item")/@id/string()
 let $context := $Context("context")
+let $context-provider := $Context("context-provider")
 let $provider := "sanofi/kk-kam-top-4"
 let $schema := plugin:provider-lookup($provider,"schema")!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
@@ -198,8 +140,8 @@ let $name := $Item/name/string()
 let $kk-history-provider := "sanofi/kk-history-mitglieder"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($kk-history-schema,$Context)
-let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)} catch * {}
-let $add-button := ui:modal-button('schema/form/modal?context='||$context||'&amp;provider='||$provider||"&amp;kk="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
@@ -210,11 +152,7 @@ return
                   <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
                   <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
                   <div class="col-xs-2">
-                    <select id="content-view-select"
-                        class="form-control"
-                        onchange="Influx.restxq('{$global:servlet-prefix}/content/view/context/'+$(this).val()+'/{$kk-id}','get',{{'kk':'{$kk-id}','context':'{$context}','provider':'{$provider}'}})">
-                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
-                    </select>
+                    {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
                   </div>
               </div>
               <div class="ibox-content">
@@ -337,22 +275,9 @@ return
               </div>
               </div>
               {
-                plugin:provider-lookup($kk-history-provider,"schema/render/table/page","kk")!.($kk-history-items,$kk-history-schema,map{'context':"kk",'kk':$kk-id})
+                plugin:provider-lookup($kk-history-provider,"schema/render/table/page","kk")!.($kk-history-items,$kk-history-schema,map{'context':"kk",'context-item-id':$kk-id,'context-provider':$context-provider})
               }
             </div>
 };
 
-(: Beware, this is the context switch. We are in "no" Context and switch to "kk" context :)
-(:
-declare %plugin:provide("schema/render/button/modal/edit/link")
-function _:kk-kam-top-4-render-button-page-edit-link($Item as element(), $Schema as element(schema), $Context as map(*))
-as xs:string
-{
-let $context := $Context => map:get("context")
-let $kk-id := $Context("kk")
-return
-    if ($kk-id)
-        then "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider/string()||"&amp;context="||$context||"&amp;kk="||$kk-id
-        else "schema/form/modal/"||$Item/@id||"?provider="||$Schema/@provider/string()||"&amp;context="||$context
-};:)
 
