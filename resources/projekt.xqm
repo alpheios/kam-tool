@@ -39,16 +39,16 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk")
 function _:sanofi-projekte-kk-input($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("item")/@id/string())
+    if ($Context("context-item")/@id/string())
         then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("item")/@id/string()}" type="hidden"/>
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("context-item")/@id/string()}" type="hidden"/>
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kk")
 function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("item")/@id/string())
+    if ($Context("context-item")/@id/string())
         then ()
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
 };
@@ -57,16 +57,16 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kv")
 function _:sanofi-projekte-kv-input($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("kv"))
+    if ($Context("context-item"))
         then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("item")/@id/string()}" type="hidden"/>
+            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("context-item")/@id/string()}" type="hidden"/>
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kv")
 function _:sanofi-projekte-kv-input-label($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
 {
-    if ($Context("kv"))
+    if ($Context("context-item"))
         then ()
         else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
 };

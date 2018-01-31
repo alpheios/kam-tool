@@ -72,7 +72,7 @@ function _:profile-dashboard-widget-vertraege($Profile as element())
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/vertragsbeginn, $item/priority return $item};
+function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/vertragsbeginn return $item};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
@@ -228,4 +228,18 @@ function _:schema-render-button-page-edit($Item as element(), $Schema as element
 as element()
 {
     plugin:lookup("schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+};
+
+(:
+
+:)
+declare %plugin:provide("schema/render/table/tbody/tr/td/text","kk")
+function _:schema-render-table-tbody-tr-td-text($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:td)
+{
+let $link := $Item/../sharepoint-link/text()
+return
+if ($Item/name()='sharepoint-link' and $link)
+    then <td xmlns="http://www.w3.org/1999/xhtml"><a target="window" href="{$link}">{$Item/text()}</a></td>
+    else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()}</td>
 };

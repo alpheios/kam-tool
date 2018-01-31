@@ -51,11 +51,15 @@ return
                   <div class="gantt-container" style="overflow: scroll">
                   	<div id="chart_div"></div>
                   </div>
+                  	<div id="table_div"></div>
               </div>
           </div>
       </div>
       { if ($projekte) then <div>
       <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+          google.charts.load('current', {{packages: ['charteditor']}});
+        </script>
         <script type="text/javascript">//<![CDATA[
           google.charts.load('current', {'packages':['gantt']});
           google.charts.setOnLoadCallback(drawChart);
@@ -70,51 +74,40 @@ return
                 return "data.addColumn('"||$type||"', '"||$element/*:label/string()||"');&#x0a;"
             :)}
             <![CDATA[
-            data.addColumn('string', 'Task ID');
-            data.addColumn('string', 'Task Name');
-            data.addColumn('string', 'Resource');
-            data.addColumn('date', 'Start Date');
-            data.addColumn('date', 'End Date');
-            data.addColumn('number', 'Duration');
-            data.addColumn('number', 'Percent Complete');
+            data.addColumn('string', 'Projekt ID');
+            data.addColumn('string', 'Projekt');
+            data.addColumn('string', 'Krankenkasse');
+            data.addColumn('date', 'Start Datum');
+            data.addColumn('date', 'Ende Datum');
+            data.addColumn('number', 'Dauer');
+            data.addColumn('number', 'Fertigstellung in %');
             data.addColumn('string', 'Dependencies');
 
             data.addRows([
             ]]>{
-                string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, 100, null]'),",")
+                string-join($projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung/string()||', null]'),",")
             }<![CDATA[
 
             ]);
 
-$.ajax({
-    url: 'myXML.xml',
-    dataType: 'xml',
-    success: function (xml) {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Name');
-        data.addColumn('number', 'Value');
-
-        $('row', xml).each(function () {
-            var name = $('name', this).text();
-            var value = parseInt($('value', this).text());
-            data.addRow([name, value]);
-        });
-
-        var chart = new google.visualization.LineChart(document.querySelector('#chart_div'));
-        chart.draw(data, {
-            height: 400,
-            width: 600
-        });
-    }
-});
-
-            var options = {
-                fontName : "open sans"
-            };
-
+                var options = {
+                    fontName : "open sans",
+                    allowHtml : true
+                };
             var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
 
             chart.draw(data, options);
+
+            var table = new google.visualization.Table(document.getElementById('table_div'));
+
+            var formatter = new google.visualization.PatternFormat('<a data-remote="false" data-target="#influx-modal-dialog" data-toggle="modal" href="/influx/schema/form/modal/{0}?provider=sanofi/projekt&amp;context=kk&amp;context-item-id=]]>{$id}<![CDATA[&amp;context-provider=sanofi/kk&amp;random=]]>{random:uuid()}<![CDATA[" class="btn btn-sm"><span class="fa fa-edit"></span></a>')
+            // Apply formatter and set the formatted value of the first column.
+            formatter.format(data, [0]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0,1,3,4]); // Create a view with the first column only.
+
+            table.draw(view, {allowHtml: true, showRowNumber: false, width: '100%', height: '100%'});
           }
         ]]></script>
         </div> else ()}

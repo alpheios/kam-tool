@@ -130,7 +130,9 @@ as element()?
 declare %plugin:provide("content/view/context","kk")
 function _:content-view($Item as element(kk-kam-top-4)?, $Schema as element(schema), $Context as map(*)){
 let $id := $Item/@id/string()
-let $kk-id := $Context("context-item")/@id/string()
+let $kk := $Context("context-item")
+let $kk-id := $kk/@id/string()
+let $kk-name := $kk/name/string()
 let $context := $Context("context")
 let $context-provider := $Context("context-provider")
 let $provider := "sanofi/kk-kam-top-4"
@@ -150,7 +152,7 @@ let $rest-marktanteil := 100 - xs:decimal($latest-marktanteil)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
-        <div class="row">
+          <div class="row">
               <div class="col-lg-12 col-md-12">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
@@ -165,12 +167,12 @@ return
                      </div>
                   </div>
               </div>
-            </div>
-            <div class="row">
+          </div>
+          <div class="row">
                 <div class="col-lg-6">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
-                            <h5>Marktanteil</h5>
+                            <h5>Marktanteil: {$latest-marktanteil}%</h5>
                         </div>
                         <div class="ibox-content">
                             <div>
@@ -179,7 +181,7 @@ return
                             </div>
                              <script>//<![CDATA[
                                       var doughnutData = {
-                                          labels: []]>{'"Anteil KK","Andere KKen"'} <![CDATA[],
+                                          labels: []]>{'"'||$kk-name||'","Andere KKen"'} <![CDATA[],
                                           datasets: [{
                                               data: []]>{$latest-marktanteil},{$rest-marktanteil} <![CDATA[],
                                               backgroundColor: []]>{'"rgba(26,179,148,1)","rgba(26,179,148,0.5)"'} <![CDATA[]
@@ -200,8 +202,35 @@ return
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
+                <div class="col-lg-6">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>Auf einen Blick</h5>
+                        </div>
+                        <div class="ibox-content">
+                           {$Item/*:ein-blick}
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div class="row">
+                {for $punkt in ("top-ziele","gute","kritisch","position")
+                 let $label := $Schema/*:element[@name=$punkt]/*:label/node()
+                 let $content := $Item/*[name()=$punkt]/node()
+                 return
+                <div class="col-lg-3">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>{$label}</h5>
+                        </div>
+                        <div class="ibox-content">
+                           {$content}
+                        </div>
+                    </div>
+                </div>
+                }
+          </div>
+          <div class="row">
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
