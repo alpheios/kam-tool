@@ -111,10 +111,10 @@ as element(schema){
         {$_:vertragsarten ! <enum key="{.}">{.}</enum>}
         <label>Vertragsart</label>
     </element>
-    <element name="produkt" type="foreign-key" required="">
+    <element name="produkt" type="foreign-key" async="" required="">
         <provider>sanofi/produkt</provider>
         <key>@id</key>
-        <display-name>name/string()</display-name>
+        <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
         <label>Produkt</label>
         <class>col-md-6</class>
     </element>

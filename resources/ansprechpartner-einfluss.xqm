@@ -20,7 +20,7 @@ as element(schema){
     <element name="produkt" type="foreign-key" async="" render="dropdown" required="">
               <provider>sanofi/produkt</provider>
               <key>@id</key>
-              <display-name>name/string()</display-name>
+              <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
               <label>Produkt</label>
     </element>
     <element name="rolle" type="enum" required="">
