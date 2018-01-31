@@ -151,7 +151,7 @@ as element(schema){
    <element name="produkt" type="foreign-key" required="">
               <provider>sanofi/produkt</provider>
               <key>@id</key>
-              <display-name>name/string()</display-name>
+              <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
               <label>Produkt</label>
               <class>col-md-6</class>
    </element>
