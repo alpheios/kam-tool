@@ -150,23 +150,23 @@ let $rest-marktanteil := 100 - xs:decimal($latest-marktanteil)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
-<div class="row">
-      <div class="col-lg-12 col-md-12">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
-                  <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
-                  <div class="col-xs-2">
-                    {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
+        <div class="row">
+              <div class="col-lg-12 col-md-12">
+                  <div class="ibox float-e-margins">
+                      <div class="ibox-title">
+                          <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
+                          <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
+                          <div class="col-xs-2">
+                            {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
+                          </div>
+                      </div>
+                      <div class="ibox-content">
+
+                     </div>
                   </div>
               </div>
-              <div class="ibox-content">
-
-             </div>
-          </div>
-      </div>
-    </div>
-              <div class="row">
+            </div>
+            <div class="row">
                 <div class="col-lg-6">
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
@@ -200,8 +200,8 @@ return
                         </div>
                     </div>
                 </div>
-              </div>
-              <div class="row">
+            </div>
+            <div class="row">
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">

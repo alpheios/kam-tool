@@ -21,7 +21,7 @@ for $item in $Items order by $item/date return $item
 
 declare %plugin:provide("schema/set/elements","kk")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","datum","anzahl","marktanteil")
+    let $columns := ("name","datum","zusatzbeitrag")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
