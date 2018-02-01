@@ -52,7 +52,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     let $schema := $schema update insert node $elements-in-order as last into .
     return $schema};
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="ansprechpartner" domain="sanofi" provider="sanofi/ansprechpartner">
     <modal>
@@ -112,9 +112,28 @@ as element(schema){
     </element>
     <element name="einfluss" type="foreign-key" render="table">
         <provider>sanofi/ansprechpartner/einfluss</provider>
-        <key>@id</key>
+        <key>ansprechpartner</key>
         <label>Einfluss</label>
     </element>
  </schema>
 };
 
+declare %plugin:provide("schema", "kk")
+function _:schema-kk() {  
+  _:schema-default() update (
+    replace value of node ./element[@name="kk"]/@render with "context-item"
+    ,delete node ./element[@name="kk"]/label
+    ,delete node ./element[@name="kv"]
+    ,delete node ./element[@name="lav"]
+  )
+};
+
+declare %plugin:provide("schema", "kv")
+function _:schema-kv() {  
+  _:schema-default() update (
+    replace value of node ./element[@name="kv"]/@render with "context-item"
+    ,delete node ./element[@name="kv"]/label
+    ,delete node ./element[@name="kk"]
+    ,delete node ./element[@name="lav"]
+  )
+};

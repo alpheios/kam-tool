@@ -52,7 +52,7 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     return $schema
 };
 
-declare %plugin:provide("schema") function _:schema()
+declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
     <modal>
@@ -81,9 +81,7 @@ as element(schema){
     <element name="ansprechpartner" type="foreign-key" render="table" required="">
             <provider>sanofi/ansprechpartner</provider>
             <key>kk</key>
-            <display-name>name/string()</display-name>
             <label>Ansprechpartner</label>
-            <class>col-md-6</class>
     </element>
     <element name="ziele" type="html">
         <label>Ziele</label>
@@ -100,39 +98,13 @@ as element(schema){
   </schema>
 };
 
-
-declare %plugin:provide("schema/render/form/field/enum","name")
- function _:schema-render-field-kk-name(
-     $Item as element()?,
-     $Element as element(element),
-     $Context)
-{
-     let $schema := $Element/ancestor::schema
-     let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
-     let $assigned-names := $kks/name/string()
-     let $type := $Element/@type
-     let $name := $Element/@name
-     let $names := $_:kk[not(.=$assigned-names)]
-     let $enums := $names!<enum key="{.}">{.}</enum>
-     let $class := $Element/class/string()
-     let $required := $Element/@required
-     let $value := $Item/node()[name()=$name]
-     return
-      if ($Item/name!="")
-             then (<span xmlns="http://www.w3.org/1999/xhtml"><br/>{$Item/name/string()}</span>)
-             else
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
-     <option value="">Nicht zugewiesen</option>
-     {
-       for $enum in $enums
-       return <option value="{$enum/@key}">
-                    {if ($enum/@key=$value) then attribute selected {} else ()}
-                    {$enum/string()}
-              </option>
-     }
-     </select>
+declare %plugin:provide("schema", "kk")
+function _:schema-kk() {  
+  _:schema-default() update (
+    replace value of node ./element[@name="name"]/@type with "hidden"
+    ,delete node ./element[@name="name"]/label
+  )
 };
-
 
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())
@@ -175,7 +147,7 @@ return
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/page/form")!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">

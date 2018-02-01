@@ -9,6 +9,7 @@ import module namespace ui =" influx/ui2";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
+declare variable $_:service-partner := plugin:lookup("plato/schema/enums/get")!.("Service Partner");
 
 
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
@@ -55,7 +56,7 @@ function _:profile-dashboard-widget-vertraege($Profile as element())
 {
 <div class="col-md-6">
   {
-    let $context := map{}
+    let $context := map {}
     let $schema := plugin:provider-lookup("sanofi/vertrag","schema")!.()
     let $items  := plugin:provider-lookup("sanofi/vertrag","datastore/dataobject/all")!.($schema,$context)
     let $items  := $items[*:verantwortlich=$Profile/@id/string()]
@@ -121,7 +122,11 @@ as element(schema){
     <element name="indikation" type="text">
             <label>Indikation</label>
     </element>
-    <element name="kk" type="foreign-key" required="">
+    <element name="service-partner" type="enum">
+      {$_:service-partner ! <enum key="{.}">{.}</enum>}
+      <label>Service Partner</label>
+    </element>
+    <element name="kk" type="foreign-key" multiple="" required="">
             <provider>sanofi/kk</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
