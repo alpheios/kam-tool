@@ -85,7 +85,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
 };
 
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="vertrag" domain="sanofi" provider="sanofi/vertrag">
     <modal>
@@ -154,31 +154,12 @@ as element(schema){
  </schema>
 };
 
-
-
-(:
-
- Item im Kontext einer "KK" anzeigen/bearbeiten   #####################################
-
-:)
-declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-vertrag-kk-input($Item as element(vertrag), $Element as element(element), $Context as map(*))
-as element()?
-{
-    let $kk-id := $Context("context-item")/@id/string()
-    let $context := $Context("context")
-    let $context-provider := $Context("context-provider")
-    return
-        if ($context-provider="sanofi/kk")
-        then <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
-        else <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Item/*:kk}" type="hidden"/>
-};
-
-declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-vertrag-kk-input-label($Item as element(vertrag), $Element as element(element), $Context as map(*))
-as element()?
-{
-    (: Label für Feld "kk" löschen :)
+declare %plugin:provide("schema", "kk")
+function _:schema-stammdaten-kk() {
+  _:schema-default() update (
+    insert node attribute render {"context-item"} into ./element[@name="kk"]
+    ,delete node ./element[@name="kk"]/label
+  )
 };
 
 declare %plugin:provide("content/view/context","kk")
