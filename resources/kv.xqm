@@ -74,12 +74,10 @@ as element(schema){
                 <label>Zuständig</label>
                 <class>col-md-6</class>
     </element>
-    <element name="ansprechpartner" type="foreign-key" required="">
+    <element name="ansprechpartner" type="foreign-key" render="table" required="">
             <provider>sanofi/ansprechpartner</provider>
-            <key>@id</key>
-            <display-name>name/string()</display-name>
+            <key>kk</key>
             <label>Ansprechpartner</label>
-            <class>col-md-6</class>
     </element>
 </schema>
 };

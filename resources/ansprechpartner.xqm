@@ -83,21 +83,21 @@ as element(schema){
     <element name="kontaktintensitaet" type="text">
         <label>Kontaktintensität</label>
     </element>
-    <element name="kv" type="foreign-key" render="dropdown" required="">
+    <element name="kv" type="foreign-key" render="dropdown">
               <provider>sanofi/kv</provider>
               <key>@id</key>
               <display-name>name/string()</display-name>
               <label>KV</label>
               <class>col-md-6</class>
     </element>
-    <element name="kk" type="foreign-key" render="dropdown" required="">
+    <element name="kk" type="foreign-key" render="dropdown">
               <provider>sanofi/kk</provider>
               <key>@id</key>
               <display-name>name/string()</display-name>
               <label>KK</label>
               <class>col-md-6</class>
     </element>
-    <element name="lav" type="foreign-key" render="dropdown" required="">
+    <element name="lav" type="foreign-key" render="dropdown">
       <provider>sanofi/lav</provider>
       <key>@id</key>
       <display-name>name/string()</display-name>
@@ -136,4 +136,28 @@ function _:schema-kv() {
     ,delete node ./element[@name="kk"]
     ,delete node ./element[@name="lav"]
   )
+};
+
+declare %plugin:provide("datastore/dataobject/delete", "kk")
+function _:clear-connection-to-kk(
+  $Item-Id as xs:string,
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
+  let $item := $item update replace value of node ./kk with ()
+  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
+  return <tr data-remove="#item-{$Item-Id}"></tr>
+};
+
+declare %plugin:provide("datastore/dataobject/delete", "kv")
+function _:clear-connection-to-kk(
+  $Item-Id as xs:string,
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
+  let $item := $item update replace value of node ./kk with ()
+  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
+  return <tr data-remove="#item-{$Item-Id}"></tr>
 };
