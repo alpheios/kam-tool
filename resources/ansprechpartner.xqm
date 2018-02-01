@@ -151,7 +151,7 @@ function _:clear-connection-to-kk(
 };
 
 declare %plugin:provide("datastore/dataobject/delete", "kv")
-function _:clear-connection-to-kk(
+function _:clear-connection-to-kv(
   $Item-Id as xs:string,
   $Schema as element(schema),
   $Context as map(*)

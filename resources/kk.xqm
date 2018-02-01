@@ -68,9 +68,6 @@ as element(schema){
     {$_:kk ! <enum key="{.}">{.}</enum>}
     <label>Name</label>
     </element>
-    <element name="dachverband" type="text">
-        <label>Dachverband</label>
-    </element>
     <element name="verantwortlich" type="foreign-key" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id/string()</key>
