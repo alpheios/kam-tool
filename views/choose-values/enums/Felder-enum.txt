@@ -1,6 +1,6 @@
 Felder
 Krankenkassen
-Bundesländer
+KV-Bezirke
 Rollen
 Vertragsarten
 Interessen

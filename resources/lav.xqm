@@ -8,10 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare variable $_:land := ("Nordrhein-Westfalen","Baden-Württemberg","Bayern","Mecklenburg-Vorpommern",
-                             "Sachsen","Sachsen-Anhalt", "Thüringen", "Brandenburg", "Berlin", "Hessen", "Niedersachsen",
-                             "Bremen","Hamburg","Schleswig-Holstein","Saarland","Rheinland-Pfalz");
-declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
+declare variable $_:kv-bezirk := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-lav()
@@ -71,9 +68,9 @@ as element(schema){
                 <label>Zuständig</label>
                 <class>col-md-6</class>
     </element>
-    <element name="bundesland" type="enum">
-            {$_:land ! <enum key="{.}">{.}</enum>}
-            <label>Bundesland</label>
+    <element name="kv-bezirk" type="enum" required="">
+            {$_:kv-bezirk ! <enum key="{.}">{.}</enum>}
+            <label>KV Bezirk</label>
         </element>
     <element name="ansprechpartner" type="foreign-key" required="">
             <provider>sanofi/ansprechpartner</provider>

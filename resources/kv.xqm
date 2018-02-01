@@ -8,8 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundesländer");
-declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
+declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kv()
@@ -64,7 +63,8 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
-    <element name="name" type="text">
+    <element name="name" type="enum">
+        {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
         <label>Name</label>
     </element>
     <element name="verantwortlich" type="foreign-key" required="">
@@ -74,10 +74,6 @@ as element(schema){
                 <label>Zuständig</label>
                 <class>col-md-6</class>
     </element>
-    <element name="bundesland" type="enum">
-            {$_:land ! <enum key="{.}">{.}</enum>}
-            <label>Bundesland</label>
-        </element>
     <element name="ansprechpartner" type="foreign-key" required="">
             <provider>sanofi/ansprechpartner</provider>
             <key>@id</key>

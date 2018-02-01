@@ -128,7 +128,13 @@ as element(schema){
             <label>KK-Vertragspartner</label>
             <class>col-md-6</class>
     </element>
-
+    <element name="kv" type="foreign-key" multiple="" >
+            <provider>sanofi/kv</provider>
+            <key>@id</key>
+            <display-name>name/string()</display-name>
+            <label>KV-Bezirke</label>
+            <class>col-md-6</class>
+    </element>
     <element name="lav" type="foreign-key" required="">
             <provider>sanofi/lav</provider>
             <key>@id</key>

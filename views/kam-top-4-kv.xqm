@@ -69,7 +69,7 @@ return
                                           labels: []]>{string-join($kven/*:name/string() ! ('"'||.||'"'),",")} <![CDATA[],
                                           datasets: [{
                                               data: []]>{string-join($kven ! (random:integer(25)),",")} <![CDATA[],
-                                              backgroundColor: []]>{string-join(for $i in 6 to count($kv:land)*10 return ('"rgb('||$i*10||','||$i*12||','||$i*13||')"'),',')} <![CDATA[]
+                                              backgroundColor: []]>{string-join(for $i in 6 to count($kv:kv-bezirke)*10 return ('"rgb('||$i*10||','||$i*12||','||$i*13||')"'),',')} <![CDATA[]
                                           }]
                                       } ;
 
@@ -155,7 +155,7 @@ declare %plugin:provide("content/view") function _:content-view($kven, $schema, 
                                           labels: []]>{string-join($kven/*:name/string() ! ('"'||.||'"'),",")} <![CDATA[],
                                           datasets: [{
                                               data: []]>{string-join($kven ! (random:integer(25)),",")} <![CDATA[],
-                                              backgroundColor: []]>{string-join(for $i in 6 to count($kv:land)*10 return ('"rgb('||$i*10||','||$i*12||','||$i*13||')"'),',')} <![CDATA[]
+                                              backgroundColor: []]>{string-join(for $i in 6 to count($kv:kv-bezirke)*10 return ('"rgb('||$i*10||','||$i*12||','||$i*13||')"'),',')} <![CDATA[]
                                           }]
                                       } ;
 
