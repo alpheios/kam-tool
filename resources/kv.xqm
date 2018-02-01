@@ -14,8 +14,8 @@ declare variable $_:kollegen := ("Wächter","Schneuer","Reiter");
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/kv"><i class="fa fa-users"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kv&amp;provider=sanofi/kv"><i class="fa fa-users"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
   </li>
 };
 
@@ -105,7 +105,7 @@ function _:profile-dashboard-widget-kv($Profile as element())
 
 };
 
-declare %plugin:provide("schema/ui/page/content")
+declare %plugin:provide("schema/ui/page/content","kv")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()

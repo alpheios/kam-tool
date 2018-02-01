@@ -13,8 +13,8 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-products()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/projekt"><i class="fa fa-cubes"></i> <span class="nav-label">Projekte</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/projekt&amp;provider=sanofi/projekt"><i class="fa fa-cubes"></i> <span class="nav-label">Projekte</span></a>
   </li>
 };
 
@@ -42,7 +42,7 @@ as element()?
     if ($Context("context-item")/@id/string())
         then
             <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("context-item")/@id/string()}" type="hidden"/>
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+        else <h1>hallo</h1>(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kk")
 function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
@@ -130,7 +130,18 @@ as element(schema){
  </schema>
 };
 
-declare %plugin:provide("content/view/context")
+
+declare
+    %plugin:provide("schema/render/new","kk")
+    %plugin:provide("schema/render/update","kk")
+    %plugin:provide("schema/render/delete","kk")
+function _:kk-projekt-render-new($Item as element(projekt), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    plugin:provider-lookup("sanofi/projekt","content/view/context","kk")!.($Item,$Schema,$Context)
+};
+
+declare %plugin:provide("content/view/context","kk")
 function _:sanofi-projekte($Item as element(projekt)? ,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
@@ -142,10 +153,11 @@ as element(xhtml:div)
   let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
   let $kk := $Context("item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
-  let $edit-button := try {plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)} catch * {}
-  let $add-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context-item-id="||$kk-id,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+  let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$Schema,$Context)
+
   return
-    <div xmlns="http://www.w3.org/1999/xhtml">
+    <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-projekte" id="kk-projekte">
       <div class="row">
           <div class="col-lg-12">
               <div class="ibox float-e-margins">
@@ -160,8 +172,8 @@ as element(xhtml:div)
               </div>
           </div>
           { if ($projekte) then <div>
-          <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-            <script type="text/javascript">//<![CDATA[
+          <script class="rxq-js-eval" type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script class="rxq-js-eval" type="text/javascript">//<![CDATA[
               google.charts.load('current', {'packages':['gantt']});
               google.charts.setOnLoadCallback(drawChart);
 

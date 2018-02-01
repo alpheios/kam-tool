@@ -13,8 +13,8 @@ declare variable $_:interessen := plugin:lookup("plato/schema/enums/get")!.("Int
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-key-accounter()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/key-accounter"><i class="fa fa-users"></i> <span class="nav-label">Key Accounter</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/key-accounter&amp;provider=sanofi/key-accounter"><i class="fa fa-users"></i> <span class="nav-label">Key Accounter</span></a>
   </li>
 };
 

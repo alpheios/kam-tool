@@ -13,8 +13,8 @@ declare variable $_:aspekte := plugin:lookup("plato/schema/enums/get")!.("Blauer
 declare %plugin:provide('side-navigationXXX')
   function _:nav-item-stammdaten-blauer-ozean()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/blauer-ozean"><i class="fa fa-users"></i> <span class="nav-label">Blauer Ozean</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items/blauer-ozean"><i class="fa fa-users"></i> <span class="nav-label">Blauer Ozean</span></a>
   </li>
 };
 
@@ -130,7 +130,7 @@ declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung:
 function _:sanofi-blauer-ozean-kk-input($Item as element(blauer-ozean), $Element as element(element), $Context as map(*))
 as element()?
 {
-    let $kk-id := $Context("item")/@id/string()
+    let $kk-id := $Context("context-item")/@id/string()
     return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
 };
 
@@ -141,6 +141,15 @@ as element()?
     (: Label für Feld "kk" löschen :)
 };
 
+declare
+    %plugin:provide("schema/render/new","kk")
+    %plugin:provide("schema/render/update","kk")
+    %plugin:provide("schema/render/delete","kk")
+function _:kk-blauer-ozean-render-new($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    plugin:provider-lookup("sanofi/blauer-ozean","content/view/context","kk")!.($Item,$Schema,$Context)
+};
 
 
 declare %plugin:provide("content/view/context","kk")
@@ -151,7 +160,7 @@ as element(xhtml:div)
 let $id := $Item/@id/string()
 let $kk-id := $Context("context-item")/@id/string()
 let $provider := "sanofi/blauer-ozean"
-let $context := "kk"
+let $context := $Context("context")
 let $schema := plugin:provider-lookup($provider,"schema")!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
 let $item := $Item

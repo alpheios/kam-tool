@@ -13,8 +13,8 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare %plugin:provide('side-navigationX')
   function _:nav-item-stammdaten-products()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/produkt"><i class="fa fa-cubes"></i> <span class="nav-label">Produkte</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/produkt&amp;provider=sanofi/produkt"><i class="fa fa-cubes"></i> <span class="nav-label">Produkte</span></a>
   </li>
 };
 

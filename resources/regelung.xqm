@@ -19,8 +19,8 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-regelungen()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/regelung"><i class="fa fa-cubes"></i> <span class="nav-label">Regelungen</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/regelung&amp;provider=sanofi/regelung"><i class="fa fa-cubes"></i> <span class="nav-label">Regelungen</span></a>
   </li>
 };
 
@@ -147,7 +147,31 @@ as element(schema){
  </schema>
 };
 
-
+declare %plugin:provide("schema/render/table/page","stammdaten/regelung")
+function _:render-page-table($Items as element()*, $Schema as element(schema), $Context)
+{
+let $form-id := "id-"||random:uuid()
+let $title := $Schema/*:modal/*:title/string()
+let $provider := $Schema/@provider/string()
+let $context := $Context("context")
+let $kk := $Context("item")/@id/string()
+let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;context-item-id="||$kk,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+let $title := $Schema/modal/title/string()
+return
+<div xmlns="http://www.w3.org/1999/xhtml" class="ibox float-e-margins">
+    <div class="ibox-title">
+        <h5>{$title}Hallo</h5>
+        <div class="ibox-tools">
+        {$modal-button}
+        </div>
+    </div>
+    <div class="ibox-content">
+    {
+        plugin:provider-lookup($provider,"schema/render/table",$context)!.($Items,$Schema,$Context)
+     }
+    </div>
+</div>
+ };
 
 (:
 

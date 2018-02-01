@@ -14,8 +14,8 @@ declare namespace mod="http://influx.adesso.de/module";
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-children="/sanofi/stammdaten" data-sortkey="AA3">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten"><i class="fa fa-gears"></i> <span class="nav-label">Stammdaten</span><span class="fa arrow"></span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-children="/schema/list/items" data-sortkey="AA3">
+      <a href="{$global:servlet-prefix}/schema/list/items"><i class="fa fa-gears"></i> <span class="nav-label">Stammdaten</span><span class="fa arrow"></span></a>
   </li>
 };
 

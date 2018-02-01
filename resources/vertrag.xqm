@@ -21,8 +21,8 @@ declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/vertrag"><i class="fa fa-cubes"></i> <span class="nav-label">Verträge</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-cubes"></i> <span class="nav-label">Verträge</span></a>
   </li>
 };
 
@@ -75,8 +75,8 @@ declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/vertragsbeginn return $item};
 
 declare %plugin:provide("schema/set/elements")
-function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-
+function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*))
+{
     let $columns := plugin:lookup("plato/schema/columns/get")!.("vertrag")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
@@ -166,7 +166,12 @@ function _:sanofi-vertrag-kk-input($Item as element(vertrag), $Element as elemen
 as element()?
 {
     let $kk-id := $Context("context-item")/@id/string()
-    return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
+    let $context := $Context("context")
+    let $context-provider := $Context("context-provider")
+    return
+        if ($context-provider="sanofi/kk")
+        then <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
+        else <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Item/*:kk}" type="hidden"/>
 };
 
 declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
@@ -182,8 +187,8 @@ function _:render-page-table($Items as element(vertrag)*, $Schema as element(sch
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
-let $vertrag-130-140 := $Items[kk=$kk-id][vertragsart=("130a","130b","130c","140a")]
-let $vertrag-sonstige := $Items[kk=$kk-id][vertragsart!=("130a","130b","130c","140a")]
+let $vertrag-130-140 := for $vertrag in $Items[kk=$kk-id] where trace($vertrag/vertragsart)=("130a","130b","130c","140a") return $vertrag
+let $vertrag-sonstige := for $vertrag in $Items[kk=$kk-id] where $vertrag/vertragsart=("73") return $vertrag
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="row">
@@ -221,8 +226,8 @@ return
  };
 
 (:
-Use modal buttons in table views in context "kk".
- :)
+Use modal buttons in table views in context "kk" instead of page buttons.
+:)
 declare %plugin:provide("schema/render/button/page/edit","kk")
 function _:schema-render-button-page-edit($Item as element(), $Schema as element(schema), $Context as map(*))
 as element()

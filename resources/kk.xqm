@@ -15,8 +15,8 @@ declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkass
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kk()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/kk"><i class="fa fa-users"></i> <span class="nav-label">Krankenkassen</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-users"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
@@ -31,7 +31,7 @@ as element(xhtml:div)
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="row">
       <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/kk","stammdaten/kk")}
+            {plugin:lookup("schema/ibox/table")!.("sanofi/kk","kk")}
       </div>
   </div>
 </div>
@@ -151,13 +151,13 @@ function _:profile-dashboard-widget-kk($Profile as element())
 
 };
 
-declare %plugin:provide("schema/ui/page/content")
+declare %plugin:provide("schema/ui/page/content","kk")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
-let $context := "kk"
+let $context := $Context("context")
 let $Context := map:remove($Context,"context")
 let $Context := map:put($Context,"context",$context)
 let $Context := if (map:contains($Context,"kk")) then $Context else map:put($Context,"kk",$Item/@id/string())
@@ -190,7 +190,7 @@ return
                           return $item
                       let $item-latest := $items[1]
                       return
-                          plugin:provider-lookup($provider,"content/view/context","kk")!.($item-latest,$schema,$Context)
+                          plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
                   }
                   </div>
               </div>
@@ -206,7 +206,7 @@ return
                         return $item
                     let $blauer-ozean-item-latest := $blauer-ozean-items[1]
                     return
-                        plugin:provider-lookup($provider,"content/view/context","kk")!.($blauer-ozean-item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
                     }
                   </div>
               </div>
@@ -238,9 +238,8 @@ return
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
-                        let $item-latest := trace($items)[1]
                         return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
                     }
                   </div>
               </div>

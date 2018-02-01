@@ -12,8 +12,8 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare %plugin:provide('side-navigationX')
   function _:nav-item-stammdaten-indikation()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/sanofi/stammdaten" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/sanofi/stammdaten/indikation"><i class="fa fa-cubes"></i> <span class="nav-label">Indikation</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/indikation&amp;provider=sanofi/indikation"><i class="fa fa-cubes"></i> <span class="nav-label">Indikation</span></a>
   </li>
 };
 
