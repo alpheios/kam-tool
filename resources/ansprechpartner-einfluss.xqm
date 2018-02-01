@@ -17,7 +17,7 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
-    <element name="produkt" type="foreign-key" async="" render="dropdown" required="">
+    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown" required="">
               <provider>sanofi/produkt</provider>
               <key>@id</key>
               <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>

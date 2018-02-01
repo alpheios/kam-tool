@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:kv-vertraege := plugin:lookup("plato/schema/enums/get")!.("KV-Verträge");
 
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
 
@@ -128,11 +129,15 @@ as element(schema){
             <label>KV-Vertragspartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="regelungsbeginn" type="date">
-        <label>Beginn</label>
+    <element name="kv-vertrag" type="enum">
+        {$_:kv-vertraege ! <enum key="{.}">{.}</enum>}
+        <label>KV Vertrag</label>
     </element>
-    <element name="regelungsende" type="date">
-        <label>Ende</label>
+    <element name="stand" type="date">
+        <label>Stand</label>
+    </element>
+    <element name="quelle" type="text">
+        <label>Quelle</label>
     </element>
     <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="1" required="">
         <provider>sanofi/produkt</provider>
