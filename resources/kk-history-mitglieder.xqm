@@ -14,13 +14,13 @@ declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk 
 <pre>{serialize($Item)}</pre>
 };
 
-declare %plugin:provide("schema/process/table/items","kk")
+declare %plugin:provide("schema/process/table/items","kk-history")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
 for $item in $Items order by $item/datum return $item
 };
 
-declare %plugin:provide("schema/set/elements","kk")
+declare %plugin:provide("schema/set/elements","kk-history")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
     let $columns := ("name","datum","anzahl","marktanteil")
     let $schema := $Schema update delete node ./*:element
@@ -37,9 +37,6 @@ as element()?
 
     return <input xmlns="http://www.w3.org/1999/xhtml" class="form-control" name="datum" value="{$datum}" type="date"/>
 };
-
-
-
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){

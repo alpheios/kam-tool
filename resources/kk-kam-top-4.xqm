@@ -156,7 +156,8 @@ let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$conte
 let $name := $Item/name/string()
 let $kk-history-provider := "sanofi/kk-history-mitglieder"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
-let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/all",$context)!.($kk-history-schema,$Context)
+let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/field",$context)!.("kk", $kk-id, $kk-history-schema, $Context)
+let $kk-history-years := for $item in $kk-history-items let $datum := $item/datum/string() order by $datum return $datum
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
 let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/name/string()!('"'||.||'"')),',')
@@ -246,7 +247,7 @@ return
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
-                          <h5>Versicherten-Entwicklung 2007-2017</h5>
+                          <h5>Versicherten-Entwicklung {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
                       </div>
                       <div class="ibox-content">
                           <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
@@ -284,7 +285,7 @@ return
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
-                          <h5>Marktanteil Entwicklung 2007-2017</h5>
+                          <h5>Marktanteil Entwicklung {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
                       </div>
                       <div class="ibox-content">
                           <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
@@ -321,10 +322,10 @@ return
               </div>
               </div>
               {
-                let $kk-history := plugin:provider-lookup("sanofi/kk", "schema", "history-kk")!.()
-                let $MyContext := map{"context":"history-kk","context-item-id":$kk-id,"context-item":$kk,"context-provider":"sanofi/kk"}
+                let $kk-history := plugin:provider-lookup("sanofi/kk", "schema", "kk-history")!.()
+                let $Context := map:put($Context, "context", "kk-history")
                 return
-                plugin:provider-lookup($kk-history-provider,"schema/render/table/page",$context)!.($kk,$kk-history-schema,$Context)
+                  plugin:provider-lookup($kk-history-provider,"schema/render/page/form",$context)!.($kk,$kk-history,$Context)
               }
             </div>
 };

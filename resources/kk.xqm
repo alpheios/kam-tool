@@ -95,9 +95,9 @@ as element(schema){
   </schema>
 };
 
-declare %plugin:provide("schema", "history-kk")
+declare %plugin:provide("schema", "kk-history")
 function _:schema-history-kk() {
-<schema xmlns="" name="kk-kam-top-4" domain="sanofi" provider="sanofi/kk-kam-top-4">
+<schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
 
     <modal>
         <title>KK Versicherte</title>
@@ -115,6 +115,13 @@ function _:schema-history-kk() {
    </element>
  </schema>
 };
+
+declare %plugin:provide("schema/render/page/form/buttons", "kk-history")
+function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*), $Form-id) {
+  let $trace := trace($Context, "In form buttons kk-history: ")
+  return ()
+};
+
 
 declare %plugin:provide("schema", "kk")
 function _:schema-kk() {  
