@@ -40,6 +40,20 @@ return
 </div>
 };
 
+declare
+    %plugin:provide("schema/render/new","kk")
+    %plugin:provide("schema/render/update","kk")
+    %plugin:provide("schema/render/delete","kk")
+function _:kk-kam-top-4-render-new($Item as element(kk-kam-top-4), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    let $provider := $Context("provider")
+    let $context := $Context("context")
+    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+    return
+    plugin:provider-lookup($provider,"content/view/context",$context)!.($Item,$schema,$Context)
+};
+
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
@@ -106,6 +120,7 @@ as element(schema){
 };
 
 
+
 (:
 
  Item im Kontext einer "KK" anzeigen/bearbeiten   #####################################
@@ -148,7 +163,7 @@ let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/d
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
 let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return $i/anzahl/string()!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
-let $rest-marktanteil := 100 - xs:decimal($latest-marktanteil)
+let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
@@ -306,7 +321,10 @@ return
               </div>
               </div>
               {
-                plugin:provider-lookup($kk-history-provider,"schema/render/table/page","kk")!.($kk-history-items,$kk-history-schema,map{'context':"kk",'context-item-id':$kk-id,'context-provider':$context-provider})
+                let $kk-history := plugin:provider-lookup("sanofi/kk", "schema", "history-kk")!.()
+                let $MyContext := map{"context":"history-kk","context-item-id":$kk-id,"context-item":$kk,"context-provider":"sanofi/kk"}
+                return
+                plugin:provider-lookup($kk-history-provider,"schema/render/table/page",$context)!.($kk,$kk-history-schema,$Context)
               }
             </div>
 };

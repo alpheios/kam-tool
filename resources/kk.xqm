@@ -95,6 +95,27 @@ as element(schema){
   </schema>
 };
 
+declare %plugin:provide("schema", "history-kk")
+function _:schema-history-kk() {
+<schema xmlns="" name="kk-kam-top-4" domain="sanofi" provider="sanofi/kk-kam-top-4">
+
+    <modal>
+        <title>KK Versicherte</title>
+        <button>
+            <add>hinzufügen</add>
+            <cancel>abbrechen</cancel>
+            <modify>ändern</modify>
+            <delete>löschen</delete>
+        </button>
+    </modal>
+   <element name="kk-versicherte" render="table" type="foreign-key" required="">
+              <provider>sanofi/kk-history-mitglieder</provider>
+              <key>kk</key>
+              <label>KK Versicherte</label>
+   </element>
+ </schema>
+};
+
 declare %plugin:provide("schema", "kk")
 function _:schema-kk() {  
   _:schema-default() update (

@@ -139,6 +139,16 @@ function _:schema-kv() {
   )
 };
 
+declare %plugin:provide("schema", "lav")
+function _:schema-lav() {
+  _:schema-default() update (
+    replace value of node ./element[@name="lav"]/@render with "context-item"
+    ,delete node ./element[@name="lav"]/label
+    ,delete node ./element[@name="kk"]
+    ,delete node ./element[@name="kv"]
+  )
+};
+
 declare %plugin:provide("datastore/dataobject/delete", "kk")
 function _:clear-connection-to-kk(
   $Item-Id as xs:string,
@@ -159,6 +169,18 @@ function _:clear-connection-to-kv(
 ) {
   let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
   let $item := $item update replace value of node ./kk with ()
+  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
+  return <tr data-remove="#item-{$Item-Id}"></tr>
+};
+
+declare %plugin:provide("datastore/dataobject/delete", "lav")
+function _:clear-connection-to-lav(
+  $Item-Id as xs:string,
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
+  let $item := $item update replace value of node ./lav with ()
   let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
   return <tr data-remove="#item-{$Item-Id}"></tr>
 };

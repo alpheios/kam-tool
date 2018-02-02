@@ -177,7 +177,7 @@ declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
     %plugin:provide("schema/render/delete","kk")
-function _:kk-blauer-ozean-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
+function _:kk-vertrag-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
 as element(xhtml:div)
 {
     let $provider := "sanofi/vertrag"
@@ -189,7 +189,9 @@ as element(xhtml:div)
         order by $date descending
         return $item
     return
-    plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)};
+    plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
+
+};
 
 
 declare %plugin:provide("content/view/context","kk")
