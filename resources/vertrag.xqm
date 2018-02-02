@@ -199,7 +199,7 @@ let $provider := $Schema/@provider/string()
 let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
 let $vertrag-130-140 := for $vertrag in trace($Items[kk//string()=$kk-id]) where trace($vertrag/vertragsart/string())=("130a","130b","130c","140a") return $vertrag
-let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()()=("73","speziell") return $vertrag
+let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("73","speziell") return $vertrag
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
