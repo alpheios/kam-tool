@@ -10,11 +10,11 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:aspekte := plugin:lookup("plato/schema/enums/get")!.("Blauer Ozean Aspekte");
 
-declare %plugin:provide('side-navigationXXX')
+declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-blauer-ozean()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items/blauer-ozean"><i class="fa fa-users"></i> <span class="nav-label">Blauer Ozean</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/blauer-ozean&amp;provider=sanofi/blauer-ozean"><i class="fa fa-users"></i> <span class="nav-label">Blauer Ozean</span></a>
   </li>
 };
 
@@ -178,11 +178,8 @@ return
       <div class="col-lg-12 col-md-12">
           <div class="ibox float-e-margins">
               <div class="ibox-title">
-                  <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
-                  <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
-                  <div class="col-xs-2">
-                   {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
-                  </div>
+                  <div class="col-xs-9">{$edit-button} {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context) update delete node .//@class}</div>
+                  <div class="col-md-3"><label class="form-label pull-right">Blauen Ozean hinzufügen {$add-button}</label></div>
               </div>
               <div class="ibox-content" id="blauer-ozean-kk-view-chart" data-replace="#blauer-ozean-kk-view-chart">
                  <canvas id="radarChart" width="640" height="720"></canvas>

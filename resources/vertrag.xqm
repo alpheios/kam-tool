@@ -173,22 +173,48 @@ function _:schema-stammdaten-kk() {
   )
 };
 
+declare
+    %plugin:provide("schema/render/new","kk")
+    %plugin:provide("schema/render/update","kk")
+    %plugin:provide("schema/render/delete","kk")
+function _:kk-blauer-ozean-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    let $provider := "sanofi/vertrag"
+    let $context := "kk"
+    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+    let $items :=
+        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+        let $date := $item/@last-modified-date
+        order by $date descending
+        return $item
+    return
+    plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)};
+
+
 declare %plugin:provide("content/view/context","kk")
 function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
 {
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
-let $vertrag-130-140 := for $vertrag in $Items[kk=$kk-id] where trace($vertrag/vertragsart)=("130a","130b","130c","140a") return $vertrag
-let $vertrag-sonstige := for $vertrag in $Items[kk=$kk-id] where $vertrag/vertragsart=("73") return $vertrag
+let $vertrag-130-140 := for $vertrag in trace($Items[kk//string()=$kk-id]) where trace($vertrag/vertragsart/string())=("130a","130b","130c","140a") return $vertrag
+let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()()=("73","speziell") return $vertrag
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="row">
+<div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
+  <div class="ibox float-e-margins">
+      <div class="ibox-title">
+              <div class="col-md-12"><label class="form-label pull-right">Vertrag hinzufügen {$add-button}</label></div>
+      </div>
+      <div class="ibox-content">
+      </div>
+
+    </div>
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
                 <h5>Verträge: §§130a-c und §140</h5>
-                <div class="ibox-tools">{$add-button}</div>
             </div>
             <div class="ibox-content">
             {
@@ -203,7 +229,6 @@ return
         <div class="ibox float-e-margins">
             <div class="ibox-title">
                 <h5>Verträge: §73,§84 und speziell</h5>
-                <div class="ibox-tools">{$add-button}</div>
             </div>
             <div class="ibox-content">
             {
@@ -238,5 +263,5 @@ let $link := $Item/../sharepoint-link/text()
 return
 if ($Item/name()='sharepoint-link' and $link)
     then <td xmlns="http://www.w3.org/1999/xhtml"><a target="window" href="{$link}">{$Item/text()}</a></td>
-    else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()}</td>
+    else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()} Hallo</td>
 };

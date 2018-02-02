@@ -70,7 +70,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Name</label>
     </element>
-    <element name="gremien" type="enum">
+    <element name="gremien" type="enum" multiple="">
         {$_:gremien ! <enum key="{.}">{.}</enum>}
         <label>Vertreten in den folgenden Gremien</label>
     </element>
@@ -80,7 +80,8 @@ as element(schema){
     <element name="position" type="text">
         <label>Position</label>
     </element>
-    <element name="kontaktintensitaet" type="text">
+    <element name="kontaktintensitaet" type="enum">
+        {('kein Kontakt','selten','regelmäßig','intensiv')!<enum key="{.}">{.}</enum>}
         <label>Kontaktintensität</label>
     </element>
     <element name="kv" type="foreign-key" render="dropdown">

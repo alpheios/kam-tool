@@ -162,7 +162,7 @@ as element(xhtml:div)
           <div class="col-lg-12">
               <div class="ibox float-e-margins">
                   <div class="ibox-title">
-                      <h5>{$add-button} Projekte hinzufügen </h5>
+                          <div class="col-md-12"><label class="form-label pull-right">Projekt hinzufügen {$add-button}</label></div>
                   </div>
                   <div class="ibox-content">
                       <div class="gantt-container" style="overflow: scroll">

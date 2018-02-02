@@ -14,7 +14,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kv&amp;provider=sanofi/kv"><i class="fa fa-users"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-users"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
   </li>
 };
 
@@ -105,6 +105,7 @@ function _:render-page-form($Item as element()?, $Schema as element(schema), $Co
 let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
+let $context:=$Context("context")
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="ibox float-e-margins">
@@ -112,6 +113,7 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
@@ -122,6 +124,22 @@ return
               <div id="tab-2" class="tab-pane">
                   <div class="panel-body">
                     {plugin:provider-lookup("sanofi/views/kam-top-4-kv","content/view")!.($Item,$Schema,$Context)}
+                  </div>
+              </div>
+              <div id="tab-3" class="tab-pane">
+                  <div class="panel-body">
+                    {
+                    let $provider := "sanofi/blauer-ozean"
+                    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+                    let $blauer-ozean-items :=
+                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                        let $date := $item/@last-modified-date
+                        order by $date descending
+                        return $item
+                    let $blauer-ozean-item-latest := $blauer-ozean-items[1]
+                    return
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
+                    }
                   </div>
               </div>
           </div>

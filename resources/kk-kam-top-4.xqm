@@ -156,11 +156,8 @@ return
               <div class="col-lg-12 col-md-12">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
-                          <div class="col-xs-9">{$edit-button} Werte bearbeiten</div>
-                          <div class="col-xs-1"><label class="form-label pull-right">{$add-button}</label></div>
-                          <div class="col-xs-2">
-                            {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context)}
-                          </div>
+                          <div class="col-md-9">{$edit-button} {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context) update delete node .//@class }</div>
+                          <div class="col-md-3"><label class="form-label pull-right">TOP-4 hinzufügen {$add-button}</label></div>
                       </div>
                       <div class="ibox-content">
 
