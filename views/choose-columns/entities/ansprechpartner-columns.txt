@@ -1,3 +1,4 @@
 vorname
 name
 position
+einfluss

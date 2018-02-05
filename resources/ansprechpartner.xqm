@@ -115,6 +115,7 @@ as element(schema){
         <provider>sanofi/ansprechpartner/einfluss</provider>
         <key>ansprechpartner</key>
         <label>Einfluss</label>
+        <display-name>rolle/string()</display-name>
     </element>
  </schema>
 };

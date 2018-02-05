@@ -34,10 +34,10 @@ as element(schema){
       <key>@id</key>
     </element>
     <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown" required="">
-              <provider>sanofi/produkt</provider>
-              <key>@id</key>
-              <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
-              <label>Produkt</label>
+      <provider>sanofi/produkt</provider>
+      <key>@id</key>
+      <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
+      <label>Produkt</label>
     </element>
     <element name="rolle" type="enum" required="">
       {$_:rollen ! <enum key="{.}">{.}</enum>}

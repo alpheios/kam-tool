@@ -202,7 +202,7 @@ function _:render-page-table($Items as element(vertrag)*, $Schema as element(sch
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
-let $vertrag-130-140 := for $vertrag in trace($Items[kk//string()=$kk-id]) where trace($vertrag/vertragsart/string())=("130a","130b","130c","140a") return $vertrag
+let $vertrag-130-140 := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("130a","130b","130c","140a") return $vertrag
 let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("73","speziell") return $vertrag
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
 return

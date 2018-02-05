@@ -76,6 +76,7 @@ as element(schema){
             <provider>sanofi/ansprechpartner</provider>
             <key>lav</key>
             <label>Ansprechpartner</label>
+            <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
 
 </schema>

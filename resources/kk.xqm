@@ -16,7 +16,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kk()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-users"></i> <span class="nav-label">Krankenkassen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kk&amp;provider=sanofi/kk"><i class="fa fa-users"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
@@ -31,7 +31,7 @@ as element(xhtml:div)
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="row">
       <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/kk","kk") (: ACHTUNG: manueller Switch auf "kk" Kontext! :)}
+            {plugin:lookup("schema/ibox/table")!.("sanofi/kk", "stammdaten/kk") (: ACHTUNG: manueller Switch auf "kk" Kontext! :)}
       </div>
   </div>
 </div>
@@ -69,21 +69,23 @@ as element(schema){
     <label>Name</label>
     </element>
     <element name="verantwortlich" type="foreign-key" required="">
-                <provider>sanofi/key-accounter</provider>
-                <key>@id/string()</key>
-                <display-name>name/string()</display-name>
-                <label>Verantwortlich</label>
-                <class>col-md-6</class>
+      <provider>sanofi/key-accounter</provider>
+      <key>@id/string()</key>
+      <display-name>name/string()</display-name>
+      <label>Verantwortlich</label>
+      <class>col-md-6</class>
     </element>
     <element name="ansprechpartner" type="foreign-key" render="table" required="">
       <provider>sanofi/ansprechpartner</provider>
       <key>kk</key>
       <label>Ansprechpartner</label>
+      <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
-    <element name="Zusammenfassung" type="foreign-key" render="table">
+    <element name="zusammenfassung" type="foreign-key" render="table">
       <provider>sanofi/kk-summary</provider>
       <key>kk</key>
       <label>Zusammenfassung</label>
+      <display-name>name/string()</display-name>
     </element>
   </schema>
 };
@@ -102,9 +104,10 @@ function _:schema-history-kk() {
         </button>
     </modal>
    <element name="kk-versicherte" render="table" type="foreign-key" required="">
-              <provider>sanofi/kk-history-mitglieder</provider>
-              <key>kk</key>
-              <label>KK Versicherte</label>
+      <provider>sanofi/kk-history-mitglieder</provider>
+      <key>kk</key>
+      <label>KK Versicherte</label>
+      <display-name>string-join((datum/string(), ": ", anzahl/string(), " (", marktanteil/string(), ")"))</display-name>
    </element>
  </schema>
 };
@@ -123,9 +126,10 @@ function _:schema-top-4-kk() {
         </button>
     </modal>
    <element name="kk-versicherte" render="table" type="foreign-key" required="">
-              <provider>sanofi/kk-kam-top-4</provider>
-              <key>kk</key>
-              <label>KK Top 4</label>
+      <provider>sanofi/kk-kam-top-4</provider>
+      <key>kk</key>
+      <label>KK Top 4</label>
+      <display-name>string-join((name/string(), " (", datum/string(), ")"))</display-name>
    </element>
  </schema>
 };
@@ -133,8 +137,7 @@ function _:schema-top-4-kk() {
 declare %plugin:provide("schema/render/page/form/buttons", "kk-history")
         %plugin:provide("schema/render/page/form/buttons", "kk-top-4")
 function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*), $Form-id) {
-  let $trace := trace($Context, "In form buttons kk-history: ")
-  return ()
+()
 };
 
 
@@ -205,6 +208,15 @@ function _:profile-dashboard-widget-kk($Profile as element())
         </div>
         else ()
 
+};
+
+declare %plugin:provide("schema/render/button/page/edit/link", "stammdaten/kk")
+function _:schema-render-button-page-edit-link($Item as element()?, $Schema as element(schema), $Context as map(*))
+as xs:string
+{
+let $provider := $Schema/@provider/string()
+return
+"schema/form/page/"||$Item/@id||"?provider="||$provider||"&amp;context=kk"||"&amp;context-item-id="||$Item/@id||"&amp;context-provider="||$provider
 };
 
 declare %plugin:provide("schema/ui/page/content","kk")

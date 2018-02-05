@@ -20,11 +20,11 @@ function _:replace-editor-field(
   $Field as xs:string
 ) {
   let $file := plugin:lookup("plato/schema/enums/get/filecontent")!.($Field)
-  let $paramMap := trace(map {
+  let $paramMap := map {
     "id": $Field||"-editor",
     "filename": $Field,
     "modifier": "sanofi/auswahlwerte"
-  }, "Param Map: ")
+  }
 
   return 
     <div id="editor-area" class="clearfix" data-replace="#editor-area">

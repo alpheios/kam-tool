@@ -89,7 +89,7 @@ as element(schema){
         <label>Datum</label>
     </element>
     {
-      for $aspekt in trace($_:aspekte-kk)
+      for $aspekt in $_:aspekte-kk
       let $aspekt-name := translate(lower-case($aspekt), " ", "-")
       return (
         <element name="{$aspekt-name}-ist" type="number">
