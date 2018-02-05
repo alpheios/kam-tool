@@ -76,21 +76,14 @@ as element(schema){
                 <class>col-md-6</class>
     </element>
     <element name="ansprechpartner" type="foreign-key" render="table" required="">
-            <provider>sanofi/ansprechpartner</provider>
-            <key>kk</key>
-            <label>Ansprechpartner</label>
+      <provider>sanofi/ansprechpartner</provider>
+      <key>kk</key>
+      <label>Ansprechpartner</label>
     </element>
-    <element name="ziele" type="html">
-        <label>Ziele</label>
-    </element>
-    <element name="strategien" type="html">
-        <label>Strategien</label>
-    </element>
-    <element name="meilensteine" type="html">
-        <label>Meilensteine/Schlüsselaktionen</label>
-    </element>
-    <element name="anforderungen" type="html">
-        <label>Anforderungen</label>
+    <element name="Zusammenfassung" type="foreign-key" render="table">
+      <provider>sanofi/kk-summary</provider>
+      <key>kk</key>
+      <label>Zusammenfassung</label>
     </element>
   </schema>
 };
@@ -116,7 +109,29 @@ function _:schema-history-kk() {
  </schema>
 };
 
+declare %plugin:provide("schema", "kk-top-4")
+function _:schema-top-4-kk() {
+<schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
+
+    <modal>
+        <title>KK Top 4</title>
+        <button>
+            <add>hinzufügen</add>
+            <cancel>abbrechen</cancel>
+            <modify>ändern</modify>
+            <delete>löschen</delete>
+        </button>
+    </modal>
+   <element name="kk-versicherte" render="table" type="foreign-key" required="">
+              <provider>sanofi/kk-kam-top-4</provider>
+              <key>kk</key>
+              <label>KK Top 4</label>
+   </element>
+ </schema>
+};
+
 declare %plugin:provide("schema/render/page/form/buttons", "kk-history")
+        %plugin:provide("schema/render/page/form/buttons", "kk-top-4")
 function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*), $Form-id) {
   let $trace := trace($Context, "In form buttons kk-history: ")
   return ()

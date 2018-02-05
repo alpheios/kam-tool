@@ -62,7 +62,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 (: provide for columns :)
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
-    let $columns := ("name","kk","kv","datum")
+    let $columns := ("datum", "ein-blick", "top-ziele", "gute", "kritisch", "")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -171,13 +171,12 @@ return
           <div class="row">
               <div class="col-lg-12 col-md-12">
                   <div class="ibox float-e-margins">
-                      <div class="ibox-title">
-                          <div class="col-md-9">{$edit-button} {plugin:provider-lookup($provider,"schema/content/view/selector",$context)!.($items,$Item,$Schema,$Context) update delete node .//@class }</div>
-                          <div class="col-md-3"><label class="form-label pull-right">TOP-4 hinzufügen {$add-button}</label></div>
-                      </div>
-                      <div class="ibox-content">
-
-                     </div>
+                      {
+                        let $kk-top-4 := plugin:provider-lookup("sanofi/kk", "schema", "kk-top-4")!.()
+                        let $Context := map:put($Context, "context", "kk-top-4")
+                        return
+                          plugin:provider-lookup($kk-history-provider,"schema/render/page/form",$context)!.($kk,$kk-top-4,$Context)
+                      }
                   </div>
               </div>
           </div>
