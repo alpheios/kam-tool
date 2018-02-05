@@ -31,7 +31,7 @@ as xs:boolean
     return
         if ($verantwortlich)
             then
-                if ($verantwortlich = plugin:lookup("username")!.())
+                if ($verantwortlich = plugin:lookup("username")!.() or plugin:lookup("is-admin")())
                 then true()
                 else false()
             else true()
