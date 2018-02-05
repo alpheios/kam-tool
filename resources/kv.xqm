@@ -96,7 +96,6 @@ function _:profile-dashboard-widget-kv($Profile as element())
          {plugin:lookup("schema/render/table/page")!.($items,$schema,$context)}
         </div>
         else ()
-
 };
 
 declare %plugin:provide("schema/ui/page/content","kv")
