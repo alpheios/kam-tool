@@ -7,6 +7,7 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
+declare namespace functx = "http://www.functx.com";
 
 declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
 declare variable $_:service-partner := plugin:lookup("plato/schema/enums/get")!.("Service Partner");
@@ -58,10 +59,11 @@ function _:profile-dashboard-widget-vertraege($Profile as element())
   {
     let $context := map {}
     let $schema := plugin:provider-lookup("sanofi/vertrag","schema")!.()
-    let $items  := plugin:provider-lookup("sanofi/vertrag","datastore/dataobject/all")!.($schema,$context)
-    let $items  := $items[*:verantwortlich=$Profile/@id/string()]
+    let $items  := plugin:provider-lookup("sanofi/vertrag","datastore/dataobject/all", "profile")!.($schema,$context)
+    (:let $items  := $items[*:verantwortlich=$Profile/@id/string()]:)
+    let $items := subsequence(for $item in $items order by $item/vertragsbeginn descending return $item, 1, 15)
     return
-        plugin:lookup("schema/render/table/page")!.($items,$schema,$context)
+        plugin:lookup("schema/render/table/page", "profile")!.($items,$schema,$context)
   }
 </div>
 };
