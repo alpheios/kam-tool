@@ -76,7 +76,7 @@ as element(schema){
     </element>
     <element name="ansprechpartner" type="foreign-key" render="table" required="">
             <provider>sanofi/ansprechpartner</provider>
-            <key>kk</key>
+            <key>kv</key>
             <label>Ansprechpartner</label>
     </element>
 </schema>

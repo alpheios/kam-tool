@@ -89,18 +89,18 @@ as element(schema){
         <label>Datum</label>
     </element>
 
-    <element name="ein-blick" type="text">
+    <element name="ein-blick" type="html">
         <label>Unser Geschäft auf einen Blick</label>
     </element>
 
-    <element name="top-ziele" type="text">
+    <element name="top-ziele" type="html">
         <label>TOP Ziel beim Kunden</label>
     </element>
 
-    <element name="gute" type="text">
+    <element name="gute" type="html">
         <label>Was läuft gut</label>
     </element>
-    <element name="kritisch" type="text">
+    <element name="kritisch" type="html">
         <label>Kritische Punkte</label>
     </element>
     <element name="position" type="html">
@@ -113,7 +113,7 @@ as element(schema){
               <label>KK</label>
               <class>col-md-6</class>
    </element>
-    <element name="notizen" type="text">
+    <element name="notizen" type="html">
          <label>Notizen</label>
      </element>
  </schema>
