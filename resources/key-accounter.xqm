@@ -159,3 +159,39 @@ as element(schema){
       </element>
  </schema>
 };
+
+
+(: Security :)
+declare %plugin:provide("schema/security")
+function _:schema-security($Item as element()*, $Schema as element(schema)*, $Context as map(*))
+as xs:boolean
+{
+let $me := plugin:lookup("username")!.()
+let $admin := (plugin:lookup("api/user-manager/users/get/realm-roles")!.($me) = "admin") or plugin:lookup("is-admin")()
+return
+        if ($admin)
+        then true()
+        else false()
+
+};
+
+declare %plugin:provide("schema/render/button/modal/new")
+function _:schema-render-button-modal-new($Item as element()*, $Schema as element(schema), $Context as map(*))
+as element()*
+{
+let $context := $Context("context")
+let $provider := $Schema/@provider/string()
+let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Item[1],$Schema,$Context)
+return
+let $me := plugin:lookup("username")!.()
+let $admin := (plugin:lookup("api/user-manager/users/get/realm-roles")!.($me) = "admin") or plugin:lookup("is-admin")()
+return
+        if ($admin)
+        then ui:modal-button($link,<a class="btn btn-sm"><span class="fa fa-plus"/></a>)
+        else ()
+
+};
+
+(:
+ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context="||$context||"&amp;context-item-id="||$context-item-id||"&amp;context-provider="||$context-provider,<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
+:)
