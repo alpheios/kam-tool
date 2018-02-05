@@ -23,7 +23,19 @@ declare %plugin:provide('i18n/translations')
 function _:translations(){doc('translations.xml')};
 
 
-
+declare %plugin:provide-default("schema/security")
+function _:schema-security($Item as element()*, $Schema as element(schema)*, $Context as map(*))
+as xs:boolean
+{
+    let $verantwortlich := $Item/verantwortlich
+    return
+        if ($verantwortlich)
+            then
+                if ($verantwortlich = plugin:lookup("username")!.())
+                then true()
+                else false()
+            else true()
+};
 
 
 
