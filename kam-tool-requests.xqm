@@ -39,7 +39,7 @@ function _:page-radar-chart($Id) {
     let $provider := "sanofi/blauer-ozean"
     let $request-parameter := map:merge(request:parameter-names() ! map{. : request:parameter(.)})
     let $context := $request-parameter => map:get("context")
-    let $schema  := plugin:provider-lookup($provider,"schema")!.()
+    let $schema  := plugin:provider-lookup($provider,"schema",$context)!.()
     let $item    := plugin:provider-lookup($provider,"datastore/dataobject",$context)!.($Id, $schema, $request-parameter)
     return
     plugin:provider-lookup("sanofi/blauer-ozean","content/view","kk")($item,$schema,$request-parameter)

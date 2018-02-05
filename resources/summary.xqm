@@ -168,7 +168,7 @@ let $id := $Item/@id/string()
 let $kk-id := if ($Context("context-id")) then $Context("context-id") else $Context("item")/@id/string()
 let $context := $Context("context")
 let $provider := "sanofi/kk-kam-top-4"
-let $schema := plugin:provider-lookup($provider,"schema")!.()
+let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
 let $name := $Item/name/string()
 let $kk-history-provider := "sanofi/kk-history-mitglieder"

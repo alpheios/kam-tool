@@ -105,6 +105,7 @@ let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
 let $context:=$Context("context")
+let $context-item-id:=$Context("context-item")/@id
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="ibox float-e-margins">
@@ -131,7 +132,7 @@ return
                     let $provider := "sanofi/blauer-ozean"
                     let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                     let $blauer-ozean-items :=
-                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/field",$context)!.("kv",$context-item-id,$schema,$Context)
                         let $date := $item/@last-modified-date
                         order by $date descending
                         return $item
