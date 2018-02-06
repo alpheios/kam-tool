@@ -3,8 +3,6 @@ module namespace _ = "sanofi/kk";
 (: import repo modules :)
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
-import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -20,8 +18,12 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
-<pre>{serialize($Item)}</pre>
+declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
+  $Item as element(),
+  $Schema as element(schema),
+  $Context as map(*)
+) as element(pre) {
+  <pre>{serialize($Item)}</pre>
 };
 
 declare %plugin:provide("ui/page/content","stammdaten/kk")
@@ -65,8 +67,10 @@ as element(schema){
         </button>
     </modal>
     <element name="name" type="enum">
-    {$_:kk ! <enum key="{.}">{.}</enum>}
     <label>Name</label>
+    {
+      $_:kk ! <enum key="{.}">{.}</enum>
+    }
     </element>
     <element name="verantwortlich" type="foreign-key" required="">
       <provider>sanofi/key-accounter</provider>
@@ -149,48 +153,19 @@ function _:schema-kk() {
   )
 };
 
-declare %plugin:provide("schema/render/form/field/enum","name")
- function _:schema-render-field-kk-name(
-     $Item as element()?,
-     $Element as element(element),
-     $Context)
-{
-     let $schema := $Element/ancestor::schema
-     let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
-     let $assigned-names := $kks/name/string()
-     let $type := $Element/@type/string()
-     let $name := $Element/@name/string()
-     let $kk-name := $Item/name/string()
-     let $names := $_:kk[not(.=$assigned-names)]
-     let $enums := $names!<enum key="{.}">{.}</enum>
-     let $class := $Element/class/string()
-     let $required := $Element/@required
-     let $value := $Item/node()[name()=$name]
-     return
-      if ($kk-name!="")
-             then (<input xmlns="http://www.w3.org/1999/xhtml" type="hidden" name="{$name}" value="{$kk-name}"/>)
-             else
-     <select xmlns="http://www.w3.org/1999/xhtml" name="{$name}" class="form-control select2">{$required}
-     <option value="">Nicht zugewiesen</option>
-     {
-       for $enum in $enums
-       return <option value="{$enum/@key}">
-                    {if ($enum/@key=$value) then attribute selected {} else ()}
-                    {$enum/string()}
-              </option>
-     }
-     </select>
+declare %plugin:provide("schema/render/form/field/enum/datasource/filter") 
+function _:filter-kk-names(
+  $Item as element(),
+  $Element as element(element),
+  $Context as map(*)
+) as element(enum)* {
+  let $schema := $Element/ancestor::schema
+  let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
+  let $assigned-names := $kks/name/string()
+  let $names := $_:kk[not(.=$assigned-names)]
+  return
+    $names ! <enum key="{.}">{.}</enum>
 };
-
-declare %plugin:provide("schema/render/form/field/label","name")
- function _:schema-render-field-label-kk-name($Item as element()?,$Element as element(element),$Context){
- let $label := $Element/label/node()
- let $kk-name := $Item/name/node()
- return
- if ($kk-name!="")
-    then ((: mute the hidden label :))
-    else <label xmlns="http://www.w3.org/1999/xhtml">{$label}</label>
- };
 
 
 declare %plugin:provide("profile/dashboard/widget")
