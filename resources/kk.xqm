@@ -8,7 +8,7 @@ import module namespace date-util ="influx/utils/date-utils";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundesländer");
-
+declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkassen");
 
 declare %plugin:provide('side-navigation')
@@ -72,6 +72,10 @@ as element(schema){
     {
       $_:kk ! <enum key="{.}">{.}</enum>
     }
+    </element>
+    <element name="kv-bezirk" type="enum" multiple="">
+      <label>KV Bezirke</label>
+      {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
     </element>
     <element name="verantwortlich" type="foreign-key" required="">
       <provider>sanofi/key-accounter</provider>
@@ -154,7 +158,7 @@ function _:schema-kk() {
   )
 };
 
-declare %plugin:provide("schema/render/form/field/enum/datasource/filter") 
+declare %plugin:provide("schema/render/form/field/enum/datasource/filter", "name") 
 function _:filter-kk-names(
   $Item as element(),
   $Element as element(element),

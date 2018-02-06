@@ -144,7 +144,7 @@ as element(schema){
             <label>KV-Bezirke</label>
             <class>col-md-6</class>
     </element>
-    <element name="lav" type="foreign-key" required="">
+    <element name="lav" type="foreign-key" multiple="" required="">
             <provider>sanofi/lav</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
