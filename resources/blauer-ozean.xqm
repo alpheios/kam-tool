@@ -92,10 +92,10 @@ as element(schema){
       for $aspekt in $_:aspekte-kk
       let $aspekt-name := translate(lower-case($aspekt), " ", "-")
       return (
-        <element name="{$aspekt-name}-ist" type="number">
+        <element name="{$aspekt-name}-ist" type="number" min="1" max="5" default="3">
           <label>{$aspekt} IST</label>
         </element>,
-        <element name="{$aspekt-name}-soll" type="number">
+        <element name="{$aspekt-name}-soll" type="number" min="1" max="5" default="3">
           <label>{$aspekt} SOLL</label>
         </element>
       )
@@ -125,7 +125,7 @@ as element(schema){
             <delete>löschen</delete>
         </button>
     </modal>
-    <element name="name" type="text">
+    <element name="name" type="text" required="">
         <label>Titel</label>
     </element>
     <element name="datum" type="text">
@@ -135,10 +135,10 @@ as element(schema){
       for $aspekt in $_:aspekte-kv
       let $aspekt-name := translate(lower-case($aspekt), " ", "-")
       return (
-        <element name="{$aspekt-name}-ist" type="number">
+        <element name="{$aspekt-name}-ist" type="number" min="1" max="5" default="3">
           <label>{$aspekt} IST</label>
         </element>,
-        <element name="{$aspekt-name}-soll" type="number">
+        <element name="{$aspekt-name}-soll" type="number" min="1" max="5" default="3">
           <label>{$aspekt} SOLL</label>
         </element>
       )

@@ -5,6 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui2";
+import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -42,7 +43,7 @@ as element()?
     if ($Context("context-item")/@id/string())
         then
             <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("context-item")/@id/string()}" type="hidden"/>
-        else <h1>hallo</h1>(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
+        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
 };
 declare %plugin:provide("schema/render/form/field/label","kk")
 function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
@@ -120,7 +121,7 @@ as element(schema){
     <element name="ende" type="date">
         <label>Ende</label>
     </element>
-    <element name="fertigstellung" type="number" min="0" max="100">
+    <element name="fertigstellung" type="number" min="0" max="100" default="100">
         <label>Fertigstellung in %</label>
     </element>
 
@@ -165,7 +166,7 @@ as element(xhtml:div)
                           <div class="col-md-12"><label class="form-label pull-right">Projekt hinzufügen {$add-button}</label></div>
                   </div>
                   <div class="ibox-content">
-                      <div class="gantt-container" style="overflow: scroll">
+                      <div class="gantt-container" style="overflow: scroll;">
                       	<div id="chart_div"></div>
                       </div>
                   </div>
@@ -198,7 +199,7 @@ as element(xhtml:div)
 
                 data.addRows([
                 ]]>{
-                    string-join($projekte!('["'||random:uuid()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
+                    string-join($projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
                 }<![CDATA[
 
                 ]);
@@ -206,6 +207,8 @@ as element(xhtml:div)
 
                 var options = {
                     fontName : "open sans"
+                    ,height : 640
+                    ,width : 720
                 };
 
                 var chart = new google.visualization.Gantt(document.getElementById('chart_div'));

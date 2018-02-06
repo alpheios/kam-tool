@@ -107,7 +107,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Name</label>
     </element>
-    <element name="datum" type="date">
+    <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
         <label>Datum</label>
     </element>
     <element name="zusatzbeitrag" type="number">

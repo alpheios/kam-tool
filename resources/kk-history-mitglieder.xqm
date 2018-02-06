@@ -5,7 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =   "influx/ui2";
-import module namespace util ="influx/utils/date-utils";
+import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -29,14 +29,6 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     return $schema
 };
 
-declare %plugin:provide("schema/render/form/field/date","datum") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-kk-history-mitglieder-kk-input-datum($Item as element(kk-history-mitglieder), $Element as element(element), $Context as map(*))
-as element()?
-{
-    let $datum := if ($Item/datum/string()) then $Item/datum/string() else util:current-date-to-html5-input-date()
-
-    return <input xmlns="http://www.w3.org/1999/xhtml" class="form-control" name="datum" value="{$datum}" type="date"/>
-};
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){
@@ -53,7 +45,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Name</label>
     </element>
-    <element name="datum" type="date">
+    <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
         <label>Datum</label>
     </element>
     <element name="anzahl" type="number">

@@ -3,6 +3,7 @@ module namespace _ = "sanofi/kk";
 (: import repo modules :)
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
+import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 

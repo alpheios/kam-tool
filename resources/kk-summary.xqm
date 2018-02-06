@@ -1,6 +1,7 @@
 module namespace _ = "sanofi/kk-summary";
 
 import module namespace plugin  = "influx/plugin";
+import module namespace date-util ="influx/utils/date-utils";
 
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/datum return $item};
@@ -34,7 +35,7 @@ as element(schema){
     <element name="name" type="text">
       <label>Titel</label>
     </element>
-    <element name="datum" type="date">
+    <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
       <label>Datum</label>
     </element>
     <element name="kk" type="foreign-key" required="" render="context-item">
