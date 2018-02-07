@@ -7,6 +7,8 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui2";
 import module namespace date-util ="influx/utils/date-utils";
 
+import module namespace date-util ="influx/utils/date-utils";
+
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
