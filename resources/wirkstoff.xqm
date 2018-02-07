@@ -40,12 +40,6 @@ as element(schema){
 <schema xmlns="" name="wirkstoff" domain="sanofi" provider="sanofi/wirkstoff">
     <modal>
         <title>Wirkstoff</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text">
         <label>Wirkstoff</label>

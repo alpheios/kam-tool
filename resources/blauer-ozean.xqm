@@ -67,12 +67,6 @@ as element(schema){
 <schema xmlns="" name="blauer-ozean" domain="sanofi" provider="sanofi/blauer-ozean">
     <modal>
         <title>Der Blaue Ozean</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text">
         <label>Titel</label>
@@ -110,12 +104,6 @@ as element(schema){
 <schema xmlns="" name="blauer-ozean" domain="sanofi" provider="sanofi/blauer-ozean">
     <modal>
         <title>Der Blaue Ozean</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text" required="">
         <label>Titel</label>

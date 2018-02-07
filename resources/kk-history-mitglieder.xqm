@@ -35,12 +35,6 @@ as element(schema){
 <schema xmlns="" name="kk-history-mitglieder" domain="sanofi" provider="sanofi/kk-history-mitglieder">
     <modal>
         <title>KK Versicherte</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text">
         <label>Name</label>

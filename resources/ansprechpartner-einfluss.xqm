@@ -23,12 +23,6 @@ as element(schema){
 <schema xmlns="" name="einfluss" domain="sanofi" provider="sanofi/ansprechpartner/einfluss">
     <modal>
         <title>Einfluss</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="ansprechpartner" type="foreign-key" render="context-item">
       <key>@id</key>

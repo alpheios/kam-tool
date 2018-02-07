@@ -60,12 +60,6 @@ as element(schema){
 <schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
     <modal>
         <title>Gesetzliche Krankenkasse</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="enum">
     <label>Name</label>
@@ -105,12 +99,6 @@ function _:schema-history-kk() {
 
     <modal>
         <title>KK Versicherte</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
    <element name="kk-versicherte" render="table" type="foreign-key" required="">
       <provider>sanofi/kk-history-mitglieder</provider>
@@ -127,12 +115,6 @@ function _:schema-top-4-kk() {
 
     <modal>
         <title>KK Top 4</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
    <element name="kk-versicherte" render="table" type="foreign-key" required="">
       <provider>sanofi/kk-kam-top-4</provider>

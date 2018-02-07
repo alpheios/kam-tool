@@ -90,12 +90,6 @@ as element(schema){
 <schema xmlns="" name="projekt" domain="sanofi" provider="sanofi/projekt">
     <modal>
         <title>Projekt</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text">
         <label>Projektname</label>

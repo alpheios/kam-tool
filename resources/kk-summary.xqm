@@ -25,12 +25,6 @@ as element(schema){
 <schema xmlns="" name="kk-summary" domain="sanofi" provider="sanofi/kk-summary">
     <modal>
         <title>Zusammenfassung</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="text">
       <label>Titel</label>

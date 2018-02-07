@@ -126,12 +126,6 @@ as element(schema){
 <schema xmlns="" name="key-accounter" domain="sanofi" provider="sanofi/key-accounter">
     <modal>
         <title>Key-Accounter</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="interessen" type="enum">
         {$_:interessen ! <enum key="{.}">{.}</enum>}

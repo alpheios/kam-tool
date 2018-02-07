@@ -95,12 +95,6 @@ as element(schema){
 <schema xmlns="" name="vertrag" domain="sanofi" provider="sanofi/vertrag">
     <modal>
         <title>Vertrag</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="verantwortlich" type="foreign-key" required="">
                  <provider>sanofi/key-accounter</provider>

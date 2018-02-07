@@ -58,12 +58,6 @@ as element(schema){
 <schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
     <modal>
         <title>Kassenärztliche Vereinigung</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="name" type="enum">
         {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}

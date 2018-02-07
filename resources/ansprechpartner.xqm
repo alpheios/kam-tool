@@ -57,12 +57,6 @@ as element(schema){
 <schema xmlns="" name="ansprechpartner" domain="sanofi" provider="sanofi/ansprechpartner">
     <modal>
         <title>Ansprechpartner</title>
-        <button>
-            <add>hinzufügen</add>
-            <cancel>abbrechen</cancel>
-            <modify>ändern</modify>
-            <delete>löschen</delete>
-        </button>
     </modal>
     <element name="vorname" type="text">
         <label>Vorname</label>
