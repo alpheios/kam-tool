@@ -16,7 +16,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-ambulance"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-user-md"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
   </li>
 };
 
