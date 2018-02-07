@@ -14,15 +14,6 @@ declare namespace mod="http://influx.adesso.de/module";
 
 declare variable $_:static := $global:module-path||"/"||doc("../module.xml")/*:module/*:install-path||"/static";
 
-
-declare %plugin:provide('side-navigation')
-  function _:nav-item-kam()
-  as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AA2">
-      <a href="{$global:servlet-prefix}/sanofi/projekt"><i class="fa fa-area-chart"></i> <span class="nav-label">Projekte Gantt</span></a>
-  </li>
-};
-
 declare %plugin:provide("ui/page/content","sanofi/projekt")
 function _:sanofi-projekte($map as map(*))
 as element(xhtml:div)

@@ -12,15 +12,6 @@ import module namespace kk = "sanofi/kk" at "../resources/kk.xqm";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
 
-
-declare %plugin:provide('side-navigation')
-  function _:nav-item-kam()
-  as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AA2">
-      <a href="{$global:servlet-prefix}/sanofi/blauer-ozean"><i class="fa fa-area-chart"></i> <span class="nav-label">Blauer Ozean</span></a>
-  </li>
-};
-
 declare %plugin:provide("ui/page/content","sanofi/blauer-ozean")
 function _:sanofi-blauer-ozean($map as map(*))
 as element(xhtml:div)

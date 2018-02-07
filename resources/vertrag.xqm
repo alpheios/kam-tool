@@ -26,7 +26,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-cubes"></i> <span class="nav-label">Verträge</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-envelope"></i> <span class="nav-label">Verträge</span></a>
   </li>
 };
 

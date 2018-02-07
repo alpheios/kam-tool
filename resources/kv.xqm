@@ -15,8 +15,8 @@ declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-users"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-ambulance"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
   </li>
 };
 

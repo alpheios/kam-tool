@@ -14,7 +14,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contacs()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/ansprechpartner&amp;provider=sanofi/ansprechpartner"><i class="fa fa-users"></i> <span class="nav-label">Ansprechpartner</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/ansprechpartner&amp;provider=sanofi/ansprechpartner"><i class="fa fa-address-book"></i> <span class="nav-label">Ansprechpartner</span></a>
   </li>
 };
 

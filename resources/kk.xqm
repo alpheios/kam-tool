@@ -14,8 +14,8 @@ declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkass
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kk()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kk&amp;provider=sanofi/kk"><i class="fa fa-users"></i> <span class="nav-label">Krankenkassen</span></a>
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
@@ -183,11 +183,15 @@ function _:filter-kk-names(
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())
 {
-
-    let $Context := map{"context":"profile"}
     let $schema := plugin:provider-lookup("sanofi/key-accounter", "schema")!.()
     let $key-accounter := plugin:lookup("datastore/dataobject/field")!.("username", plugin:lookup("username")!.(), $schema, map {})
-    let $Context := map:put($Context, "context-item", $key-accounter)
+
+    let $Context := map{
+      "context":"profile",
+      "context-item": $key-accounter,
+      "provider": "sanofi/kk"
+    }
+    
     let $context := "kk"
     let $schema := plugin:provider-lookup("sanofi/kk","schema",$context)!.()
     let $items  := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$Context)
@@ -202,6 +206,7 @@ function _:profile-dashboard-widget-kk($Profile as element())
 };
 
 declare %plugin:provide("schema/render/button/page/edit/link", "stammdaten/kk")
+        %plugin:provide("schema/render/button/page/edit/link", "profile")
 function _:schema-render-button-page-edit-link($Item as element()?, $Schema as element(schema), $Context as map(*))
 as xs:string
 {

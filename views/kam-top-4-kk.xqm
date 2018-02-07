@@ -9,15 +9,6 @@ import module namespace kk = "sanofi/kk" at "../resources/kk.xqm";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-
-declare %plugin:provide('side-navigation')
-  function _:nav-item-kam2()
-  as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AA2">
-      <a href="{$global:servlet-prefix}/sanofi/kam-top-4-kk"><i class="fa fa-area-chart"></i> <span class="nav-label">KAM Top 4 - KK</span></a>
-  </li>
-};
-
 declare %plugin:provide("ui/page/content","sanofi/kam-top-4-kk")
 function _:sanofi-kam-top-4($map)
 as element(xhtml:div)
