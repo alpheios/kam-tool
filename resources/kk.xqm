@@ -77,7 +77,7 @@ as element(schema){
       <label>KV Bezirke</label>
       {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
     </element>
-    <element name="verantwortlich" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" render="dropdown"     required="">
       <provider>sanofi/key-accounter</provider>
       <key>@id/string()</key>
       <display-name>name/string()</display-name>
@@ -143,6 +143,13 @@ function _:schema-top-4-kk() {
  </schema>
 };
 
+declare %plugin:provide("schema", "profile")
+function _:schema-kk-profile() {
+  _:schema-default() update (
+    replace value of node ./element[@name="verantwortlich"]/@render with "context-item"
+    ,delete node ./element[@name="verantwortlich"]/label
+  )};
+
 declare %plugin:provide("schema/render/page/form/buttons", "kk-history")
         %plugin:provide("schema/render/page/form/buttons", "kk-top-4")
 function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*), $Form-id) {
@@ -177,14 +184,18 @@ declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())
 {
 
-    let $context := map{}
-    let $schema := plugin:provider-lookup("sanofi/kk","schema")!.()
-    let $items  := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$context)
+    let $Context := map{"context":"profile"}
+    let $schema := plugin:provider-lookup("sanofi/key-accounter", "schema")!.()
+    let $key-accounter := plugin:lookup("datastore/dataobject/field")!.("username", plugin:lookup("username")!.(), $schema, map {})
+    let $Context := map:put($Context, "context-item", $key-accounter)
+    let $context := "kk"
+    let $schema := plugin:provider-lookup("sanofi/kk","schema",$context)!.()
+    let $items  := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($schema,$Context)
     let $items  := $items[*:verantwortlich=$Profile/@id/string()]
     return
         if (count($items)>0) then
         <div class="col-md-6">
-         {plugin:provider-lookup("sanofi/kk","schema/render/table/page")!.($items,$schema,$context)}
+         {plugin:provider-lookup("sanofi/kk","schema/render/table/page",$context)!.($items,$schema,$Context)}
         </div>
         else ()
 
