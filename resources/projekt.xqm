@@ -208,7 +208,7 @@ as element(xhtml:div)
                 var options = {
                     fontName : "open sans"
                     ,height : 640
-                    ,width : 720
+                    ,width : 420
                 };
 
                 var chart = new google.visualization.Gantt(document.getElementById('chart_div'));

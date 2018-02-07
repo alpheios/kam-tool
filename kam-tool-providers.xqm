@@ -1,4 +1,4 @@
-module namespace _="sales-management/providers";
+module namespace _="sanofi/providers";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
@@ -27,11 +27,15 @@ declare %plugin:provide-default("schema/security")
 function _:schema-security($Item as element()*, $Schema as element(schema)*, $Context as map(*))
 as xs:boolean
 {
+    let $context := $Context("context")
     let $verantwortlich := $Item/verantwortlich
     return
         if ($verantwortlich)
             then
-                if ($verantwortlich = plugin:lookup("username")!.() or plugin:lookup("is-admin")())
+                let $key-accounter-schema := plugin:provider-lookup("sanofi/key-accounter","schema",$context)!.()
+                let $key-accounter := plugin:provider-lookup("sanofi/key-accounter","datastore/dataobject",$context)!.($verantwortlich,$key-accounter-schema,$Context)
+                return
+                if ($key-accounter/username = plugin:lookup("username")!.() or plugin:lookup("is-admin")())
                 then true()
                 else false()
             else true()

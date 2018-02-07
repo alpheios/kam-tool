@@ -219,6 +219,7 @@ return
               <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
@@ -279,6 +280,22 @@ return
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/vertrag"
+                        let $context := "kk"
+                        let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+                        let $items :=
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            let $date := $item/@last-modified-date
+                            order by $date descending
+                            return $item
+                        return
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
+                    }
+                  </div>
+              </div>
+              <div id="tab-6" class="tab-pane">
+                  <div class="panel-body">
+                    {
+                        let $provider := "sanofi/ansprechpartner"
                         let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                         let $items :=

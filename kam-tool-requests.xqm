@@ -1,4 +1,4 @@
-module namespace _="sales-management/requests";
+module namespace _="sanofi/requests";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';

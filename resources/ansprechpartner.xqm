@@ -185,3 +185,74 @@ function _:clear-connection-to-lav(
   let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
   return <tr data-remove="#item-{$Item-Id}"></tr>
 };
+
+declare %plugin:provide("content/view/context","kk")
+function _:sanofi-ansprechpartner-kk($Items as element(ansprechpartner)* ,$Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+  let $provider := $Context("provider")
+  let $context := $Context("context")
+  let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Items[1],$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
+  return
+    <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
+      <div data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
+        <div class="ibox float-e-margins ">
+          <div class="ibox-title">
+            <h5>Ansprechpartner</h5>
+            <div class="ibox-tools">
+              <a data-remote="false" data-target="#influx-modal-dialog" data-toggle="modal" href="/influx/schema/form/modal?context=kk&amp;provider=sanofi/ansprechpartner&amp;schema=&amp;item=&amp;context-provider=&amp;context-item=" shape="rect" class="btn btn-sm btn-outline">
+                <span class="fa fa-plus"></span>
+              </a>
+            </div>
+          </div>
+          <div class="ibox-content">
+            <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
+              <div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+                <div class="table-responsive">
+                  <table class="table table-hover schema-ansprechpartner-table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Produkt</th>
+                        <th>Einfluss</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        let $einfluss-schema := plugin:provider-lookup("sanofi/ansprechpartner/einfluss","schema")!.()
+                        let $produkt-schema  := plugin:provider-lookup("sanofi/produkt","schema")!.()
+                        return
+                            for $item in $Items
+                            let $id := $item/@id/string()
+                            let $name := $item/*:name/string()
+                            let $einfluss-id := $item/*:einfluss/string()
+                            let $einfluesse := plugin:lookup("datastore/dataobject/field")!.("ansprechpartner",$id,$einfluss-schema,map{})
+                            return
+                                for $einfluss in $einfluesse
+                                let $produkt-id := $einfluss/*:produkt/string()
+                                let $produkt := if ($produkt-id!="") then plugin:lookup("datastore/dataobject")!.($produkt-id,$produkt-schema,map{}) else ()
+                                return
+
+                      <tr id="item-{$id}">
+                        <td>
+                          <a class="btn btn-sm btn-error" href="/influx/schema/form/page/{$id}?provider=sanofi/ansprechpartner&amp;context=kk&amp;context-item-id=c18a06b8-08c4-4d71-9166-fb28fc98bed1&amp;context-provider=sanofi/ansprechpartner">
+                            <span class="fa fa-edit"></span>
+                          </a>
+                        </td>
+                        <td>{$name}</td>
+                        <td>{$produkt/*:name/string()}</td>
+                        <td>{$einfluss/*:rolle/string()}</td>
+                      </tr>
+                    }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+};
