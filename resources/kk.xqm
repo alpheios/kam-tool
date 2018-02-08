@@ -116,7 +116,7 @@ function _:schema-top-4-kk() {
     <modal>
         <title>KK Top 4</title>
     </modal>
-   <element name="kk-versicherte" render="table" type="foreign-key" required="">
+   <element name="kk-kam-top-4" render="table" type="foreign-key" required="">
       <provider>sanofi/kk-kam-top-4</provider>
       <key>kk</key>
       <label>KK Top 4</label>
@@ -194,7 +194,7 @@ as xs:string
 {
 let $provider := $Schema/@provider/string()
 return
-"schema/form/page/"||$Item/@id||"?provider="||$provider||"&amp;context=kk"||"&amp;context-item-id="||$Item/@id||"&amp;context-provider="||$provider
+"schema/form/page/"||$Item/@id||"?provider="||$provider||"&amp;context=kk"||"&amp;context-item-id="||$Item/@id||"&amp;context-provider="||$provider (: Manueller Kontextwechsel auf 'kk' :)
 };
 
 declare %plugin:provide("schema/ui/page/content","kk")
