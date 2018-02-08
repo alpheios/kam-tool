@@ -263,5 +263,5 @@ let $link := $Item/../sharepoint-link/text()
 return
 if ($Item/name()='sharepoint-link' and $link)
     then <td xmlns="http://www.w3.org/1999/xhtml"><a target="window" href="{$link}">{$Item/text()}</a></td>
-    else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()} Hallo</td>
+    else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()}</td>
 };

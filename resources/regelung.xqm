@@ -160,7 +160,7 @@ let $title := $Schema/modal/title/string()
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="ibox float-e-margins">
     <div class="ibox-title">
-        <h5>{$title}Hallo</h5>
+        <h5>{$title}</h5>
         <div class="ibox-tools">
         {$modal-button}
         </div>
