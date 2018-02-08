@@ -58,10 +58,10 @@ as element(schema){
     <modal>
         <title>Ansprechpartner</title>
     </modal>
-    <element name="vorname" type="text">
+    <element name="vorname" type="text" required="">
         <label>Vorname</label>
     </element>
-    <element name="name" type="text">
+    <element name="name" type="text" required="">
         <label>Name</label>
     </element>
     <element name="gremien" type="enum" multiple="">
