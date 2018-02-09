@@ -58,7 +58,7 @@ as element(schema){
     <modal>
         <title>Ansprechpartner</title>
     </modal>
-    <element name="titel" type="text" required="">
+    <element name="titel" type="text">
         <label>Titel</label>
     </element>
     <element name="vorname" type="text" required="">
