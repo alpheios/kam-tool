@@ -58,6 +58,9 @@ as element(schema){
     <modal>
         <title>Ansprechpartner</title>
     </modal>
+    <element name="titel" type="text" required="">
+        <label>Titel</label>
+    </element>
     <element name="vorname" type="text" required="">
         <label>Vorname</label>
     </element>
@@ -99,8 +102,8 @@ as element(schema){
       <label>LAV</label>
       <class>col-md-6</class>
     </element>
-    <element name="fachrichtung" type="text">
-        <label>Fachrichtung</label>
+    <element name="ausbildung" type="text">
+        <label>Ausbildung</label>
     </element>
     <element name="notizen" type="text">
         <label>Notizen</label>
