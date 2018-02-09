@@ -96,7 +96,7 @@ declare function _:import-products(
     }
   let $schemaProds :=
     for $product in $prods
-    return plugin:lookup('schema/instance/new/from/form')!.($schema, $product)
+    return plugin:lookup('schema/instance/new/from/form')!.($schema, $product) update replace value of node ./@last-modified-date with current-dateTime()
 
   let $elementName := $schema/@name/string()
   let $dbPaths := $schemaProds ! $elementName

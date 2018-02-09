@@ -75,7 +75,7 @@ as element(schema){
       <provider>sanofi/key-accounter</provider>
       <key>@id/string()</key>
       <display-name>name/string()</display-name>
-      <label>Verantwortlich</label>
+      <label>Zuständig</label>
       <class>col-md-6</class>
     </element>
     <element name="ansprechpartner" type="foreign-key" render="table" required="">

@@ -166,7 +166,6 @@ return
         if ($admin)
         then true()
         else false()
-
 };
 
 declare %plugin:provide("schema/render/button/modal/new")
@@ -184,6 +183,19 @@ return
         then ui:modal-button($link,<a class="btn btn-sm"><span class="fa fa-plus"/></a>)
         else ()
 
+};
+
+(::: Remove Buttons from modal if key-accounter details are opened from table-view :::)
+declare %plugin:provide("schema/render/modal/form/buttons", "stammdaten/kk")
+        %plugin:provide("schema/render/modal/form/buttons", "kv") (: Gucken ob der Kontext hier wirklich kv bleibt oder sich das noch ändert:)
+        %plugin:provide("schema/render/modal/form/buttons", "stammdaten/lav")
+function _:remove-buttons-from-modal(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*),
+  $form-id as xs:string
+) {
+  ()
 };
 
 (:

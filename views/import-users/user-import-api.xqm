@@ -106,7 +106,7 @@ declare function _:import-users(
     }
   let $schemaUsers :=
     for $user in $userMaps
-    return plugin:lookup('schema/instance/new/from/form')!.($schema, $user)
+    return plugin:lookup('schema/instance/new/from/form')!.($schema, $user) update replace value of node ./@last-modified-date with current-dateTime()
 
   let $importUsers :=
     for $user in $schemaUsers
