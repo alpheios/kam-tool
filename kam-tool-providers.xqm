@@ -46,5 +46,8 @@ as xs:boolean
 
 declare %plugin:provide("ui/page/custom-css","profile")
 function _:page-custom-css($map){
-       <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
+    <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
 };
+
+
+declare %plugin:page("schema","list/items/{$arg1}") function _:test($req as map(*),$arg1){$arg1,$req("parameter")=>map:keys()};

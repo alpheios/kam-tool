@@ -11,6 +11,7 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:aspekte-kk := plugin:lookup("plato/schema/enums/get")!.("Blauer Ozean Aspekte-KK");
 declare variable $_:aspekte-kv := plugin:lookup("plato/schema/enums/get")!.("Blauer Ozean Aspekte-KV");
 
+
 declare %plugin:provide("schema/render/modal/debug/itemX") function _:debug-blauer-ozean ($Item as element(blauer-ozean),$Schema as element(schema),$Context){
 <pre>{serialize($Item)}
 <ul>{for $key in map:keys($Context)

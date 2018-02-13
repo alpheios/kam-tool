@@ -134,7 +134,7 @@ function _:schema-kk-profile() {
 
 declare %plugin:provide("schema/render/page/form/buttons", "kk-history")
         %plugin:provide("schema/render/page/form/buttons", "kk-top-4")
-function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*), $Form-id) {
+function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*)) {
 ()
 };
 
