@@ -192,8 +192,7 @@ declare %plugin:provide("schema/render/modal/form/buttons", "stammdaten/kk")
 function _:remove-buttons-from-modal(
   $Item as element(), 
   $Schema as element(schema), 
-  $Context as map(*),
-  $form-id as xs:string
+  $Context as map(*)
 ) {
   ()
 };
