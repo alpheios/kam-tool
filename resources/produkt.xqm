@@ -7,6 +7,7 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui2";
 import module namespace date-util ="influx/utils/date-utils";
 
+declare namespace functx = "http://www.functx.com";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -39,7 +40,20 @@ as element(xhtml:div)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
 
+declare %plugin:provide("schema/render/form/field/foreign-key/datasource/search")
+function _:search-through-all-fields(
+  $Item as element()?,
+  $DisplayName as xs:string,
+  $Context as map(*),
+  $Search as xs:string?
+) as xs:boolean {
+  let $name := $Item/name/string()
+  let $wirkstoff := $Item/wirkstoff/string()
+  let $hersteller := $Item/herstellername/string()
+  let $indikation := $Item/indikation/string()
 
+  return functx:contains-case-insensitive(concat($name, $wirkstoff, $hersteller, $indikation), $Search)
+};
 
 
 declare %plugin:provide("schema/set/elements")
