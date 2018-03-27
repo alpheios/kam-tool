@@ -9,8 +9,6 @@ import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-declare variable $_:kv-vertraege := plugin:lookup("plato/schema/enums/get")!.("KV-Verträge");
-
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
 
 (:
@@ -124,16 +122,7 @@ as element(schema){
             <label>KV-Vertragspartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="kv-vertrag" type="enum">
-        {$_:kv-vertraege ! <enum key="{.}">{.}</enum>}
-        <label>KV Vertrag</label>
-    </element>
-    <element name="stand" type="date">
-        <label>Stand</label>
-    </element>
-    <element name="quelle" type="text">
-        <label>Quelle</label>
-    </element>
+
     <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="1" required="">
         <provider>sanofi/produkt</provider>
         <key>@id</key>
@@ -141,7 +130,46 @@ as element(schema){
         <label>Produkt</label>
         <class>col-md-6</class>
     </element>
-    <element name="notizen" type="text">
+
+    <element name="amr-beschreibung" type="html">
+      <label>AMR/Ziele Beschreibung</label>
+    </element>
+    <element name="amr-stand" type="date">
+        <label>AMR Stand</label>
+    </element>
+    <element name="amr-quelle" type="text">
+        <label>AMR Quelle</label>
+    </element>
+
+    <element name="pbs-beschreibung" type="html">
+      <label>PBS Beschreibung</label>
+    </element>
+    <element name="pbs-stand" type="date">
+        <label>PBS Stand</label>
+    </element>
+    <element name="pbs-quelle" type="text">
+        <label>PBS Quelle</label>
+    </element>
+
+    <element name="ssp-beschreibung" type="html">
+      <label>SSP/OVB Beschreibung</label>
+    </element>
+    <element name="amr-stand" type="date">
+        <label>SSP Stand</label>
+    </element>
+    <element name="amr-quelle" type="text">
+        <label>SSP Quelle</label>
+    </element>
+
+    <element name="mapt" type="text">
+      <label>MAPT</label>
+    </element>
+
+    <element name="impact" type="number" min="0" max="20">
+      <label>Impactwert</label>
+    </element>
+    
+    <element name="notizen" type="html">
          <label>Notizen</label>
      </element>
  </schema>
