@@ -154,10 +154,10 @@ as element(schema){
     <element name="ssp-beschreibung" type="html">
       <label>SSP/OVB Beschreibung</label>
     </element>
-    <element name="amr-stand" type="date">
+    <element name="ssp-stand" type="date">
         <label>SSP Stand</label>
     </element>
-    <element name="amr-quelle" type="text">
+    <element name="ssp-quelle" type="text">
         <label>SSP Quelle</label>
     </element>
 

@@ -1,3 +1,8 @@
 name
 kv
-regelungsbeginn
+produkt
+amr-beschreibung
+pbs-beschreibung
+ssp-beschreibung
+mapt
+impact
