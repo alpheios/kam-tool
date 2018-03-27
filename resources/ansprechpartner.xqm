@@ -219,6 +219,7 @@ as element(xhtml:div)
                         <th></th>
                         <th>Name</th>
                         <th>Produkt</th>
+                        <th>Thema</th>
                         <th>Einfluss</th>
                       </tr>
                     </thead>
@@ -237,17 +238,17 @@ as element(xhtml:div)
                                 let $produkt-id := $einfluss/*:produkt/string()
                                 let $produkt := if ($produkt-id!="") then plugin:lookup("datastore/dataobject")!.($produkt-id,$produkt-schema,map{}) else ()
                                 return
-
-                      <tr id="item-{$id}">
-                        <td>
-                          <a class="btn btn-sm btn-error" href="/influx/schema/form/page/{$id}?provider=sanofi/ansprechpartner&amp;context=kk&amp;context-item-id=c18a06b8-08c4-4d71-9166-fb28fc98bed1&amp;context-provider=sanofi/ansprechpartner">
-                            <span class="fa fa-edit"></span>
-                          </a>
-                        </td>
-                        <td>{$name}</td>
-                        <td>{$produkt/*:name/string()}</td>
-                        <td>{$einfluss/*:rolle/string()}</td>
-                      </tr>
+                                  <tr id="item-{$id}">
+                                    <td>
+                                      <a class="btn btn-sm btn-error" href="/influx/schema/form/page/{$id}?provider=sanofi/ansprechpartner&amp;context=kk&amp;context-item-id=c18a06b8-08c4-4d71-9166-fb28fc98bed1&amp;context-provider=sanofi/ansprechpartner">
+                                        <span class="fa fa-edit"></span>
+                                      </a>
+                                    </td>
+                                    <td>{$name}</td>
+                                    <td>{$produkt/*:name/string()}</td>
+                                    <td>{$einfluss/*:thema/string()}</td>
+                                    <td>{$einfluss/*:rolle/string()}</td>
+                                  </tr>
                     }
                     </tbody>
                   </table>

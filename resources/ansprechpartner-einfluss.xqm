@@ -10,7 +10,7 @@ function _:schema-render-table-prepare-rows-only-name(
   $Schema as element(schema),
   $Context as map(*)
 ) {
-    let $columns := ("produkt", "rolle")
+    let $columns := ("produkt", "thema", "rolle")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -26,12 +26,17 @@ as element(schema){
     </modal>
     <element name="ansprechpartner" type="foreign-key" render="context-item">
       <key>@id</key>
+      <provider>sanofi/ansprechpartner</provider>
+      <display-name>name/string()</display-name>
     </element>
-    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown" required="">
+    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown">
       <provider>sanofi/produkt</provider>
       <key>@id</key>
       <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
       <label>Produkt</label>
+    </element>
+    <element name="thema" type="text">
+      <label>Thema</label>
     </element>
     <element name="rolle" type="enum" required="">
       {$_:rollen ! <enum key="{.}">{.}</enum>}
