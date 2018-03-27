@@ -154,7 +154,7 @@ as element(schema){
     <element name="vertragsende" type="date">
         <label>Ende</label>
     </element>
-    <element name="notizen" type="text">
+    <element name="notizen" type="html">
          <label>Notizen</label>
      </element>
      <element name="sharepoint-link" type="text">

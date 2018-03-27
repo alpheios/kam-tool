@@ -115,6 +115,9 @@ as element(schema){
             <label>KK</label>
             <class>col-md-6</class>
     </element>
+    <element name="notizen" type="html">
+        <label>Notizen</label>
+    </element>
   </schema>
 };
 

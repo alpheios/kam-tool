@@ -140,7 +140,7 @@ as element(schema){
     <element name="nachname" type="text">
         <label>Nachname</label>
     </element>
-    <element name="notizen" type="text">
+    <element name="notizen" type="html">
          <label>Notizen</label>
      </element>
      <element name="username" type="hidden">

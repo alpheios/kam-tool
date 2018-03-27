@@ -51,7 +51,7 @@ as element(schema){
             <label>Indikation</label>
             <class>col-md-6</class>
         </element>
-     <element name="notizen" type="text">
+     <element name="notizen" type="html">
          <label>Notizen</label>
      </element>
  </schema>

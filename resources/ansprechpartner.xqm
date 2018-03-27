@@ -105,7 +105,13 @@ as element(schema){
     <element name="ausbildung" type="text">
         <label>Ausbildung</label>
     </element>
-    <element name="notizen" type="text">
+    <element name="telefon" type="text">
+        <label>Telefon</label>
+    </element>
+    <element name="email" type="text">
+        <label>E-Mail</label>
+    </element>
+    <element name="notizen" type="html">
         <label>Notizen</label>
     </element>
     <element name="einfluss" type="foreign-key" render="table">

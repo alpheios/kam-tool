@@ -76,6 +76,9 @@ as element(schema){
             <label>Ansprechpartner</label>
             <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
+    <element name="notizen" type="html">
+        <label>Notizen</label>
+    </element>
 </schema>
 };
 

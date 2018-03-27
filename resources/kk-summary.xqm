@@ -49,6 +49,9 @@ as element(schema){
     <element name="anforderungen" type="html">
         <label>Anforderungen</label>
     </element>
+    <element name="notizen" type="html">
+        <label>Notizen</label>
+    </element>
   </schema>
 };
 
