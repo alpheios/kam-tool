@@ -70,16 +70,7 @@ as element(schema){
     <element name="indikation" type="text">
         <label>Indikation</label>
     </element>
-    <element name="atc-c" type="text">
-        <label>ATC-C.__ADV_</label>
-    </element>
-    <element name="atc-4-steller" type="text">
-        <label>ATC_4_Steller</label>
-    </element>
-    <element name="stoffklasse" type="text">
-        <label>Stoffklasse</label>
-    </element>
-    <element name="notizen" type="text">
+    <element name="notizen" type="html">
         <label>Notizen</label>
      </element>
  </schema>
