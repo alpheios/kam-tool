@@ -16,35 +16,6 @@ declare namespace mod="http://influx.adesso.de/module";
 declare variable $_:module := doc("module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:module/mod:install-path||"/static";
 
-
-declare variable $_:status := ("angeboten","beauftragt","offen","abgelehnt");
-
-declare  
-  %rest:path("sanofi/blauer-ozean")
-  %rest:GET
-  %output:method("html")
-  %output:version("5.0")
-function _:page1() {
-  ui:page(map{"id":request:parameter("id"),
-    "title": "Blauer Ozean"
-    },"sanofi/blauer-ozean")
-};
-
-declare
-  %rest:path("sanofi/blauer-ozean/radar-chart/{$Id}")
-  %rest:GET
-  %output:method("html")
-  %output:version("5.0")
-function _:page-radar-chart($Id) {
-    let $provider := "sanofi/blauer-ozean"
-    let $request-parameter := map:merge(request:parameter-names() ! map{. : request:parameter(.)})
-    let $context := $request-parameter => map:get("context")
-    let $schema  := plugin:provider-lookup($provider,"schema",$context)!.()
-    let $item    := plugin:provider-lookup($provider,"datastore/dataobject",$context)!.($Id, $schema, $request-parameter)
-    return
-    plugin:provider-lookup("sanofi/blauer-ozean","content/view","kk")($item,$schema,$request-parameter)
-};
-
 declare
   %rest:path("admin/sanofi/import-products")
   %rest:GET
@@ -88,37 +59,3 @@ function _:page-choose-columns() {
     "title": "Spalten für Entitäten festlegen"
     },"sanofi/choose-columns")
 };
-
-declare
-  %rest:path("sanofi/projekt")
-  %rest:GET
-  %output:method("html")
-  %output:version("5.0")
-function _:page100() {
-  ui:page(map{"id":request:parameter("id"),
-    "title": "Projekte - Gantt"
-    },"sanofi/projekt")
-};
-
-declare
-  %rest:path("sanofi/kam-top-4-kk")
-  %rest:GET
-  %output:method("html")
-  %output:version("5.0")
-function _:page-top-4-kk() {
-  ui:page(map{
-    "title": "KAM Top 4 KK"
-    },"sanofi/kam-top-4-kk")
-};
-
-declare
-  %rest:path("sanofi/kam-top-4-kv")
-  %rest:GET
-  %output:method("html")
-  %output:version("5.0")
-function _:page-top-4-kv() {
-  ui:page(map{
-    "title": "KAM Top 4 KV"
-    },"sanofi/kam-top-4-kv")
-};
-

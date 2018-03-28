@@ -25,19 +25,6 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 };
 
 
-declare %plugin:provide("ui/page/content","stammdaten/kv")
-function _:stammdaten-kv($map)
-as element(xhtml:div)
-{
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/kv","stammdaten/kv")}
-      </div>
-  </div>
-</div>
-};
-
 declare %plugin:provide("schema/process/table/items","stammdaten/kv")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {

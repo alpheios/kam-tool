@@ -9,38 +9,6 @@ import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
-(:
-UI page adapter
-:)
-declare %plugin:provide("ui/page/content","stammdaten/kk-kam-top-4")
-function _:stammdaten-kk-kam-top-4($map)
-as element(xhtml:div)
-{
-let $items := $map("items")
-let $provider := $map("provider")
-let $id := $map("id")
-let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context=page",<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
-return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>{$modal-button} KAM TOP 4</h5>
-                  <select class="chosen pull-right" onchange="window.location='/influx/sanofi/kk-kam-top-4?id='+$(this).val()">
-                    <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
-                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
-                  </select>
-              </div>
-              <div class="ibox-content">
-                {plugin:lookup("schema/ibox/table")!.("sanofi/kk-kam-top-4","stammdaten/kk-kam-top-4")}
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-};
-
 declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
@@ -154,7 +122,7 @@ let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/field",$context)!.("kk", $kk-id, $kk-history-schema, $Context)
 let $kk-history-years := for $item in $kk-history-items let $datum := $item/datum/string() order by $datum return $datum
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
-let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
 let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/name/string()!('"'||.||'"')),',')
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
 let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return $i/anzahl/string()!('"'||.||'"')),',')
@@ -291,7 +259,7 @@ return
                                             datasets: [
 
                                                 {
-                                                    label: "2007-2016",
+                                                    label: "]]>{$kk-history-years[1]} - {$kk-history-years[last()]}<![CDATA[",
                                                     backgroundColor: 'rgba(26,179,148,0.5)',
                                                     borderColor: "rgba(26,179,148,0.7)",
                                                     pointBackgroundColor: "rgba(26,179,148,1)",

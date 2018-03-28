@@ -30,23 +30,6 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-(:
-  Provider für die Stammdaten Seite
-:)
-declare %plugin:provide("ui/page/content","stammdaten/vertrag")
-function _:stammdaten-vertrag($map)
-as element(xhtml:div)
-{
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/vertrag","stammdaten/vertrag")}
-      </div>
-  </div>
-</div>
-};
-
-
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
 
 
@@ -124,21 +107,21 @@ as element(schema){
       {$_:service-partner ! <enum key="{.}">{.}</enum>}
       <label>Service Partner</label>
     </element>
-    <element name="kk" type="foreign-key" multiple="" required="">
+    <element name="kk" type="foreign-key" multiple="">
             <provider>sanofi/kk</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
             <label>KK-Vertragspartner</label>
             <class>col-md-6</class>
     </element>
-    <element name="kv" type="foreign-key" multiple="" >
+    <element name="kv" type="foreign-key" multiple="">
             <provider>sanofi/kv</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
             <label>KV-Bezirke</label>
             <class>col-md-6</class>
     </element>
-    <element name="lav" type="foreign-key" multiple="" required="">
+    <element name="lav" type="foreign-key" multiple="">
             <provider>sanofi/lav</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
@@ -200,7 +183,7 @@ let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
 let $vertrag-130-140 := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("130a","130b","130c","140a") return $vertrag
 let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("73","speziell") return $vertrag
-let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
   <div class="ibox float-e-margins">

@@ -9,20 +9,6 @@ import module namespace ui =" influx/ui2";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
-declare %plugin:provide("ui/page/content","stammdaten/indikation")
-function _:stammdaten($map)
-as element(xhtml:div)
-{
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/indikation","stammdaten/indikation")}
-      </div>
-  </div>
-</div>
-};
-
-
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};

@@ -20,36 +20,6 @@ return <li>{$key} : {$Context($key)}</li>
 </pre>
 };
 
-declare %plugin:provide("ui/page/content","stammdaten/blauer-ozean")
-function _:stammdaten-blauer-ozean($map)
-as element(xhtml:div)
-{
-let $items := $map("items")
-let $provider := $map("provider")
-let $id := $map("id")
-let $modal-button := ui:modal-button('schema/form/modal?provider='||$provider||"&amp;context=page",<a xmlns="http://www.w3.org/1999/xhtml" shape="rect" class="btn btn-sm btn-outline"><span class="fa fa-plus"/></a>)
-return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>{$modal-button} Der Blaue Ozean</h5>
-                  <select class="chosen pull-right" onchange="window.location='/influx/sanofi/blauer-ozean?id='+$(this).val()">
-                    <option>{if (not($id)) then attribute selected {} else ()}Bitte auswählen</option>
-                    {$items ! <option value="{./@id/string()}">{if ($id=./@id) then attribute selected {} else ()}{./*:name/string()}</option>}
-                  </select>
-              </div>
-              <div class="ibox-content">
-                {plugin:lookup("schema/ibox/table")!.("sanofi/blauer-ozean","stammdaten/blauer-ozean")}
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-};
-
-
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
@@ -181,7 +151,7 @@ let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
 let $item := $Item
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
-let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
 let $ist-names := $schema/element[ends-with(@name,"-ist")]/@name/string()
 let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
 let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()
@@ -255,7 +225,7 @@ let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kv=$kk-id]
 let $item := $Item
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
-let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$schema,$Context)
+let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
 let $ist-names := $schema/element[ends-with(@name,"-ist")]/@name/string()
 let $soll-names := $schema/element[ends-with(@name,"-soll")]/@name/string()
 let $andere-names := $schema/element[ends-with(@name,"-andere")]/@name/string()

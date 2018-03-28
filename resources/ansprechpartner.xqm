@@ -18,20 +18,6 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide("ui/page/content","stammdaten/ansprechpartner")
-function _:stammdaten-ansprechpartner($map)
-as element(xhtml:div)
-{
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/ansprechpartner","stammdaten/ansprechpartner")}
-      </div>
-  </div>
-</div>
-};
-
-
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows(
@@ -196,7 +182,7 @@ as element(xhtml:div)
   let $provider := $Context("provider")
   let $context := $Context("context")
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Items[1],$Schema,$Context)
-  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Items[1],$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
   return
     <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
       <div data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">

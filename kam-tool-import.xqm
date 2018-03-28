@@ -22,13 +22,6 @@ import module namespace news                    = "sanofi/news" at "resources/ne
 
 import module namespace kk-history-mitglieder   = "sanofi/kk-history-mitglieder" at "resources/kk-history-mitglieder.xqm";
 
-
-import module namespace blauer-ozean            = "sanofi/views/blauer-ozean" at "views/blauer-ozean.xqm";
-import module namespace kam-top-4-kk            = "sanofi/views/kam-top-4-kk" at "views/kam-top-4-kk.xqm";
-import module namespace kam-top-4-kv            = "sanofi/views/kam-top-4-kv" at "views/kam-top-4-kv.xqm";
-import module namespace projekte-gantt          = "sanofi/views/projekte" at "views/projekte-gantt.xqm";
-
-
 import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
 import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";
 import module namespace user-importer           = "sanofi/views/user-import" at "views/import-users/user-import.xqm";

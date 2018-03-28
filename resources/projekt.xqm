@@ -23,19 +23,6 @@ declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($
 <pre>{serialize($Item)}</pre>
 };
 
-declare %plugin:provide("ui/page/content","stammdaten/projekt")
-function _:stammdaten-projekt($map)
-as element(xhtml:div)
-{
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="row">
-      <div class="col-lg-12">
-            {plugin:lookup("schema/ibox/table")!.("sanofi/projekt","stammdaten/projekt")}
-      </div>
-  </div>
-</div>
-};
-
 declare %plugin:provide("schema/render/form/field/foreign-key","kk")
 function _:sanofi-projekte-kk-input($Item as element(), $Element as element(element), $Context as map(*))
 as element()?
@@ -149,7 +136,7 @@ as element(xhtml:div)
   let $kk := $Context("item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
-  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Item,$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
 
   return
     <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-projekte" id="kk-projekte">
