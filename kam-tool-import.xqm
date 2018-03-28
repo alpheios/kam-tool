@@ -18,6 +18,7 @@ import module namespace regelung                = "sanofi/regelung" at "resource
 import module namespace ka                      = "sanofi/key-accounter" at "resources/key-accounter.xqm";
 import module namespace blauer-ozean-resource   = "sanofi/blauer-ozean" at "resources/blauer-ozean.xqm";
 import module namespace kk-top-4-resource       = "sanofi/kk-kam-top-4" at "resources/kk-kam-top-4.xqm";
+import module namespace news                    = "sanofi/news" at "resources/news.xqm";
 
 import module namespace kk-history-mitglieder   = "sanofi/kk-history-mitglieder" at "resources/kk-history-mitglieder.xqm";
 
