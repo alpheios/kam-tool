@@ -209,7 +209,7 @@ return
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
-                          <h5>Versicherten-Entwicklung {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                          <h5>Entwicklung des Marktanteils im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
                       </div>
                       <div class="ibox-content">
                           <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
@@ -247,7 +247,7 @@ return
                 <div class="col-lg-6">
                   <div class="ibox float-e-margins">
                       <div class="ibox-title">
-                          <h5>Marktanteil Entwicklung {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                          <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
                       </div>
                       <div class="ibox-content">
                           <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
@@ -259,7 +259,7 @@ return
                                             datasets: [
 
                                                 {
-                                                    label: "]]>{$kk-history-years[1]} - {$kk-history-years[last()]}<![CDATA[",
+                                                    label: "Entwicklung der Versichertenzahl",
                                                     backgroundColor: 'rgba(26,179,148,0.5)',
                                                     borderColor: "rgba(26,179,148,0.7)",
                                                     pointBackgroundColor: "rgba(26,179,148,1)",

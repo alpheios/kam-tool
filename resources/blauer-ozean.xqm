@@ -42,7 +42,7 @@ as element(schema){
     <element name="name" type="text">
         <label>Titel</label>
     </element>
-    <element name="datum" type="text">
+    <element name="datum" type="date">
         <label>Datum</label>
     </element>
     {

@@ -81,25 +81,25 @@ as element(schema){
     <element name="name" type="text">
         <label>Projektname</label>
     </element>
-    <element name="kk" type="foreign-key" required="">
+    <element name="kk" type="foreign-key">
                     <provider>sanofi/kk</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
                     <label>KK-Vertragspartner</label>
                     <class>col-md-6</class>
     </element>
-    <element name="kv" type="foreign-key" required="">
+    <element name="kv" type="foreign-key">
                     <provider>sanofi/kv</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
                     <label>KV-Vertragspartner</label>
                     <class>col-md-6</class>
     </element>
-    <element name="beginn" type="date">
+    <element name="beginn" type="date" required="">
         <class></class>
         <label>Beginn</label>
     </element>
-    <element name="ende" type="date">
+    <element name="ende" type="date" required="">
         <label>Ende</label>
     </element>
     <element name="fertigstellung" type="number" min="0" max="100" default="100">
