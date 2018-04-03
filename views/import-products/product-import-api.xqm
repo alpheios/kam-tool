@@ -80,11 +80,13 @@ declare function _:import-products(
   let $schema := plugin:provider-lookup($provider,"schema")!.()
   let $prods :=
     for $product in $Products
-    let $name := $product/Produkt/string()
-    let $wirkstoff := $product/Wirkstoff/string()
-    let $herstellername := $product/Hersteller/string()
-    let $indikation := $product/Indikation/string()
+    let $id := $product/id/string()
+    let $name := $product/name/string()
+    let $wirkstoff := $product/wirkstoff/string()
+    let $herstellername := $product/herstellername/string()
+    let $indikation := $product/indikation/string()
     return map {
+      '@id': $id,
       'name': $name,
       'wirkstoff': $wirkstoff,
       'herstellername': $herstellername,
