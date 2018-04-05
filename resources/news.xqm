@@ -42,6 +42,15 @@ function _:set-number-of-columns-in-layout(
   1
 };
 
+declare function _:get-current-key-accounter-id() {
+    let $current-username := plugin:lookup("username")!.()
+    let $key-accounter-provider := "sanofi/key-accounter"
+    let $key-accounter-schema := plugin:provider-lookup($key-accounter-provider, "schema")!.()
+    let $context := map {}
+    let $key-accounter-id := plugin:provider-lookup("sanofi/key-accounter", "datastore/dataobject/field")!.("username", $current-username, $key-accounter-schema, $context)/@id/string()
+    return $key-accounter-id
+};
+
 declare %plugin:provide("schema") 
 function _:schema-customer-influence()
 as element(schema){
@@ -49,7 +58,7 @@ as element(schema){
     <modal>
         <title>Neuigkeiten und Gesprächsthemen</title>
     </modal>
-    <element name="kam" type="foreign-key" render="dropdown" multiple="">
+    <element name="kam" type="foreign-key" render="dropdown" multiple="" default="{_:get-current-key-accounter-id()}">
       <provider>sanofi/key-accounter</provider>
       <key>@id/string()</key>
       <display-name>name/string()</display-name>
