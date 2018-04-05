@@ -89,14 +89,39 @@ function _:schema-render-table-prepare-rows-only-name(
 };
 
 
+declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
+function _:combine-regelung-name(
+	$Item as element(),
+	$Schema as element(schema),
+	$Context as map(*)
+) {
+    let $context := $Context?context
+    let $foreign-provider := $Schema/element[@name/string() = "kv"]/provider/string()
+    let $foreign-schema := plugin:provider-lookup($foreign-provider, "schema", $context)!.()
+    let $kv-key := $Schema/element[@name/string() = "kv"]/key/string()
+    let $kv-fk := $Item/kv/string()
+	let $kv := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)!.($kv-key, $kv-fk, $foreign-schema, $Context)/name/string()
+
+    let $product-provider := $Schema/element[@name/string() = "produkt"]/provider/string()
+    let $product-key := $Schema/element[@name/string() = "produkt"]/key/string()
+    let $product-schema := plugin:provider-lookup($product-provider, "schema", $context)!.()
+    let $productNames :=
+        for $product in $Item/produkt/key/string()
+        let $p := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)!.($product-key, $product, $product-schema, $Context)/name/string()
+        return normalize-space($p)
+	let $products := string-join($productNames, "_")
+
+	return
+        $Item update replace value of node ./name with string-join(($products, $kv), "_")
+};
+
 declare %plugin:provide("schema") function _:schema-customer()
 as element(schema){
 <schema xmlns="" name="regelung" domain="sanofi" provider="sanofi/regelung">
     <modal>
         <title>Regelung</title>
     </modal>
-    <element name="name" type="text">
-        <label>Bezeichnung</label>
+    <element name="name" type="hidden">
     </element>
     <element name="kv" type="foreign-key" required="">
             <provider>sanofi/kv</provider>
@@ -157,3 +182,4 @@ as element(schema){
      </element>
  </schema>
 };
+
