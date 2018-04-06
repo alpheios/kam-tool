@@ -14,6 +14,7 @@
     <t id="import-users-failed-no-products">Es wurden keine zu importierenden Benutzer gefunden.</t>
     <t id="side-navigation-choose-values">Auswahlwerte festlegen</t>
     <t id="side-navigation-choose-columns">Spalten festlegen</t>
+    <t id="no-regelungen-data-changed">Es wurde kein Stand angepasst, haben Sie vielleicht etwas vergessen?</t>
   </lang>
   <lang id="en_US">
     <t id="drop-products-csv-here">Drop products.csv here</t>
@@ -29,5 +30,6 @@
     <t id="import-users-failed-no-products">No users to import.</t>
     <t id="side-navigation-choose-values">Choose Select Values</t>
     <t id="side-navigation-choose-columns">Choose Columns for list views</t>
+    <t id="no-regelungen-data-changed">No date changed, did you miss something?</t>
   </lang>
 </translations>

@@ -202,3 +202,63 @@ as element(schema){
  </schema>
 };
 
+(:~
+This is more or less copy and paste code from the
+schema app but added some "kind of validation".
+For now I used the copy and paste method because
+we don't have a working validation concept.
+
+@author Jan Meischner
+@deprecated
+:)
+declare %plugin:provide("schema/datastore/dataobject/put")
+function _:schema-datastore-dataobject-put(
+  $Schema as element(schema), 
+  $Id as xs:string, 
+  $Context as map(*)
+) as element()* {
+  let $provider           := $Context("provider")
+  let $context            := $Context("context")
+  let $context-provider   := $Context("context-provider")
+  let $context-item-id    := $Context("context-item-id")
+  let $context-schema     := if ($context-provider) then plugin:provider-lookup($context-provider,"schema",$context)!.() else ()
+  let $context-item       := if ($context-schema) then plugin:provider-lookup($context-provider,"datastore/dataobject",$context)!.($context-item-id, $context-schema, $Context) else ()
+
+  let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+  let $old-item := plugin:provider-lookup($provider,"datastore/dataobject",$context)!.($Id, $schema, $Context)
+  let $new-item := plugin:provider-lookup($provider,"schema/instance/new/from/form",$context)!.($schema,$Context)
+
+  let $changed-date :=
+    if (
+      $new-item/amr-stand/string() = $old-item/amr-stand/string() and
+      $new-item/pbs-stand/string() = $old-item/pbs-stand/string() and
+      $new-item/ssp-stand/string() = $old-item/ssp-stand/string()
+    )
+    then
+      ui:warn(<span data-i18n="no-regelungen-data-changed"></span>)
+    else ()
+
+  let $item :=
+    if ($old-item)
+        then plugin:provider-lookup($provider,"schema/update/instance",$context)!.($new-item,$old-item, $schema, $Context)
+        else $new-item
+
+  let $item := plugin:provider-lookup($provider,"schema/datastore/dataobject/put/pre-hook",$context)!.($item, $Schema, $Context)
+
+  let $item := if ($item/@last-modified-date)
+                then $item update replace value of node ./@last-modified-date with current-dateTime()
+                else $item update insert node attribute last-modified-date {current-dateTime()} into .
+
+  let $putItem := plugin:provider-lookup($provider,"datastore/dataobject/put",$context)!.($item, $schema, $Context)
+  let $Context := map:merge(($Context, map{"context-item":$context-item,"context-provider":$context-provider,"context-item-id":$context-item-id}), map {
+                        "duplicates": "use-first"
+                    })
+  return
+      (    
+        $changed-date,
+        plugin:provider-lookup($provider,"datastore/dataobject/put/post-hook",$context)!.($item, $schema, $Context)
+        ,if (count($old-item)=0)
+          then plugin:provider-lookup($provider,"schema/render/new",$context)!.($item, $schema, $Context)
+          else plugin:provider-lookup($provider,"schema/render/update",$context)!.($item, $schema, $Context)
+   )
+ };
