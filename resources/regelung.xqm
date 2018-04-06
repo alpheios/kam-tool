@@ -176,10 +176,10 @@ as element(schema){
     </element>
 
     <element name="mapt" type="text">
-      <label>MAPT</label>
+      <label>Impact Beschreibung</label>
     </element>
 
-    <element name="impact" type="number" min="0" max="20">
+    <element name="impact" type="number" min="0" max="10">
       <label>Impactwert</label>
     </element>
     
