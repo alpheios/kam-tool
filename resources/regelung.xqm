@@ -48,10 +48,16 @@ function _:profile-dashboard-widget-regelungen($Profile as element())
 {
 <div class="col-md-6">
   {
-    let $context := map{}
+    let $context := map { }
     let $schema := plugin:provider-lookup("sanofi/regelung","schema")!.()
+    let $kv-schema := plugin:provider-lookup("sanofi/kv", "schema")!.()
+    let $kvs := plugin:provider-lookup("sanofi/kv","datastore/dataobject/all")!.($kv-schema,$context)
     let $items  := plugin:provider-lookup("sanofi/regelung","datastore/dataobject/all")!.($schema,$context)
-    let $items  := $items[*:verantwortlich=$Profile/@id/string()]
+    let $items  := 
+      for $item in $items 
+      for $kv in $kvs
+      where $kv/*:verantwortlich/string() = $Profile/@id/string() and $item/*:kv/string() = $kv/@id/string()
+      return $item
     return
         plugin:lookup("schema/render/table/page")!.($items,$schema,$context)
   }
@@ -127,7 +133,7 @@ as element(schema){
             <provider>sanofi/kv</provider>
             <key>@id</key>
             <display-name>name/string()</display-name>
-            <label>KV-Vertragspartner</label>
+            <label>KV</label>
             <class>col-md-6</class>
     </element>
 

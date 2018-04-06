@@ -55,7 +55,7 @@ as element(schema){
                     <provider>sanofi/kv</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
-                    <label>KV-Vertragspartner</label>
+                    <label>KV</label>
                     <class>col-md-6</class>
     </element>
     <element name="beginn" type="date" required="">
