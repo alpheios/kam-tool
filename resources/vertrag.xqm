@@ -72,7 +72,6 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     return $schema
 };
 
-
 declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="vertrag" domain="sanofi" provider="sanofi/vertrag">
@@ -137,7 +136,7 @@ as element(schema){
     <element name="vertragsende" type="date">
         <label>Ende</label>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
      <element name="sharepoint-link" type="text">

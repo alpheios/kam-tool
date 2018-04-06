@@ -97,7 +97,7 @@ as element(schema){
     <element name="email" type="text">
         <label>E-Mail</label>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
     <element name="einfluss" type="foreign-key" render="table">

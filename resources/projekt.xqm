@@ -69,7 +69,7 @@ as element(schema){
         <label>Fertigstellung in %</label>
     </element>
 
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
  </schema>

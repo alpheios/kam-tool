@@ -42,9 +42,8 @@ as element(schema){
       {$_:rollen ! <enum key="{.}">{.}</enum>}
       <label>Rolle</label>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
  </schema>
 };
-

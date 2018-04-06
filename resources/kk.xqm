@@ -77,7 +77,7 @@ as element(schema){
       <label>Zusammenfassung</label>
       <display-name>name/string()</display-name>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
   </schema>

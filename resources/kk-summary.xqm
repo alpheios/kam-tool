@@ -37,19 +37,19 @@ as element(schema){
       <key>@id/string()</key>
       <display-name>name/string()</display-name>
     </element>
-    <element name="ziele" type="html">
+    <element name="ziele" type="textarea">
         <label>Ziele</label>
     </element>
-    <element name="strategien" type="html">
+    <element name="strategien" type="textarea">
         <label>Strategien</label>
     </element>
-    <element name="meilensteine" type="html">
+    <element name="meilensteine" type="textarea">
         <label>Meilensteine/Schlüsselaktionen</label>
     </element>
-    <element name="anforderungen" type="html">
+    <element name="anforderungen" type="textarea">
         <label>Anforderungen</label>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
   </schema>

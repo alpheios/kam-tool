@@ -71,10 +71,10 @@ as element(schema){
       <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
       <label>Produkt</label>
     </element>
-    <element name="thema" type="html">
+    <element name="thema" type="textarea">
       <label>Thema</label>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
  </schema>

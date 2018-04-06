@@ -52,7 +52,7 @@ as element(schema){
         <provider>sanofi/kk</provider>
         <key>@id</key>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
   </schema>

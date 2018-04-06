@@ -52,21 +52,21 @@ as element(schema){
         <label>Datum</label>
     </element>
 
-    <element name="ein-blick" type="html">
+    <element name="ein-blick" type="textarea">
         <label>Unser Geschäft auf einen Blick</label>
     </element>
 
-    <element name="top-ziele" type="html">
+    <element name="top-ziele" type="textarea">
         <label>TOP Ziel beim Kunden</label>
     </element>
 
-    <element name="gute" type="html">
+    <element name="gute" type="textarea">
         <label>Was läuft gut</label>
     </element>
-    <element name="kritisch" type="html">
+    <element name="kritisch" type="textarea">
         <label>Kritische Punkte</label>
     </element>
-    <element name="position" type="html">
+    <element name="position" type="textarea">
         <label>Wie positioniert sich der Kunde?</label>
     </element>
    <element name="kk" type="foreign-key" required="">
@@ -76,7 +76,7 @@ as element(schema){
               <label>KK</label>
               <class>col-md-6</class>
    </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
  </schema>

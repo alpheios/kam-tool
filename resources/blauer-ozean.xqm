@@ -64,7 +64,7 @@ as element(schema){
               <label>KK</label>
               <class>col-md-6</class>
    </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
  </schema>
@@ -99,7 +99,7 @@ as element(schema){
               <key>@id</key>
               <display-name>name/string()</display-name>
    </element>
-    <element name="notizen" type="text">
+    <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
  </schema>
