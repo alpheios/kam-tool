@@ -9,6 +9,8 @@ import module namespace ui =" influx/ui2";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:gremien := plugin:lookup("plato/schema/enums/get")!.("Gremien");
+declare variable $_:ausbildung := plugin:lookup("plato/schema/enums/get")!.("Ausbildungen");
+declare variable $_:position := plugin:lookup("plato/schema/enums/get")!.("Positionen");
 
 declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-contacs()
@@ -60,7 +62,8 @@ as element(schema){
     <element name="abteilung" type="text">
         <label>Abteilung</label>
     </element>
-    <element name="position" type="text">
+    <element name="position" type="enum">
+        {$_:position ! <enum key="{.}">{.}</enum>}
         <label>Position</label>
     </element>
     <element name="kontaktintensitaet" type="enum">
@@ -88,17 +91,9 @@ as element(schema){
       <label>LAV</label>
       <class>col-md-6</class>
     </element>
-    <element name="ausbildung" type="text">
+    <element name="ausbildung" type="enum">
+        {$_:ausbildung ! <enum key="{.}">{.}</enum>}
         <label>Ausbildung</label>
-    </element>
-    <element name="telefon" type="text">
-        <label>Telefon</label>
-    </element>
-    <element name="email" type="text">
-        <label>E-Mail</label>
-    </element>
-    <element name="notizen" type="textarea">
-        <label>Notizen</label>
     </element>
     <element name="einfluss" type="foreign-key" render="table">
         <provider>sanofi/ansprechpartner/einfluss</provider>
