@@ -188,7 +188,7 @@ as element(schema){
         <label>SSP Quelle</label>
     </element>
 
-    <element name="mapt" type="text">
+    <element name="mapt" type="text" maxlength="180">
       <label>Impact Beschreibung</label>
     </element>
 
