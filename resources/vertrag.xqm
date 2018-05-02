@@ -180,8 +180,20 @@ function _:render-page-table($Items as element(vertrag)*, $Schema as element(sch
 let $provider := $Schema/@provider/string()
 let $context := $Context("context")
 let $kk-id := $Context("context-item")/@id/string()
-let $vertrag-130-140 := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("130a","130b","130c","140a") return $vertrag
-let $vertrag-sonstige := for $vertrag in $Items[kk//string()=$kk-id] where $vertrag/vertragsart/string()=("73","speziell") return $vertrag
+let $vertraege := 
+  for $vertrag in $Items[kk//string()=$kk-id]
+  let $products := 
+    some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
+    satisfies contains(lower-case($product/herstellername/string()), "sanofi")
+  let $is-sanofi := xs:boolean($products) 
+  group by $is-sanofi
+  return
+    <vertraege herstellername="{if ($is-sanofi) then "Sanofi" else "Sonstige"}">
+    {
+      $vertrag
+    }
+    </vertraege>
+
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
@@ -196,11 +208,11 @@ return
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>Verträge: §§130a-c und §140</h5>
+                <h5>Verträge mit Sanofi</h5>
             </div>
             <div class="ibox-content">
             {
-                let $items := $vertrag-130-140
+                let $items := $vertraege[@herstellername="Sanofi"]/*:vertrag
                 return
                 plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
              }
@@ -210,11 +222,11 @@ return
     <div class="col-md-6">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>Verträge: §73,§84 und speziell</h5>
+                <h5>Verträge anderer Hersteller</h5>
             </div>
             <div class="ibox-content">
             {
-                let $items := $vertrag-sonstige
+                let $items := $vertraege[@herstellername="Sonstige"]/*:vertrag
                 return
                 plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
              }
@@ -223,6 +235,21 @@ return
     </div>
  </div>
  };
+
+ declare function _:get-products-of-corresponding-vertrag(
+  $Vertrag as element(vertrag),
+  $Vertrag-Schema as element(schema),
+  $Context as map(*)
+) as element(produkt)* {
+  let $product-provider := "sanofi/produkt"
+  let $product-schema := plugin:provider-lookup($product-provider, "schema")!.()
+  let $product-keys := $Vertrag/*:produkt/*:key/string()
+  let $product-key-field := $Vertrag-Schema/element[@name="produkt"]/key/string()
+  let $products := 
+    for $key in $product-keys
+    return plugin:provider-lookup($product-provider, "datastore/dataobject/field")!.($product-key-field, $key, $product-schema, $Context)
+  return $products
+};
 
 (:
 Use modal buttons in table views in context "kk" instead of page buttons.
