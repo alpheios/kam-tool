@@ -19,7 +19,9 @@ function _:get-columns(
 
   return
     if (file:exists($filepath))
-    then file:read-text-lines($filepath)
+    then 
+      let $text-lines := file:read-text-lines($filepath)
+      return distinct-values($text-lines)
     else ""
 };
 
