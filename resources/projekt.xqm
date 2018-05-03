@@ -23,43 +23,6 @@ declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($
 <pre>{serialize($Item)}</pre>
 };
 
-declare %plugin:provide("schema/render/form/field/foreign-key","kk")
-function _:sanofi-projekte-kk-input($Item as element(), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("context-item")/@id/string())
-        then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$Context("context-item")/@id/string()}" type="hidden"/>
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
-};
-declare %plugin:provide("schema/render/form/field/label","kk")
-function _:sanofi-projekte-kk-input-label($Item as element(), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("context-item")/@id/string())
-        then ()
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
-};
-
-declare %plugin:provide("schema/render/form/field/foreign-key","kv")
-function _:sanofi-projekte-kv-input($Item as element(), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("context-item"))
-        then
-            <input xmlns="http://www.w3.org/1999/xhtml" name="kv" value="{$Context("context-item")/@id/string()}" type="hidden"/>
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/foreign-key")!.($Item,$Element,$Context):)
-};
-declare %plugin:provide("schema/render/form/field/label","kv")
-function _:sanofi-projekte-kv-input-label($Item as element(), $Element as element(element), $Context as map(*))
-as element()?
-{
-    if ($Context("context-item"))
-        then ()
-        else ()(:plugin:provider-lookup("influx/schema","schema/render/form/field/label")!.($Item,$Element,$Context):)
-};
-
-
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
@@ -72,7 +35,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     let $schema := $schema update insert node $elements-in-order as last into .
     return $schema};
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") function _:schema-projekt()
 as element(schema){
 <schema xmlns="" name="projekt" domain="sanofi" provider="sanofi/projekt">
     <modal>
@@ -81,14 +44,14 @@ as element(schema){
     <element name="name" type="text">
         <label>Projektname</label>
     </element>
-    <element name="kk" type="foreign-key">
+    <element name="kk" type="foreign-key" render="dropdown">
                     <provider>sanofi/kk</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
                     <label>KK-Vertragspartner</label>
                     <class>col-md-6</class>
     </element>
-    <element name="kv" type="foreign-key">
+    <element name="kv" type="foreign-key" render="dropdown">
                     <provider>sanofi/kv</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
@@ -112,6 +75,23 @@ as element(schema){
  </schema>
 };
 
+declare %plugin:provide("schema", "kk")
+function _:schema-kk() {  
+  _:schema-projekt() update (
+    replace value of node ./element[@name="kk"]/@render with "context-item"
+    ,delete node ./element[@name="kk"]/label
+    ,delete node ./element[@name="kv"]
+  )
+};
+
+declare %plugin:provide("schema", "kv")
+function _:schema-kv() {  
+  _:schema-projekt() update (
+    replace value of node ./element[@name="kv"]/@render with "context-item"
+    ,delete node ./element[@name="kv"]/label
+    ,delete node ./element[@name="kk"]
+  )
+};
 
 declare
     %plugin:provide("schema/render/new","kk")
