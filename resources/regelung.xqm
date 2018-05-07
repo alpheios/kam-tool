@@ -158,7 +158,7 @@ as element(schema){
         <class>col-md-6</class>
     </element>
 
-    <element name="amr-beschreibung" type="html">
+    <element name="amr-beschreibung" type="textarea">
       <label>AMR/Ziele Beschreibung</label>
     </element>
     <element name="amr-stand" type="date">
@@ -168,7 +168,7 @@ as element(schema){
         <label>AMR Quelle</label>
     </element>
 
-    <element name="pbs-beschreibung" type="html">
+    <element name="pbs-beschreibung" type="textarea">
       <label>PBS Beschreibung</label>
     </element>
     <element name="pbs-stand" type="date">
@@ -178,7 +178,7 @@ as element(schema){
         <label>PBS Quelle</label>
     </element>
 
-    <element name="ssp-beschreibung" type="html">
+    <element name="ssp-beschreibung" type="textarea">
       <label>SSP/OVB Beschreibung</label>
     </element>
     <element name="ssp-stand" type="date">
