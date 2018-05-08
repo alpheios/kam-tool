@@ -143,7 +143,7 @@ function _:clear-connection-to-kk(
   let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
   let $item := $item update replace value of node ./kk with ()
   let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}"></tr>
+  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
 };
 
 declare %plugin:provide("datastore/dataobject/delete", "kv")
@@ -155,7 +155,7 @@ function _:clear-connection-to-kv(
   let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
   let $item := $item update replace value of node ./kk with ()
   let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}"></tr>
+  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
 };
 
 declare %plugin:provide("datastore/dataobject/delete", "lav")
@@ -167,7 +167,7 @@ function _:clear-connection-to-lav(
   let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
   let $item := $item update replace value of node ./lav with ()
   let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}"></tr>
+  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
 };
 
 declare %plugin:provide("content/view/context","kk")

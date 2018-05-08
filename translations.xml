@@ -6,7 +6,12 @@
     <t id="import-products-success">Produkte wurden erfolgreich importiert.</t>
     <t id="import-products-failed-during-db-operation">Produkte konnten nicht in die Datenbank importiert werden.</t>
     <t id="import-products-failed-no-products">Es wurden keine zu importierenden Produkte gefunden.</t>
+    <t id="import-kenngroessen-success">Kenngrößen wurden erfolgreich importiert.</t>
+    <t id="import-kenngroessen-failed-during-db-operation">Kenngrößen konnten nicht in die Datenbank importiert werden.</t>
+    <t id="import-kenngroessen-failed-no-kenngroessen">Es wurden keine zu importierenden Kenngrößen gefunden.</t>
+    <t id="import-kenngroessen-missing-kks">Die Kenngrößen wurden erfolgreich importiert, aber einige KKs wurden nicht gefunden: </t>
     <t id="side-navigation-import-products">Produktimport</t>
+    <t id="side-navigation-import-kenngroessen">Kenngrößen Import</t>
     <t id="side-navigation-import-users">Benutzerimport</t>
     <t id="import-users-success">Benutzer wurden erfolgreich importiert.</t>
     <t id="import-users-failed-during-db-operation">Nicht alle Benutzer konnten in die Datenbank importiert werden. 
@@ -25,6 +30,11 @@
     <t id="import-products-failed-no-products">No products to import.</t>
     <t id="side-navigation-import-products">Import Products</t>
     <t id="side-navigation-import-users">Import Users</t>
+    <t id="import-kenngroessen-success">Kenngrößen successfully imported.</t>
+    <t id="import-kenngroessen-failed-during-db-operation">Import of Kenngrößen failed due to database operations.</t>
+    <t id="import-kenngroessen-failed-no-kenngroessen">No Kenngrößen to import.</t>
+    <t id="import-kenngroessen-missing-kks">Kenngrößen successfully imported but some KKs were not found: </t>
+    <t id="side-navigation-import-kenngroessen">Import Kenngrößen</t>
     <t id="import-users-success">Users successfully imported.</t>
     <t id="import-users-failed-during-db-operation">Import of users failed due to database operations.</t>
     <t id="import-users-failed-no-products">No users to import.</t>

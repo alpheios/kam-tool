@@ -14,6 +14,7 @@
     <collection name="datastore-sanofi-ansprechpartner"/>
     <collection name="datastore-sanofi-ansprechpartner-einfluss"/>
     <collection name="datastore-sanofi-key-accounter"/>
+    <collection name="datastore-sanofi-kk-kenngroessen"/>
   </setup>
   <icon>
     <div class="manage-icon">

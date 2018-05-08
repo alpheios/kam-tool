@@ -14,6 +14,14 @@ declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk 
 <pre>{serialize($Item)}</pre>
 };
 
+declare %plugin:provide("datastore/name")
+function _:datastore-name(
+    $Schema as element(schema),
+    $Context as map(*)
+) as xs:string {
+    'datastore-sanofi-kk-kenngroessen'
+};
+
 declare %plugin:provide("schema/process/table/items","kk-history")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
@@ -22,7 +30,7 @@ for $item in $Items order by $item/datum return $item
 
 declare %plugin:provide("schema/set/elements","kk-history")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $columns := ("name","datum","anzahl","marktanteil")
+    let $columns := ("name","datum","anzahl","marktanteil", "arzneimittelausgaben", "arzneimittelausgaben_marktanteil")
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
@@ -45,12 +53,19 @@ as element(schema){
     <element name="anzahl" type="number">
         <label>Mitglieder Anzahl</label>
     </element>
-    <element name="marktanteil" type="number">
-        <label>Mitglieder Marktanteil</label>
+    <element name="marktanteil" type="number" max="100">
+        <label>Mitglieder Marktanteil (%)</label>
+    </element>
+    <element name="arzneimittelausgaben" type="number">
+        <label>Arzneimittelausgaben (€)</label>
+    </element>
+    <element name="arzneimittelausgaben_marktanteil" type="number" max="100">
+        <label>Marktanteil Arzneimittelausgaben (%)</label>
     </element>
     <element name="kk" type="foreign-key" render="context-item" required="">
         <provider>sanofi/kk</provider>
         <key>@id</key>
+        <display-name>name</display-name>
     </element>
     <element name="notizen" type="textarea">
         <label>Notizen</label>

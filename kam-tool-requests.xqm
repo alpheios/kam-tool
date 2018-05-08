@@ -28,6 +28,17 @@ function _:page-product-importer() {
 };
 
 declare
+  %rest:path("admin/sanofi/import-kenngroessen")
+  %rest:GET
+  %output:method("html")
+  %output:version("5.0")
+function _:page-kenngroessen-importer() {
+  ui:page(map{
+    "title": "Kenngrößen Importieren"
+    },"sanofi/import-kenngroessen")
+};
+
+declare
   %rest:path("admin/sanofi/import-users")
   %rest:GET
   %output:method("html")

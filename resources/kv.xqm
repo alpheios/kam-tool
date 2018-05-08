@@ -99,7 +99,7 @@ return
       <div class="tabs-container">
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
               <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
           </ul>
           <div class="tab-content">

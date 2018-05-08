@@ -104,12 +104,12 @@ function _:schema-top-4-kk() {
 <schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
 
     <modal>
-        <title>KK Top 4</title>
+        <title>Management Zusammenfassung</title>
     </modal>
    <element name="kk-kam-top-4" render="table" type="foreign-key" required="">
       <provider>sanofi/kk-kam-top-4</provider>
       <key>kk</key>
-      <label>KK Top 4</label>
+      <label>Management Zusammenfassung</label>
       <display-name>string-join((name/string(), " (", datum/string(), ")"))</display-name>
    </element>
  </schema>
@@ -203,7 +203,7 @@ return
       <div class="tabs-container">
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-2">TOP 4</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
               <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>

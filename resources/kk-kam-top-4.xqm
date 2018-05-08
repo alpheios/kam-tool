@@ -42,7 +42,7 @@ declare %plugin:provide("schema") function _:schema-()
 as element(schema){
 <schema xmlns="" name="kk-kam-top-4" domain="sanofi" provider="sanofi/kk-kam-top-4">
     <modal>
-        <title>KAM TOP 4</title>
+        <title>Management Zusammenfassung</title>
     </modal>
     <element name="name" type="text">
         <label>Titel</label>
@@ -123,8 +123,10 @@ let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/
 let $kk-history-years := for $item in $kk-history-items let $datum := $item/datum/string() order by $datum return $datum
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
-let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/name/string()!('"'||.||'"')),',')
+let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||.||'"')),',')
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
+let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben/string()!('"'||.||'"')),',')
+let $arzneimittelausgaben-anteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben_marktanteil/string()!('"'||.||'"')),',')
 let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return $i/anzahl/string()!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
 let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
@@ -188,108 +190,176 @@ return
                     </div>
                 </div>
                 </div>
-                <div class="row">
-                {for $punkt in ("top-ziele","gute","kritisch","position")
-                 let $label := $Schema/*:element[@name=$punkt]/*:label/node()
-                 let $content := $Item/*[name()=$punkt]/node()
-                 return
-                <div class="col-lg-3">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>{$label}</h5>
-                        </div>
-                        <div class="ibox-content">
-                           {$content}
-                        </div>
-                    </div>
-                </div>
-                }
-          </div>
+                
           <div class="row">
-                <div class="col-lg-6">
-                  <div class="ibox float-e-margins">
-                      <div class="ibox-title">
-                          <h5>Entwicklung des Marktanteils im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
-                      </div>
-                      <div class="ibox-content">
-                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                                          <canvas id="lineChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                                                      </div>
-                           <script>//<![CDATA[
-                                    var lineData = {
-                                            labels: []]>{$marktanteil-names}<![CDATA[],
-                                            datasets: [
-
-                                                {
-                                                    label: "Entwicklung des Marktanteils",
-                                                    backgroundColor: 'rgba(26,179,148,0.5)',
-                                                    borderColor: "rgba(26,179,148,0.7)",
-                                                    pointBackgroundColor: "rgba(26,179,148,1)",
-                                                    pointBorderColor: "#fff",
-                                                    data: []]>{$marktanteil-values}<![CDATA[]
-                                                }
-                                            ]
-                                        };
-
-                                        var lineOptions = {
-                                            responsive: true
-                                        };
-
-
-                                        var ctx = document.getElementById("lineChart").getContext("2d");
-                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
-                                    //]]></script>
-                      </div>
+            <div class="col-lg-6">
+              <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                </div>
+                <div class="ibox-content">
+                  <div>
+                    <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;">  
+                    </iframe>
+                    <canvas id="lineChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;">
+                    </canvas>
                   </div>
+                  <script>//<![CDATA[
+                    var lineData = {
+                            labels: []]>{$marktanteil-names}<![CDATA[],
+                            datasets: [
+
+                                {
+                                    label: "Entwicklung der Versichertenzahl",
+                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                    borderColor: "rgba(26,179,148,0.7)",
+                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                    pointBorderColor: "#fff",
+                                    data: []]>{$mitglieder-values}<![CDATA[]
+                                }
+                            ]
+                        };
+
+                        var lineOptions = {
+                            responsive: true
+                        };
+
+
+                        var ctx = document.getElementById("lineChart2").getContext("2d");
+                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                    //]]></script>
+                </div>
               </div>
-                <div class="col-lg-6">
-                  <div class="ibox float-e-margins">
-                      <div class="ibox-title">
-                          <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
-                      </div>
-                      <div class="ibox-content">
-                          <div><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                                          <canvas id="lineChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                                                      </div>
-                           <script>//<![CDATA[
-                                    var lineData = {
-                                            labels: []]>{$marktanteil-names}<![CDATA[],
-                                            datasets: [
-
-                                                {
-                                                    label: "Entwicklung der Versichertenzahl",
-                                                    backgroundColor: 'rgba(26,179,148,0.5)',
-                                                    borderColor: "rgba(26,179,148,0.7)",
-                                                    pointBackgroundColor: "rgba(26,179,148,1)",
-                                                    pointBorderColor: "#fff",
-                                                    data: []]>{$mitglieder-values}<![CDATA[]
-                                                }
-                                            ]
-                                        };
-
-                                        var lineOptions = {
-                                            responsive: true
-                                        };
-
-
-                                        var ctx = document.getElementById("lineChart2").getContext("2d");
-                                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
-                                    //]]></script>
-                      </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                  <h5>Entwicklung des Marktanteils im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                </div>
+                <div class="ibox-content">
+                  <div>
+                    <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                    <canvas id="lineChart" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
                   </div>
+                  <script>//<![CDATA[
+                    var lineData = {
+                            labels: []]>{$marktanteil-names}<![CDATA[],
+                            datasets: [
+
+                                {
+                                    label: "Entwicklung des Marktanteils",
+                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                    borderColor: "rgba(26,179,148,0.7)",
+                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                    pointBorderColor: "#fff",
+                                    data: []]>{$marktanteil-values}<![CDATA[]
+                                }
+                            ]
+                        };
+
+                        var lineOptions = {
+                            responsive: true
+                        };
+
+
+                        var ctx = document.getElementById("lineChart").getContext("2d");
+                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                    //]]></script>
               </div>
+            </div>
+          </div></div>
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                  <h5>Entwicklung der Arzneimittelausgaben im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                </div>
+                <div class="ibox-content">
+                  <div>
+                    <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                    <canvas id="lineChart3" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+                  </div>
+                  <script>//<![CDATA[
+                    var lineData = {
+                            labels: []]>{$marktanteil-names}<![CDATA[],
+                            datasets: [
+
+                                {
+                                    label: "Entwicklung der Arzneimittelausgaben",
+                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                    borderColor: "rgba(26,179,148,0.7)",
+                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                    pointBorderColor: "#fff",
+                                    data: []]>{$arzneimittelausgaben-values}<![CDATA[]
+                                }
+                            ]
+                        };
+
+                        var lineOptions = {
+                            responsive: true
+                        };
+
+
+                        var ctx = document.getElementById("lineChart3").getContext("2d");
+                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                    //]]></script>
+                </div>
               </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                  <h5>Entwicklung des Marktanteils der Arzneimittelausgaben im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                </div>
+                <div class="ibox-content">
+                  <div>
+                    <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                    <canvas id="lineChart4" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
+                  </div>
+                  <script>//<![CDATA[
+                    var lineData = {
+                            labels: []]>{$marktanteil-names}<![CDATA[],
+                            datasets: [
+
+                                {
+                                    label: "Entwicklung des Marktanteils der Arzneimittelausgaben",
+                                    backgroundColor: 'rgba(26,179,148,0.5)',
+                                    borderColor: "rgba(26,179,148,0.7)",
+                                    pointBackgroundColor: "rgba(26,179,148,1)",
+                                    pointBorderColor: "#fff",
+                                    data: []]>{$arzneimittelausgaben-anteil-values}<![CDATA[]
+                                }
+                            ]
+                        };
+
+                        var lineOptions = {
+                            responsive: true
+                        };
+
+
+                        var ctx = document.getElementById("lineChart4").getContext("2d");
+                        new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
+
+
+                    //]]></script>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
               {
                 let $kk-history := plugin:provider-lookup("sanofi/kk", "schema", "kk-history")!.()
                 let $Context := map:put($Context, "context", "kk-history")
                 return
                   plugin:provider-lookup($kk-history-provider,"schema/render/page/form",$context)!.($kk,$kk-history,$Context)
               }
-            </div>
+          </div></div>
 };
 
 
