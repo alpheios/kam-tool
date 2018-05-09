@@ -78,9 +78,14 @@ function _:schema-render-table-prepare-rows(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/key/string(), $kk-schema, $Context)
+    let $kks :=
+      for $key in $item/kk/key/string()
+      return plugin:lookup("datastore/dataobject")!.($key, $kk-schema, $Context)
+    let $containsKKsWhichAreNotFusioniert := 
+      some $kk in $kks
+      satisfies $kk/fusioniert/string() = ""
     order by $item/vertragsbeginn
-    where not($kk/fusioniert/string() = "true")
+    where $containsKKsWhichAreNotFusioniert or not($kks)
     return $item
 };
 
@@ -95,7 +100,9 @@ function _:schema-render-table-prepare-rows-fusioniert(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/key/string(), $kk-schema, $Context)
+    let $kk := 
+      for $key in $item/kk/key/string()
+      return plugin:lookup("datastore/dataobject")!.($key, $kk-schema, $Context)
     order by $item/vertragsbeginn
     where $kk/fusioniert/string() = "true"
     return $item
