@@ -4,6 +4,7 @@ module namespace _ = "sanofi/kk";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace ui      = "influx/ui2";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -19,6 +20,14 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+declare %plugin:provide('side-navigation')
+  function _:nav-item-stammdaten-kk-fusioniert()
+  as element(xhtml:li) {
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="AAA">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
+  </li>
+};
+
 declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
   $Item as element(),
   $Schema as element(schema),
@@ -30,7 +39,19 @@ declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
-for $item in $Items order by $item/name return $item
+  for $item in $Items 
+  order by $item/name 
+  where $item/fusioniert/string() = ""
+  return $item
+};
+
+declare %plugin:provide("schema/process/table/items", "fusioniert/kk")
+function _:schema-render-table-prepare-rows-fusioniert($Items as element()*, $Schema as element(schema),$Context as map(*))
+{
+  for $item in $Items 
+  order by $item/name 
+  where $item/fusioniert/string() = "true"
+  return $item
 };
 
 declare %plugin:provide("schema/set/elements")
@@ -77,10 +98,46 @@ as element(schema){
       <label>Zusammenfassung</label>
       <display-name>name/string()</display-name>
     </element>
+    <element name="fusioniert" type="hidden"></element>
+    <element name="fusionsdatum" type="date">
+      <label>Wurde fusioniert am</label>
+    </element>
     <element name="notizen" type="textarea">
         <label>Notizen</label>
     </element>
   </schema>
+};
+
+declare %plugin:provide("schema/render/form/field/enum/datasource/filter")
+function _:filter-enum-datasource(
+    $Item as element(),
+    $Element as element(element),
+    $Context as map(*)
+) as element(enum)* {
+  if ($Element/@name/string() = "name")
+  then
+    let $provider := "sanofi/kk"
+    let $context := $Context("context")
+    let $schema := plugin:provider-lookup($provider, "schema", $context)!.()
+    let $kks := plugin:lookup("datastore/dataobject/all")!.($schema, $Context)
+    let $enums :=
+      for $enum in $Element/enum
+      let $kk := $kks[./name/string() = $enum/string()]
+      where not($kk)
+      return $enum
+    return $enums
+  else $Element/enum
+};
+
+declare %plugin:provide("schema/render/form/field/foreign-key/datasource/filter")
+function _:filter-foreign-key-datasource(
+    $Item as element(),
+    $Element as element(element),
+    $Context as map(*)
+) as element(kk) {
+  if ($Item/fusioniert/string() = "true")
+  then $Item update replace value of node ./name with "[↯] "||./name/string()
+  else $Item
 };
 
 declare %plugin:provide("schema", "kk-history")
@@ -151,6 +208,47 @@ function _:filter-kk-names(
     $names ! <enum key="{.}">{.}</enum>
 };
 
+declare %plugin:provide("schema/datastore/dataobject/put/check") 
+function _:check-for-fusionsdatum(
+  $Item as element(),
+  $Schema as element(schema),
+  $Context as map(*)
+) as xs:boolean {
+  if ($Item/fusionsdatum/string())
+  then 
+    if (xs:date($Item/fusionsdatum/string()) <= current-date())
+    then true()
+    else false()
+  else true()
+};
+
+declare %plugin:provide("schema/datastore/dataobject/put/check/fail/message")
+function _:custom-dataobject-validation-fail-message(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:div) {
+  let $checkFusionsdatum := _:check-for-fusionsdatum($Item, $Schema, $Context)
+  return
+    if ($checkFusionsdatum)
+    then
+      ui:error(<span data-i18n="custom-validation-fail-message">You tried to save invalid data.</span>)
+    else
+      ui:error(<span data-i18n="insert-future-fusionsdatum">The Fusionsdatum has to be in the past.</span>)
+};
+
+declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
+function _:insert-fusion-if-neccessary(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(*) {
+  if ($Item/fusionsdatum/string())
+    then
+      $Item update replace value of node ./fusioniert with true()
+    else
+      $Item update replace value of node ./fusioniert with ()
+};
 
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())

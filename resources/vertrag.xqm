@@ -30,6 +30,14 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+declare %plugin:provide('side-navigation')
+  function _:nav-item-stammdaten-contracts-fusioniert()
+  as element(xhtml:li) {
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-balance-scale"></i> <span class="nav-label">Verträge</span></a>
+  </li>
+};
+
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
 
 
@@ -60,7 +68,38 @@ function _:profile-dashboard-widget-vertraege($Profile as element())
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/vertragsbeginn return $item};
+function _:schema-render-table-prepare-rows(
+  $Items as element()*,
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  let $context := $Context("context")
+  let $kk-provider := "sanofi/kk"
+  let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
+  return
+    for $item in $Items
+    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/key/string(), $kk-schema, $Context)
+    order by $item/vertragsbeginn
+    where not($kk/fusioniert/string() = "true")
+    return $item
+};
+
+declare %plugin:provide("schema/process/table/items", "fusioniert/vertrag")
+function _:schema-render-table-prepare-rows-fusioniert(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  let $context := $Context("context")
+  let $kk-provider := "sanofi/kk"
+  let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
+  return
+    for $item in $Items
+    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/key/string(), $kk-schema, $Context)
+    order by $item/vertragsbeginn
+    where $kk/fusioniert/string() = "true"
+    return $item
+};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*))

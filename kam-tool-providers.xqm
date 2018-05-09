@@ -19,6 +19,14 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+declare %plugin:provide('side-navigation')
+  function _:nav-item-stammdaten-fusioniert()
+  as element(xhtml:li) {
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-children="/schema/list/items/fusioniert" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items"><i class="fa fa-compress"></i> <span class="nav-label">Fusionierte Kassen</span><span class="fa arrow"></span></a>
+  </li>
+};
+
 declare %plugin:provide('i18n/translations')
 function _:translations(){doc('translations.xml')};
 

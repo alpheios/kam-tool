@@ -20,6 +20,7 @@
     <t id="side-navigation-choose-values">Auswahlwerte festlegen</t>
     <t id="side-navigation-choose-columns">Spalten festlegen</t>
     <t id="no-regelungen-data-changed">Es wurde kein Stand angepasst, haben Sie vielleicht etwas vergessen?</t>
+    <t id="insert-future-fusionsdatum">Das Fusionsdatum muss in der Vergangenheit liegen.</t>
   </lang>
   <lang id="en_US">
     <t id="drop-products-csv-here">Drop products.csv here</t>
@@ -41,5 +42,6 @@
     <t id="side-navigation-choose-values">Choose Select Values</t>
     <t id="side-navigation-choose-columns">Choose Columns for list views</t>
     <t id="no-regelungen-data-changed">No date changed, did you miss something?</t>
+    <t id="insert-future-fusionsdatum">The Fusionsdatum has to be in the past.</t>
   </lang>
 </translations>
