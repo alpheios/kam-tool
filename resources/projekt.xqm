@@ -175,8 +175,8 @@ as element(xhtml:div)
           { if ($projekte) then <div>
           <script class="rxq-js-eval" type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
             <script class="rxq-js-eval" type="text/javascript">//<![CDATA[
-              google.charts.load('current', {'packages':['gantt']});
-              google.charts.setOnLoadCallback(drawChart);
+              google.charts.load('current', {'packages':['gantt'], callback: init});
+              // google.charts.setOnLoadCallback(drawChart);
 
               function drawChart() {
 
@@ -199,21 +199,28 @@ as element(xhtml:div)
 
                 data.addRows([
                 ]]>{
-                    string-join($projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date('||translate(./*:beginn,'-',',')||'),new Date('||translate(./*:ende,'-',',')||'), null, '||./*:fertigstellung||', null]'),",")
+                    string-join($projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date("'||./*:beginn/string()||'"),new Date("'||./*:ende/string()||'"), null, '||./*:fertigstellung||', null]'),",")
                 }<![CDATA[
 
                 ]);
 
-
                 var options = {
-                    fontName : "open sans"
-                    ,height : 640
-                    ,width : 420
+                    fontName : "open sans",
+                    height: ]]>{count($projekte)*55 + 25}<![CDATA[
                 };
 
                 var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
 
                 chart.draw(data, options);
+              }
+
+              function init() {
+                if ($('#tab-4').hasClass('active')) {
+                    drawChart();
+                }
+                else {
+                    $("a[href='#tab-4']").one('shown.bs.tab', drawChart);
+                }
               }
             ]]></script>
             </div> else ()}
