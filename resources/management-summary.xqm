@@ -13,6 +13,9 @@ declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
     %plugin:provide("schema/render/delete","kk")
+    %plugin:provide("schema/render/new","kv")
+    %plugin:provide("schema/render/update","kv")
+    %plugin:provide("schema/render/delete","kv")
 function _:management-summary-render-new(
   $Item as element(management-summary), 
   $Schema as element(schema), 
@@ -48,7 +51,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     return $schema
 };
 
-declare %plugin:provide("schema") function _:schema-()
+declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="management-summary" domain="sanofi" provider="sanofi/management-summary">
     <modal>
@@ -79,41 +82,33 @@ as element(schema){
     <element name="position" type="textarea">
         <label>Wie positioniert sich der Kunde?</label>
     </element>
-   <element name="kk" type="foreign-key" required="">
-              <provider>sanofi/kk</provider>
-              <key>@id</key>
-              <display-name>name/string()</display-name>
-              <label>KK</label>
-              <class>col-md-6</class>
-   </element>
     <element name="notizen" type="textarea">
          <label>Notizen</label>
      </element>
  </schema>
 };
 
-
-
-(:
-
- Item im Kontext einer "KK" anzeigen/bearbeiten   #####################################
-
-:)
-declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-management-summary-kk-input($Item as element(management-summary), $Element as element(element), $Context as map(*))
-as element()?
-{
-    let $kk-id := $Context("context-item")/@id/string()
-    return <input xmlns="http://www.w3.org/1999/xhtml" name="kk" value="{$kk-id}" type="hidden"/>
+declare %plugin:provide("schema", "kk-top-4")
+function _:schema-kk-top-4() as element(schema) {
+  let $schema := _:schema-default()
+  return $schema update insert node 
+    <element name="kk" type="foreign-key" render="context-item" required="">
+      <provider>sanofi/kk</provider>
+      <key>@id</key>
+      <display-name>name/string()</display-name>
+    </element> into .
 };
 
-declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-management-summary-kk-input-label($Item as element(management-summary), $Element as element(element), $Context as map(*))
-as element()?
-{
-    (: Label für Feld "kk" löschen :)
+declare %plugin:provide("schema", "kv-top-4")
+function _:schema-kv-top-4() as element(schema) {
+  let $schema := _:schema-default()
+  return $schema update insert node 
+    <element name="kv" type="foreign-key" render="context-item" required="">
+      <provider>sanofi/kv</provider>
+      <key>@id</key>
+      <display-name>name/string()</display-name>
+    </element> into .
 };
-
 
 declare %plugin:provide("content/view/context","kk")
 function _:content-view($Item as element(management-summary)?, $Schema as element(schema), $Context as map(*)){
@@ -324,6 +319,41 @@ return
                   plugin:provider-lookup($kk-history-provider,"schema/render/page/form",$context)!.($kk,$kk-history,$Context)
               }
           </div></div>
+};
+
+declare %plugin:provide("content/view/context","kv")
+function _:content-view-for-kv(
+  $Item as element(management-summary)?, 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+  let $context := $Context("context")
+  let $kv := $Context("context-item")
+  let $kv-history-provider := "sanofi/kv-top-4"
+  return
+    <div xmlns="http://www.w3.org/1999/xhtml" id="kv-top-4" data-replace="#kv-top-4">
+      <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <div class="ibox float-e-margins">
+          {
+            let $kv-top-4 := plugin:provider-lookup("sanofi/kv", "schema", "kv-top-4")!.()
+            let $Context := map:put($Context, "context", "kv-top-4")
+            return
+              plugin:provider-lookup($kv-history-provider,"schema/render/page/form",$context)!.($kv,$kv-top-4,$Context)
+          }
+          </div>
+        </div>
+      </div>                
+      <div>
+      {
+        let $kv-history := plugin:provider-lookup("sanofi/kv", "schema", "kv-history")!.()
+        let $Context := map:put($Context, "context", "kv-history")
+        return
+          plugin:provider-lookup($kv-history-provider,"schema/render/page/form",$context)!.($kv,$kv-history,$Context)
+      }
+      </div>
+    </div>
 };
 
 

@@ -69,6 +69,38 @@ as element(schema){
 </schema>
 };
 
+declare %plugin:provide("schema", "kv-top-4")
+function _:schema-top-4-kv() {
+<schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
+
+    <modal>
+        <title>Management Zusammenfassung</title>
+    </modal>
+   <element name="management-summary" render="table" type="foreign-key" required="">
+      <provider>sanofi/management-summary</provider>
+      <key>kv</key>
+      <label>Management Zusammenfassung</label>
+      <display-name>string-join((name/string(), " (", datum/string(), ")"))</display-name>
+   </element>
+ </schema>
+};
+
+declare %plugin:provide("schema", "kv-history")
+function _:schema-history-kk() {
+<schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
+
+    <modal>
+        <title>KV Kenngrößen</title>
+    </modal>
+   <element name="kv-kenngroessen" render="table" type="foreign-key" required="">
+      <provider>sanofi/kv-top-4</provider>
+      <key>kv</key>
+      <label>KV Kenngrößen</label>
+      <display-name>{(: Todo: Add display name:)}</display-name>
+   </element>
+ </schema>
+};
+
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kv($Profile as element())
 {
@@ -83,6 +115,12 @@ function _:profile-dashboard-widget-kv($Profile as element())
          {plugin:lookup("schema/render/table/page")!.($items,$schema,$context)}
         </div>
         else ()
+};
+
+declare %plugin:provide("schema/render/page/form/buttons", "kv-history")
+        %plugin:provide("schema/render/page/form/buttons", "kv-top-4")
+function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*)) {
+()
 };
 
 declare %plugin:provide("schema/ui/page/content","kv")
@@ -110,7 +148,18 @@ return
               </div>
               <div id="tab-2" class="tab-pane">
                   <div class="panel-body">
-                    {plugin:provider-lookup("sanofi/views/kam-top-4-kv","content/view")!.($Item,$Schema,$Context)}
+                  {
+                      let $provider := "sanofi/management-summary"
+                      let $schema := plugin:provider-lookup($provider,"schema", "kv-top-4")!.()
+                      let $items :=
+                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                          let $date := $item/@last-modified-date
+                          order by $date descending
+                          return $item
+                      let $item-latest := $items[1]
+                      return
+                          plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                  }
                   </div>
               </div>
               <div id="tab-3" class="tab-pane">

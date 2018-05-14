@@ -18,6 +18,7 @@ import module namespace management-summary      = "sanofi/management-summary" at
 import module namespace news                    = "sanofi/news" at "resources/news.xqm";
 
 import module namespace kk-top-4                = "sanofi/kk-top-4" at "resources/kk-top-4.xqm";
+import module namespace kv-top-4                = "sanofi/kv-top-4" at "resources/kv-top-4.xqm";
 
 import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
 import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";

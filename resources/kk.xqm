@@ -145,12 +145,12 @@ function _:schema-history-kk() {
 <schema xmlns="" name="kk" domain="sanofi" provider="sanofi/kk">
 
     <modal>
-        <title>KK Versicherte</title>
+        <title>KK Kenngrößen</title>
     </modal>
-   <element name="kk-versicherte" render="table" type="foreign-key" required="">
+   <element name="kk-kenngroessen" render="table" type="foreign-key" required="">
       <provider>sanofi/kk-top-4</provider>
       <key>kk</key>
-      <label>KK Versicherte</label>
+      <label>KK Kenngrößen</label>
       <display-name>string-join((datum/string(), ": ", anzahl/string(), " (", marktanteil/string(), ")"))</display-name>
    </element>
  </schema>
@@ -318,7 +318,7 @@ return
                   <div class="panel-body">
                   {
                       let $provider := "sanofi/management-summary"
-                      let $schema := plugin:provider-lookup($provider,"schema")!.()
+                      let $schema := plugin:provider-lookup($provider,"schema", "kk-top-4")!.()
                       let $items :=
                           for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
                           let $date := $item/@last-modified-date
