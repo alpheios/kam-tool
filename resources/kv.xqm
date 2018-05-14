@@ -85,6 +85,23 @@ function _:schema-top-4-kv() {
  </schema>
 };
 
+declare %plugin:provide("schema", "kv-arztzahlen")
+function _:schema-arztzahlen-kv() {
+<schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
+
+    <modal>
+        <title>Arztanzahl</title>
+    </modal>
+   <element name="arztzahl" render="table" type="foreign-key" required="">
+      <provider>sanofi/kv-arztzahlen</provider>
+      <key>kv</key>
+      <label>Arztanzahl</label>
+      <display-name>string-join((name/string(), " (", datum/string(), ")"))</display-name>
+   </element>
+ </schema>
+};
+
+
 declare %plugin:provide("schema", "kv-history")
 function _:schema-history-kk() {
 <schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
@@ -119,6 +136,7 @@ function _:profile-dashboard-widget-kv($Profile as element())
 
 declare %plugin:provide("schema/render/page/form/buttons", "kv-history")
         %plugin:provide("schema/render/page/form/buttons", "kv-top-4")
+        %plugin:provide("schema/render/page/form/buttons", "kv-arztzahlen")
 function _:render-no-form-buttons($Item as element(), $Schema as element(schema), $Context as map(*)) {
 ()
 };

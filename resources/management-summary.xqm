@@ -329,7 +329,8 @@ function _:content-view-for-kv(
 ) {
   let $context := $Context("context")
   let $kv := $Context("context-item")
-  let $kv-history-provider := "sanofi/kv-top-4"
+  let $kv-top4-provider := "sanofi/kv-top-4"
+  let $kv-arztzahlen-provider := "sanofi/kv-arztzahlen"
   return
     <div xmlns="http://www.w3.org/1999/xhtml" id="kv-top-4" data-replace="#kv-top-4">
       <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
@@ -340,17 +341,51 @@ function _:content-view-for-kv(
             let $kv-top-4 := plugin:provider-lookup("sanofi/kv", "schema", "kv-top-4")!.()
             let $Context := map:put($Context, "context", "kv-top-4")
             return
-              plugin:provider-lookup($kv-history-provider,"schema/render/page/form",$context)!.($kv,$kv-top-4,$Context)
+              plugin:provider-lookup($kv-top4-provider,"schema/render/page/form",$context)!.($kv,$kv-top-4,$Context)
           }
           </div>
         </div>
-      </div>                
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <div class="ibox float-e-margins">
+          {
+            let $ap-schema := plugin:provider-lookup("sanofi/ansprechpartner", "schema")!.()
+            let $kv-ap := plugin:lookup("datastore/dataobject/field")!.("kv", $kv/@id/string(), $ap-schema, $Context)
+            let $trace := trace($kv-ap[1]/*:position)
+            let $Context := map:put($Context, "context", "kv-top-4")
+            return
+              <div>
+                <label class="control-label">Vorstände</label>
+                <ul>
+                  {
+                    for $vorstand in $kv-ap[*:position = "Vorstand"]
+                    return <li><a href="{$global:servlet-prefix}/schema/form/page/{$vorstand/@id/string()}?provider=sanofi/ansprechpartner&amp;context=stammdaten/ansprechpartner&amp;context-item-id={$kv/@id/string()}&amp;context-provider=sanofi/kv">{$vorstand/*:vorname/string()|| " " || $vorstand/*:name/string()}</a></li>
+                  }
+                </ul>
+              </div>
+          }
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 col-md-12">
+          <div class="ibox float-e-margins">
+          {
+            let $kv-arztzahlen := plugin:provider-lookup("sanofi/kv", "schema", "kv-arztzahlen")!.()
+            let $Context := map:put($Context, "context", "kv-arztzahlen")
+            return
+              plugin:provider-lookup($kv-arztzahlen-provider,"schema/render/page/form",$context)!.($kv,$kv-arztzahlen,$Context)
+          }
+          </div>
+        </div>
+      </div>               
       <div>
       {
         let $kv-history := plugin:provider-lookup("sanofi/kv", "schema", "kv-history")!.()
         let $Context := map:put($Context, "context", "kv-history")
         return
-          plugin:provider-lookup($kv-history-provider,"schema/render/page/form",$context)!.($kv,$kv-history,$Context)
+          plugin:provider-lookup($kv-top4-provider,"schema/render/page/form",$context)!.($kv,$kv-history,$Context)
       }
       </div>
     </div>

@@ -40,7 +40,10 @@ function _:schema-render-table-prepare-rows(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+    let $kk := 
+      if ($item/kk/string())
+      then plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+      else ()
     order by $item/name
     where not($kk/fusioniert/string() = "true")
     return $item
@@ -57,7 +60,10 @@ function _:schema-render-table-prepare-rows-fusioniert(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+    let $kk := 
+      if ($item/kk/string())
+      then plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+      else ()
     order by $item/name
     where $kk/fusioniert/string() = "true"
     return $item

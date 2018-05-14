@@ -16,6 +16,7 @@
     <collection name="datastore-sanofi-key-accounter"/>
     <collection name="datastore-sanofi-kk-kenngroessen"/>
     <collection name="datastore-sanofi-kv-kenngroessen"/>
+    <collection name="datastore-sanofi-kv-arztzahlen"/>
   </setup>
   <icon>
     <div class="manage-icon">
