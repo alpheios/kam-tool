@@ -92,12 +92,12 @@ as element(schema){
       <label>Ansprechpartner</label>
       <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
-    <element name="zusammenfassung" type="foreign-key" render="table">
+    <!--<element name="zusammenfassung" type="foreign-key" render="table">
       <provider>sanofi/kk-summary</provider>
       <key>kk</key>
       <label>Zusammenfassung</label>
       <display-name>name/string()</display-name>
-    </element>
+    </element>-->
     <element name="fusioniert" type="hidden"></element>
     <element name="fusionsdatum" type="date">
       <label>Wurde fusioniert am</label>
@@ -148,7 +148,7 @@ function _:schema-history-kk() {
         <title>KK Versicherte</title>
     </modal>
    <element name="kk-versicherte" render="table" type="foreign-key" required="">
-      <provider>sanofi/kk-history-mitglieder</provider>
+      <provider>sanofi/kk-top-4</provider>
       <key>kk</key>
       <label>KK Versicherte</label>
       <display-name>string-join((datum/string(), ": ", anzahl/string(), " (", marktanteil/string(), ")"))</display-name>
@@ -163,8 +163,8 @@ function _:schema-top-4-kk() {
     <modal>
         <title>Management Zusammenfassung</title>
     </modal>
-   <element name="kk-kam-top-4" render="table" type="foreign-key" required="">
-      <provider>sanofi/kk-kam-top-4</provider>
+   <element name="management-summary" render="table" type="foreign-key" required="">
+      <provider>sanofi/management-summary</provider>
       <key>kk</key>
       <label>Management Zusammenfassung</label>
       <display-name>string-join((name/string(), " (", datum/string(), ")"))</display-name>
@@ -317,7 +317,7 @@ return
               <div id="tab-2" class="tab-pane">
                   <div class="panel-body">
                   {
-                      let $provider := "sanofi/kk-kam-top-4"
+                      let $provider := "sanofi/management-summary"
                       let $schema := plugin:provider-lookup($provider,"schema")!.()
                       let $items :=
                           for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)

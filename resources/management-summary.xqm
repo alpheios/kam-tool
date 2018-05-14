@@ -1,4 +1,4 @@
-module namespace _ = "sanofi/kk-kam-top-4";
+module namespace _ = "sanofi/management-summary";
 
 (: import repo modules :)
 import module namespace global	= "influx/global";
@@ -13,9 +13,11 @@ declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
     %plugin:provide("schema/render/delete","kk")
-function _:kk-kam-top-4-render-new($Item as element(kk-kam-top-4), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
+function _:management-summary-render-new(
+  $Item as element(management-summary), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:div) {
     let $provider := $Context("provider")
     let $context := $Context("context")
     let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
@@ -26,7 +28,15 @@ as element(xhtml:div)
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/datum return $item};
+function _:schema-render-table-prepare-rows(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  for $item in $Items 
+  order by $item/datum 
+  return $item
+};
 
 (: provide for columns :)
 declare %plugin:provide("schema/set/elements")
@@ -40,7 +50,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
 
 declare %plugin:provide("schema") function _:schema-()
 as element(schema){
-<schema xmlns="" name="kk-kam-top-4" domain="sanofi" provider="sanofi/kk-kam-top-4">
+<schema xmlns="" name="management-summary" domain="sanofi" provider="sanofi/management-summary">
     <modal>
         <title>Management Zusammenfassung</title>
     </modal>
@@ -90,7 +100,7 @@ as element(schema){
 
 :)
 declare %plugin:provide("schema/render/form/field/foreign-key","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-kk-kam-top-4-kk-input($Item as element(kk-kam-top-4), $Element as element(element), $Context as map(*))
+function _:sanofi-management-summary-kk-input($Item as element(management-summary), $Element as element(element), $Context as map(*))
 as element()?
 {
     let $kk-id := $Context("context-item")/@id/string()
@@ -98,7 +108,7 @@ as element()?
 };
 
 declare %plugin:provide("schema/render/form/field/label","kk") (: Achtung: "kk" ist hier nicht der Kontext, sondern der Feldname! :)
-function _:sanofi-kk-kam-top-4-kk-input-label($Item as element(kk-kam-top-4), $Element as element(element), $Context as map(*))
+function _:sanofi-management-summary-kk-input-label($Item as element(management-summary), $Element as element(element), $Context as map(*))
 as element()?
 {
     (: Label für Feld "kk" löschen :)
@@ -106,18 +116,18 @@ as element()?
 
 
 declare %plugin:provide("content/view/context","kk")
-function _:content-view($Item as element(kk-kam-top-4)?, $Schema as element(schema), $Context as map(*)){
+function _:content-view($Item as element(management-summary)?, $Schema as element(schema), $Context as map(*)){
 let $id := $Item/@id/string()
 let $kk := $Context("context-item")
 let $kk-id := $kk/@id/string()
 let $kk-name := $kk/name/string()
 let $context := $Context("context")
 let $context-provider := $Context("context-provider")
-let $provider := "sanofi/kk-kam-top-4"
+let $provider := "sanofi/management-summary"
 let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
 let $items := plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)[kk=$kk-id]
 let $name := $Item/name/string()
-let $kk-history-provider := "sanofi/kk-history-mitglieder"
+let $kk-history-provider := "sanofi/kk-top-4"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/field",$context)!.("kk", $kk-id, $kk-history-schema, $Context)
 let $kk-history-years := for $item in $kk-history-items let $datum := $item/datum/string() order by $datum return $datum
@@ -144,53 +154,7 @@ return
                       }
                   </div>
               </div>
-          </div>
-          <div class="row">
-                <div class="col-lg-6">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Marktanteil: {$latest-marktanteil}%</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <div>
-                                <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
-                                <canvas id="doughnutChart2" height="602" width="1294" style="display: block; width: 647px; height: 301px;"></canvas>
-                            </div>
-                             <script>//<![CDATA[
-                                      var doughnutData = {
-                                          labels: []]>{'"'||$kk-name||'","Andere KKen"'} <![CDATA[],
-                                          datasets: [{
-                                              data: []]>{$latest-marktanteil},{$rest-marktanteil} <![CDATA[],
-                                              backgroundColor: []]>{'"rgba(26,179,148,1)","rgba(26,179,148,0.5)"'} <![CDATA[]
-                                          }]
-                                      } ;
-
-
-                                      var doughnutOptions = {
-                                          responsive: true
-                                      };
-
-
-                                      var ctx4 = document.getElementById("doughnutChart2").getContext("2d");
-                                      new Chart(ctx4, {type: 'doughnut', data: doughnutData, options:doughnutOptions});
-
-
-                                      //]]></script>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Auf einen Blick</h5>
-                        </div>
-                        <div class="ibox-content">
-                           {$Item/*:ein-blick}
-                        </div>
-                    </div>
-                </div>
-                </div>
-                
+          </div>                
           <div class="row">
             <div class="col-lg-6">
               <div class="ibox float-e-margins">

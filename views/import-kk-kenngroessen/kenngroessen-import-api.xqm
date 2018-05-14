@@ -96,7 +96,7 @@ function _:api-import-kenngroessen() {
 declare function _:import-kenngroessen(
   $Kenngroessen as element(record)*
 ) as xs:boolean {
-  let $provider := "sanofi/kk-history-mitglieder"
+  let $provider := "sanofi/kk-top-4"
   let $schema := plugin:provider-lookup($provider,"schema")!.()
   let $kenngroessen :=
     for $kenngroesse in $Kenngroessen
@@ -142,7 +142,7 @@ declare function _:check-if-data-for-date-allready-exist(
   $KK as xs:string,
   $Date as xs:string
 ) as xs:boolean {
-  let $history-provider := "sanofi/kk-history-mitglieder"
+  let $history-provider := "sanofi/kk-top-4"
   let $context := "kenngroessen-import"
   let $context-map := map {
     "context": $context

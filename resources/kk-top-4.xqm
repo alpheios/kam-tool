@@ -1,4 +1,4 @@
-module namespace _ = "sanofi/kk-history-mitglieder";
+module namespace _ = "sanofi/kk-top-4";
 
 (: import repo modules :)
 import module namespace global	= "influx/global";
@@ -40,7 +40,7 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){
-<schema xmlns="" name="kk-history-mitglieder" domain="sanofi" provider="sanofi/kk-history-mitglieder">
+<schema xmlns="" name="kk-top-4" domain="sanofi" provider="sanofi/kk-top-4">
     <modal>
         <title>KK Versicherte</title>
     </modal>
