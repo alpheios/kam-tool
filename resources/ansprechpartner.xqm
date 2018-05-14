@@ -202,11 +202,15 @@ function _:clear-connection-to-lav(
 };
 
 declare %plugin:provide("content/view/context","kk")
-function _:sanofi-ansprechpartner-kk($Items as element(ansprechpartner)* ,$Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
+function _:sanofi-ansprechpartner-kk(
+  $Items as element(ansprechpartner)*,
+  $Schema as element(schema),
+  $Context as map(*)
+) as element(xhtml:div) {
   let $provider := $Context("provider")
   let $context := $Context("context")
+  let $kk-id := $Context("context-item")/@id/string()
+  let $ap-items := $Items[./kk = $kk-id]
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Items[1],$Schema,$Context)
   let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
   return
@@ -240,7 +244,7 @@ as element(xhtml:div)
                         let $einfluss-schema := plugin:provider-lookup("sanofi/ansprechpartner/einfluss","schema")!.()
                         let $produkt-schema  := plugin:provider-lookup("sanofi/produkt","schema")!.()
                         return
-                            for $item in $Items
+                            for $item in $ap-items
                             let $id := $item/@id/string()
                             let $name := $item/*:name/string()
                             let $einfluss-id := $item/*:einfluss/string()

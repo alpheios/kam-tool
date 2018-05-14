@@ -131,10 +131,10 @@ function _:filter-enum-datasource(
 
 declare %plugin:provide("schema/render/form/field/foreign-key/datasource/filter")
 function _:filter-foreign-key-datasource(
-    $Item as element(),
+    $Item as element()?,
     $Element as element(element),
     $Context as map(*)
-) as element(kk) {
+) as element(kk)? {
   if ($Item/fusioniert/string() = "true")
   then $Item update replace value of node ./name with "[↯] "||./name/string()
   else $Item
@@ -292,6 +292,7 @@ let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
 let $context := $Context("context")
+(: ToDo: Was sollen die 2 Zeilen? :)
 let $Context := map:remove($Context,"context")
 let $Context := map:put($Context,"context",$context)
 let $Context := if (map:contains($Context,"kk")) then $Context else map:put($Context,"kk",$Item/@id/string())
