@@ -231,6 +231,18 @@ function _:sanofi-ansprechpartner-kv(
     _:render-unternehmensstruktur($ap-items, $Items[1]/@id/string(), "kv")
 };
 
+declare %plugin:provide("content/view/context","lav")
+function _:sanofi-ansprechpartner-lav(
+  $Items as element(ansprechpartner)*,
+  $Schema as element(schema),
+  $Context as map(*)
+) as element(xhtml:div) {
+  let $lav-id := $Context("context-item")/@id/string()
+  let $ap-items := $Items[./lav = $lav-id]
+  return
+    _:render-unternehmensstruktur($ap-items, $Items[1]/@id/string(), "lav")
+};
+
 declare function _:render-unternehmensstruktur(
   $Ansprechpartner as element(ansprechpartner)*,
   $Context-Item-Id as xs:string,

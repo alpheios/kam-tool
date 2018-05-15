@@ -14,17 +14,17 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-lav()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/lav&amp;provider=sanofi/lav"><i class="fa fa-ambulance"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav"><i class="fa fa-ambulance"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
   </li>
 };
 
-declare %plugin:provide("schema/process/table/items","stammdaten/lav")
+declare %plugin:provide("schema/process/table/items","lav")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
 for $item in $Items order by $item/land return $item
 };
 
-declare %plugin:provide("schema/set/elements","stammdaten/lav")
+declare %plugin:provide("schema/set/elements","lav")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
     let $columns := plugin:lookup("plato/schema/columns/get")!.("lav")
     let $schema := $Schema update delete node ./*:element
@@ -80,8 +80,8 @@ return
       <div class="tabs-container">
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
+              <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
@@ -89,28 +89,27 @@ return
                      {plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context)}
                   </div>
               </div>
-              <div id="tab-4" class="tab-pane">
+              <div id="tab-5" class="tab-pane">
                   <div class="panel-body">
                     {
-                        let $provider := "sanofi/projekt"
-                        let $context := "kk"
+                        let $provider := "sanofi/vertrag"
+                        let $context := "lav"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                         let $items :=
                             for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
-                        let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
                     }
                   </div>
               </div>
-              <div id="tab-5" class="tab-pane">
+              <div id="tab-6" class="tab-pane">
                   <div class="panel-body">
                     {
-                        let $provider := "sanofi/vertrag"
-                        let $context := "kk"
+                        let $provider := "sanofi/ansprechpartner"
+                        let $context := "lav"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                         let $items :=
                             for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)

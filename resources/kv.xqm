@@ -25,13 +25,13 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 };
 
 
-declare %plugin:provide("schema/process/table/items","stammdaten/kv")
+declare %plugin:provide("schema/process/table/items","kv")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
 for $item in $Items order by $item/land return $item
 };
 
-declare %plugin:provide("schema/set/elements","stammdaten/kv")
+declare %plugin:provide("schema/set/elements","kv")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
     let $columns := plugin:lookup("plato/schema/columns/get")!.("kv")
     let $schema := $Schema update delete node ./*:element

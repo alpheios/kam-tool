@@ -100,7 +100,7 @@ as element(schema){
                     <provider>sanofi/kv</provider>
                     <key>@id</key>
                     <display-name>name/string()</display-name>
-                    <label>KV</label>
+                    <label>KV-Vertragspartner</label>
                     <class>col-md-6</class>
     </element>
     <element name="beginn" type="date" required="">
@@ -138,6 +138,7 @@ function _:schema-kv() {
   )
 };
 
+
 declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
@@ -167,7 +168,6 @@ as element(xhtml:div)
   let $context := map{"context":"sanofi/projekt"}
   let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
   let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
-  let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
   let $kk := $Context("context-item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
@@ -187,7 +187,6 @@ as element(xhtml:div)
   let $context := map{"context":"sanofi/projekt"}
   let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
   let $kv-schema := plugin:provider-lookup($context-provider,"schema")!.()
-  let $kvs := plugin:provider-lookup($context-provider,"datastore/dataobject/all")!.($kv-schema,$context)
   let $kv := $Context("context-item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kv=$kv-id]
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
@@ -195,6 +194,25 @@ as element(xhtml:div)
 
   return
     _:render-project-view($projekte, $kv, $add-button)
+};
+
+declare %plugin:provide("content/view/context","lav")
+function _:sanofi-projekte-lav($Item as element(projekt)? ,$Schema as element(schema), $Context)
+as element(xhtml:div)
+{
+  let $context-provider := "sanofi/lav" 
+  let $lav-id := $Context("context-item")/@id/string()
+  let $provider := "sanofi/projekt"
+  let $context := map{"context":"sanofi/projekt"}
+  let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
+  let $lav-schema := plugin:provider-lookup($context-provider,"schema")!.()
+  let $lav := $Context("context-item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
+  let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[lav=$lav-id]
+  let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
+
+  return
+    _:render-project-view($projekte, $lav, $add-button)
 };
 
 declare function _:render-project-view(

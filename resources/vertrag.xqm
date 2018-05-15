@@ -199,6 +199,22 @@ function _:schema-stammdaten-kk() {
   )
 };
 
+declare %plugin:provide("schema", "kv")
+function _:schema-stammdaten-kv() {
+  _:schema-default() update (
+    insert node attribute render {"context-item"} into ./element[@name="kv"]
+    ,delete node ./element[@name="kv"]/label
+  )
+};
+
+declare %plugin:provide("schema", "lav")
+function _:schema-stammdaten-lav() {
+  _:schema-default() update (
+    insert node attribute render {"context-item"} into ./element[@name="lav"]
+    ,delete node ./element[@name="lav"]/label
+  )
+};
+
 declare
     %plugin:provide("schema/render/new","kk")
     %plugin:provide("schema/render/update","kk")
@@ -253,6 +269,31 @@ function _:render-page-kv-table($Items as element(vertrag)*, $Schema as element(
   let $kv-id := $Context("context-item")/@id/string()
   let $vertraege := 
     for $vertrag in $Items[kv//string()=$kv-id]
+    let $products := 
+      some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
+      satisfies contains(lower-case($product/herstellername/string()), "sanofi")
+    let $is-sanofi := xs:boolean($products) 
+    group by $is-sanofi
+    return
+      <vertraege herstellername="{if ($is-sanofi) then "Sanofi" else "Sonstige"}">
+      {
+        $vertrag
+      }
+      </vertraege>
+
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
+  return
+    _:render-vertraege($vertraege, $Schema, $Context, $add-button)
+ };
+
+ declare %plugin:provide("content/view/context","lav")
+function _:render-page-lav-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  let $provider := $Schema/@provider/string()
+  let $context := $Context("context")
+  let $lav-id := $Context("context-item")/@id/string()
+  let $vertraege := 
+    for $vertrag in $Items[lav//string()=$lav-id]
     let $products := 
       some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
       satisfies contains(lower-case($product/herstellername/string()), "sanofi")
