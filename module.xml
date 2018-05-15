@@ -17,6 +17,17 @@
     <collection name="datastore-sanofi-kk-kenngroessen"/>
     <collection name="datastore-sanofi-kv-kenngroessen"/>
     <collection name="datastore-sanofi-kv-arztzahlen"/>
+    <collection name="datastore-sanofi-management-summary"/>
+    <collection name="datastore-sanofi-blauer-ozean"/>
+    <collection name="datastore-sanofi-kk-top-4"/>
+    <collection name="datastore-sanofi-kk"/>
+    <collection name="datastore-sanofi-kv"/>
+    <collection name="datastore-sanofi-kv-top-4"/>
+    <collection name="datastore-sanofi-lav"/>
+    <collection name="datastore-sanofi-news"/>
+    <collection name="datastore-sanofi-projekt"/>
+    <collection name="datastore-sanofi-regelung"/>
+    <collection name="datastore-sanofi-vertrag"/>
   </setup>
   <icon>
     <div class="manage-icon">
