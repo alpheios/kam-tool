@@ -139,20 +139,20 @@ declare
 function _:kk-projekt-render-new($Item as element(projekt), $Schema as element(schema), $Context as map(*))
 as element(xhtml:div)
 {
-    plugin:provider-lookup("sanofi/projekt","content/view/context","kk")!.($Item,$Schema,$Context)
+  plugin:provider-lookup("sanofi/projekt","content/view/context","kk")!.($Item,$Schema,$Context)
 };
 
 declare %plugin:provide("content/view/context","kk")
 function _:sanofi-projekte($Item as element(projekt)? ,$Schema as element(schema), $Context)
 as element(xhtml:div)
 {
-  let $kk-id := $Context("item")/@id/string()
+  let $kk-id := $Context("context-item")/@id/string()
   let $provider := "sanofi/projekt"
   let $context := map{"context":"sanofi/projekt"}
   let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
   let $kk-schema := plugin:provider-lookup("sanofi/kk","schema")!.()
   let $kks := plugin:provider-lookup("sanofi/kk","datastore/dataobject/all")!.($kk-schema,$context)
-  let $kk := $Context("item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
+  let $kk := $Context("context-item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
   let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kk=$kk-id]
   let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
   let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
@@ -176,7 +176,6 @@ as element(xhtml:div)
           <script class="rxq-js-eval" type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
             <script class="rxq-js-eval" type="text/javascript">//<![CDATA[
               google.charts.load('current', {'packages':['gantt'], callback: init});
-              // google.charts.setOnLoadCallback(drawChart);
 
               function drawChart() {
 

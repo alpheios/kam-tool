@@ -91,23 +91,27 @@ as element(schema){
 declare %plugin:provide("schema", "kk-top-4")
 function _:schema-kk-top-4() as element(schema) {
   let $schema := _:schema-default()
-  return $schema update insert node 
+  return $schema update insert node (
     <element name="kk" type="foreign-key" render="context-item" required="">
       <provider>sanofi/kk</provider>
       <key>@id</key>
       <display-name>name/string()</display-name>
-    </element> into .
+    </element>,
+    <element name="kv" type="hidden" />
+    ) into .
 };
 
 declare %plugin:provide("schema", "kv-top-4")
 function _:schema-kv-top-4() as element(schema) {
   let $schema := _:schema-default()
-  return $schema update insert node 
+  return $schema update insert node (
     <element name="kv" type="foreign-key" render="context-item" required="">
       <provider>sanofi/kv</provider>
       <key>@id</key>
       <display-name>name/string()</display-name>
-    </element> into .
+    </element>,
+    <element name="kk" type="hidden" />
+    ) into .
 };
 
 declare %plugin:provide("content/view/context","kk")
