@@ -134,7 +134,7 @@ function _:combine-regelung-name(
         $Item update replace value of node ./name with string-join(($products, $kv), "_")
 };
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") function _:schema-regelung()
 as element(schema){
 <schema xmlns="" name="regelung" domain="sanofi" provider="sanofi/regelung">
     <modal>
@@ -200,6 +200,14 @@ as element(schema){
          <label>Notizen</label>
      </element>
  </schema>
+};
+
+declare %plugin:provide("schema", "kv")
+function _:schema-kv-kontext() as element(schema) {
+  trace(_:schema-regelung() update (
+      insert node attribute render {"context-item"} into ./element[@name="kv"],
+      delete node ./element[@name="kv"]/label
+  ))
 };
 
 (:~

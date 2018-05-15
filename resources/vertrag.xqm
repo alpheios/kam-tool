@@ -223,64 +223,101 @@ as element(xhtml:div)
 declare %plugin:provide("content/view/context","kk")
 function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
 {
-let $provider := $Schema/@provider/string()
-let $context := $Context("context")
-let $kk-id := $Context("context-item")/@id/string()
-let $vertraege := 
-  for $vertrag in $Items[kk//string()=$kk-id]
-  let $products := 
-    some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
-    satisfies contains(lower-case($product/herstellername/string()), "sanofi")
-  let $is-sanofi := xs:boolean($products) 
-  group by $is-sanofi
+  let $provider := $Schema/@provider/string()
+  let $context := $Context("context")
+  let $kk-id := $Context("context-item")/@id/string()
+  let $vertraege := 
+    for $vertrag in $Items[kk//string()=$kk-id]
+    let $products := 
+      some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
+      satisfies contains(lower-case($product/herstellername/string()), "sanofi")
+    let $is-sanofi := xs:boolean($products) 
+    group by $is-sanofi
+    return
+      <vertraege herstellername="{if ($is-sanofi) then "Sanofi" else "Sonstige"}">
+      {
+        $vertrag
+      }
+      </vertraege>
+
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
   return
-    <vertraege herstellername="{if ($is-sanofi) then "Sanofi" else "Sonstige"}">
-    {
-      $vertrag
-    }
-    </vertraege>
-
-let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
-return
-<div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
-  <div class="ibox float-e-margins">
-      <div class="ibox-title">
-              <div class="col-md-12"><label class="form-label pull-right">Vertrag hinzufügen {$add-button}</label></div>
-      </div>
-      <div class="ibox-content">
-      </div>
-
-    </div>
-    <div class="col-md-6">
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>Verträge mit Sanofi</h5>
-            </div>
-            <div class="ibox-content">
-            {
-                let $items := $vertraege[@herstellername="Sanofi"]/*:vertrag
-                return
-                plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
-             }
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>Verträge anderer Hersteller</h5>
-            </div>
-            <div class="ibox-content">
-            {
-                let $items := $vertraege[@herstellername="Sonstige"]/*:vertrag
-                return
-                plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
-             }
-            </div>
-        </div>
-    </div>
- </div>
+    _:render-vertraege($vertraege, $Schema, $Context, $add-button)
  };
+
+declare %plugin:provide("content/view/context","kv")
+function _:render-page-kv-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  let $provider := $Schema/@provider/string()
+  let $context := $Context("context")
+  let $kv-id := $Context("context-item")/@id/string()
+  let $vertraege := 
+    for $vertrag in $Items[kv//string()=$kv-id]
+    let $products := 
+      some $product in _:get-products-of-corresponding-vertrag($vertrag, $Schema, $Context)
+      satisfies contains(lower-case($product/herstellername/string()), "sanofi")
+    let $is-sanofi := xs:boolean($products) 
+    group by $is-sanofi
+    return
+      <vertraege herstellername="{if ($is-sanofi) then "Sanofi" else "Sonstige"}">
+      {
+        $vertrag
+      }
+      </vertraege>
+
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
+  return
+    _:render-vertraege($vertraege, $Schema, $Context, $add-button)
+ };
+
+ declare function _:render-vertraege(
+  $Vertraege as element(vertraege)*,
+  $Schema as element(schema),
+  $Context as map(*),
+  $Add-Button
+) as element(xhtml:div) {
+  let $provider := $Schema/@provider/string()
+  let $context := $Context("context")
+  return
+    <div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
+      <div class="ibox float-e-margins">
+          <div class="ibox-title">
+                  <div class="col-md-12"><label class="form-label pull-right">Vertrag hinzufügen {$Add-Button}</label></div>
+          </div>
+          <div class="ibox-content">
+          </div>
+
+      </div>
+      <div class="col-md-6">
+          <div class="ibox float-e-margins">
+              <div class="ibox-title">
+                  <h5>Verträge mit Sanofi</h5>
+              </div>
+              <div class="ibox-content">
+              {
+                  let $items := $Vertraege[@herstellername="Sanofi"]/*:vertrag
+                  return
+                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+               }
+              </div>
+          </div>
+      </div>
+      <div class="col-md-6">
+          <div class="ibox float-e-margins">
+              <div class="ibox-title">
+                  <h5>Verträge anderer Hersteller</h5>
+              </div>
+              <div class="ibox-content">
+              {
+                  let $items := $Vertraege[@herstellername="Sonstige"]/*:vertrag
+                  return
+                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+               }
+              </div>
+          </div>
+      </div>
+   </div>
+};
 
  declare function _:get-products-of-corresponding-vertrag(
   $Vertrag as element(vertrag),

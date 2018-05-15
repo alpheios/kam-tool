@@ -16,7 +16,7 @@ declare %plugin:provide('side-navigation')
   function _:nav-item-stammdaten-kk()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
@@ -273,16 +273,6 @@ function _:profile-dashboard-widget-kk($Profile as element())
         </div>
         else ()
 
-};
-
-declare %plugin:provide("schema/render/button/page/edit/link", "stammdaten/kk")
-        %plugin:provide("schema/render/button/page/edit/link", "profile")
-function _:schema-render-button-page-edit-link($Item as element()?, $Schema as element(schema), $Context as map(*))
-as xs:string
-{
-let $provider := $Schema/@provider/string()
-return
-"schema/form/page/"||$Item/@id||"?provider="||$provider||"&amp;context=kk"||"&amp;context-item-id="||$Item/@id||"&amp;context-provider="||$provider (: Manueller Kontextwechsel auf 'kk' :)
 };
 
 declare %plugin:provide("schema/ui/page/content","kk")

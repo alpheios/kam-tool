@@ -213,23 +213,34 @@ function _:sanofi-ansprechpartner-kk(
   $Schema as element(schema),
   $Context as map(*)
 ) as element(xhtml:div) {
-  let $provider := $Context("provider")
-  let $context := $Context("context")
   let $kk-id := $Context("context-item")/@id/string()
   let $ap-items := $Items[./kk = $kk-id]
-  let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Items[1],$Schema,$Context)
-  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
   return
-    <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
+    _:render-unternehmensstruktur($ap-items, $Items[1]/@id/string(), "kk")
+};
+
+declare %plugin:provide("content/view/context","kv")
+function _:sanofi-ansprechpartner-kv(
+  $Items as element(ansprechpartner)*,
+  $Schema as element(schema),
+  $Context as map(*)
+) as element(xhtml:div) {
+  let $kv-id := $Context("context-item")/@id/string()
+  let $ap-items := $Items[./kv = $kv-id]
+  return
+    _:render-unternehmensstruktur($ap-items, $Items[1]/@id/string(), "kv")
+};
+
+declare function _:render-unternehmensstruktur(
+  $Ansprechpartner as element(ansprechpartner)*,
+  $Context-Item-Id as xs:string,
+  $Context as xs:string
+) as element(xhtml:div) {
+  <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
       <div data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
         <div class="ibox float-e-margins ">
           <div class="ibox-title">
             <h5>Ansprechpartner</h5>
-            <div class="ibox-tools">
-              <a data-remote="false" data-target="#influx-modal-dialog" data-toggle="modal" href="/influx/schema/form/modal?context=kk&amp;provider=sanofi/ansprechpartner&amp;schema=&amp;item=&amp;context-provider=&amp;context-item=" shape="rect" class="btn btn-sm btn-outline">
-                <span class="fa fa-plus"></span>
-              </a>
-            </div>
           </div>
           <div class="ibox-content">
             <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
@@ -250,7 +261,7 @@ function _:sanofi-ansprechpartner-kk(
                         let $einfluss-schema := plugin:provider-lookup("sanofi/ansprechpartner/einfluss","schema")!.()
                         let $produkt-schema  := plugin:provider-lookup("sanofi/produkt","schema")!.()
                         return
-                            for $item in $ap-items
+                            for $item in $Ansprechpartner
                             let $id := $item/@id/string()
                             let $name := $item/*:name/string()
                             let $einfluss-id := $item/*:einfluss/string()
@@ -262,7 +273,7 @@ function _:sanofi-ansprechpartner-kk(
                                 return
                                   <tr id="item-{$id}">
                                     <td>
-                                      <a class="btn btn-sm btn-error" href="/influx/schema/form/page/{$id}?provider=sanofi/ansprechpartner&amp;context=kk&amp;context-item-id=c18a06b8-08c4-4d71-9166-fb28fc98bed1&amp;context-provider=sanofi/ansprechpartner">
+                                      <a class="btn btn-sm btn-error" href="/influx/schema/form/page/{$id}?provider=sanofi/ansprechpartner&amp;context={$Context}&amp;context-item-id={$Context-Item-Id}&amp;context-provider=sanofi/ansprechpartner">
                                         <span class="fa fa-edit"></span>
                                       </a>
                                     </td>

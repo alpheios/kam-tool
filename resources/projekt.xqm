@@ -43,7 +43,10 @@ function _:schema-render-table-prepare-rows(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+    let $kk := 
+      if ($item/kk/string())
+      then plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+      else ()
     order by $item/name
     where not($kk/fusioniert/string() = "true")
     return $item
@@ -60,7 +63,10 @@ function _:schema-render-table-prepare-rows-fusioniert(
   let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
   return
     for $item in $Items
-    let $kk := plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+    let $kk := 
+      if ($item/kk/string())
+      then plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
+      else ()
     order by $item/name
     where $kk/fusioniert/string() = "true"
     return $item
@@ -142,6 +148,16 @@ as element(xhtml:div)
   plugin:provider-lookup("sanofi/projekt","content/view/context","kk")!.($Item,$Schema,$Context)
 };
 
+declare
+    %plugin:provide("schema/render/new","kv")
+    %plugin:provide("schema/render/update","kv")
+    %plugin:provide("schema/render/delete","kv")
+function _:kv-projekt-render-new($Item as element(projekt), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+  plugin:provider-lookup("sanofi/projekt","content/view/context","kv")!.($Item,$Schema,$Context)
+};
+
 declare %plugin:provide("content/view/context","kk")
 function _:sanofi-projekte($Item as element(projekt)? ,$Schema as element(schema), $Context)
 as element(xhtml:div)
@@ -158,21 +174,49 @@ as element(xhtml:div)
   let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
 
   return
-    <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-projekte" id="kk-projekte">
+    _:render-project-view($projekte, $kk, $add-button)
+};
+
+declare %plugin:provide("content/view/context","kv")
+function _:sanofi-projekte-kv($Item as element(projekt)? ,$Schema as element(schema), $Context)
+as element(xhtml:div)
+{
+  let $context-provider := "sanofi/kv" 
+  let $kv-id := $Context("context-item")/@id/string()
+  let $provider := "sanofi/projekt"
+  let $context := map{"context":"sanofi/projekt"}
+  let $projekt-schema := plugin:provider-lookup("sanofi/projekt","schema")!.()
+  let $kv-schema := plugin:provider-lookup($context-provider,"schema")!.()
+  let $kvs := plugin:provider-lookup($context-provider,"datastore/dataobject/all")!.($kv-schema,$context)
+  let $kv := $Context("context-item") (:plugin:provider-lookup("sanofi/projekt","datastore/dataobject")!.($kk-id,$kk-schema,$context):)
+  let $projekte := plugin:provider-lookup("sanofi/projekt","datastore/dataobject/all")!.($projekt-schema,$context)[kv=$kv-id]
+  let $edit-button :=plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$Schema,$Context)
+  let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($Schema,$Context)
+
+  return
+    _:render-project-view($projekte, $kv, $add-button)
+};
+
+declare function _:render-project-view(
+  $Projekte as element(projekt)*,
+  $Context-Item as element(*),
+  $Add-Button
+) as element(xhtml:div) {
+  <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#projekte-tab" id="projekte-tab">
       <div class="row">
           <div class="col-lg-12">
               <div class="ibox float-e-margins">
                   <div class="ibox-title">
-                          <div class="col-md-12"><label class="form-label pull-right">Projekt hinzufügen {$add-button}</label></div>
+                          <div class="col-md-12"><label class="form-label pull-right">Projekt hinzufügen {$Add-Button}</label></div>
                   </div>
                   <div class="ibox-content">
                       <div class="gantt-container" style="overflow: scroll;">
-                      	<div id="chart_div"></div>
+                        <div id="chart_div"></div>
                       </div>
                   </div>
               </div>
           </div>
-          { if ($projekte) then <div>
+          { if ($Projekte) then <div>
           <script class="rxq-js-eval" type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
             <script class="rxq-js-eval" type="text/javascript">//<![CDATA[
               google.charts.load('current', {'packages':['gantt'], callback: init});
@@ -198,14 +242,14 @@ as element(xhtml:div)
 
                 data.addRows([
                 ]]>{
-                    string-join($projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$kk/*:name/string()||'",new Date("'||./*:beginn/string()||'"),new Date("'||./*:ende/string()||'"), null, '||./*:fertigstellung||', null]'),",")
+                    string-join($Projekte!('["'||./@id/string()||'","'||./*:name/string()||'","'||$Context-Item/*:name/string()||'",new Date("'||./*:beginn/string()||'"),new Date("'||./*:ende/string()||'"), null, '||./*:fertigstellung||', null]'),",")
                 }<![CDATA[
 
                 ]);
 
                 var options = {
                     fontName : "open sans",
-                    height: ]]>{count($projekte)*55 + 25}<![CDATA[
+                    height: ]]>{count($Projekte)*55 + 25}<![CDATA[
                 };
 
                 var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
