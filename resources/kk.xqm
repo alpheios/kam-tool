@@ -185,14 +185,20 @@ function _:render-no-form-buttons($Item as element(), $Schema as element(schema)
 ()
 };
 
-
+(: 
+  Wenn der Name in der Details Ansicht einer KK nicht bearbeitet werden können soll, dann muss 
+  das wieder rein. Dann muss aber auch der Kontext im Link in der Sidenavigation geändert werden
+  und der Kontextswitch im Edit Link eingebaut werden, sonst kann beim neu anlegen einer KK kein Name
+  für die KK ausgewählt werden.
+:)
+(:
 declare %plugin:provide("schema", "kk")
 function _:schema-kk() {  
   _:schema-default() update (
     replace value of node ./element[@name="name"]/@type with "hidden"
     ,delete node ./element[@name="name"]/label
   )
-};
+};:)
 
 declare %plugin:provide("schema/render/form/field/enum/datasource/filter", "name") 
 function _:filter-kk-names(
