@@ -28,7 +28,7 @@ function _:upload-app-req(
   else
     let $kenngroessenString := 
       for $fileName in map:keys($Files)
-      return convert:binary-to-string($Files($fileName))
+      return convert:binary-to-string($Files($fileName), "iso-8859-1")
 
     let $tempFilePath := file:base-dir()||"temp-kenngroessen.csv"
     let $tempFile := file:write-text($tempFilePath, $kenngroessenString)
@@ -76,7 +76,7 @@ function _:api-import-kenngroessen() {
       return
         if ($importkenngroessen)
         then 
-          if ($missingKKs)
+          if (count($missingKKs) > 0)
           then (
             ui:warn(<span><span data-i18n="import-kenngroessen-missing-kks">kenngroessen successfully imported, but some KK are missing: </span>{
               for $missing in $missingKKs
@@ -106,7 +106,8 @@ declare function _:import-kenngroessen(
     return
       if ($kkId)
       then
-        let $datum := functx:mmddyyyy-to-date($kenngroesse/Datum/string())
+        let $datumFromQuartalString := _:extract-datum-from-quartal-string($kenngroesse/Datum/string())
+        let $datum := functx:mmddyyyy-to-date($datumFromQuartalString)
         let $datumString := xs:string($datum)
         return
           if (_:check-if-data-for-date-allready-exist($kkId, $datumString))
@@ -114,7 +115,7 @@ declare function _:import-kenngroessen(
           else 
             let $versicherte := $kenngroesse/Versicherte/string()
             let $versicherte_marktanteil := translate($kenngroesse/Marktanteil/string(),",%", ".")
-            let $arzneimittelausgaben := translate($kenngroesse/Arzneimittel_Ausgaben_Gesamt/string(), ".€", "")
+            let $arzneimittelausgaben := translate($kenngroesse/Arzneimittel_Ausgaben_Gesamt/string(), ",.€", ".")
             let $arzneimittelausgaben_marktanteil := translate($kenngroesse/Marktanteil_Arzneimittelausgaben/string(), ",%",".")
             return map {
               '@id': $id,
@@ -136,6 +137,25 @@ declare function _:import-kenngroessen(
     return plugin:lookup("datastore/dataobject/put")!.($kenngroesse,$schema,map {})
 
   return true()
+};
+
+declare function _:extract-datum-from-quartal-string(
+  $Datum as xs:string
+) as xs:string {
+  let $parts := tokenize($Datum, "/")
+  let $quartal := upper-case($parts[1])
+  let $year :=
+    if (string-length($parts[2]) = 2)
+    then "20"||$parts[2]
+    else $parts[2]
+  let $day-month :=
+    switch ($quartal)
+    case "Q1" return "01.01."
+    case "Q2" return "01.04."
+    case "Q3" return "01.07."
+    case "Q4" return "01.10."
+    default return "01.01."
+  return $day-month||$year
 };
 
 declare function _:check-if-data-for-date-allready-exist(
