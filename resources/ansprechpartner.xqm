@@ -245,7 +245,7 @@ function _:sanofi-ansprechpartner-lav(
 
 declare function _:render-unternehmensstruktur(
   $Ansprechpartner as element(ansprechpartner)*,
-  $Context-Item-Id as xs:string,
+  $Context-Item-Id as xs:string?,
   $Context as xs:string
 ) as element(xhtml:div) {
   <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
