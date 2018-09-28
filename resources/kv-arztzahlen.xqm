@@ -36,8 +36,7 @@ function _:schema-render-table-prepare-rows-jf(
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
-    let $trace := trace($Schema)
-    let $schema-fachrichtung-elements := 
+    let $schema-fachrichtung-elements :=
         for $fachrichtung in $_:fachrichtungen
         return "zahl-"||lower-case(translate($fachrichtung, " /:;", "--"))
     let $columns := (("name","datum"), $schema-fachrichtung-elements)

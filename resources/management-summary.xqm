@@ -356,7 +356,6 @@ function _:content-view-for-kv(
           {
             let $ap-schema := plugin:provider-lookup("sanofi/ansprechpartner", "schema")!.()
             let $kv-ap := plugin:lookup("datastore/dataobject/field")!.("kv", $kv/@id/string(), $ap-schema, $Context)
-            let $trace := trace($kv-ap[1]/*:position)
             let $Context := map:put($Context, "context", "kv-top-4")
             return
               <div>
