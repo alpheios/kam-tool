@@ -115,7 +115,7 @@ as element(schema){
     </element>
 
     <element name="notizen" type="textarea">
-         <label>Notizen</label>
+         <label>Link</label>
      </element>
  </schema>
 };

@@ -60,7 +60,7 @@ as element(schema){
             <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
     <element name="notizen" type="textarea">
-        <label>Notizen</label>
+        <label>Link</label>
     </element>
 </schema>
 };

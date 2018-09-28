@@ -43,7 +43,7 @@ as element(schema){
       <label>Rolle</label>
     </element>
     <element name="notizen" type="textarea">
-        <label>Notizen</label>
+        <label>Link</label>
     </element>
  </schema>
 };

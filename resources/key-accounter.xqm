@@ -128,7 +128,7 @@ as element(schema){
         <label>Nachname</label>
     </element>
     <element name="notizen" type="textarea">
-         <label>Notizen</label>
+         <label>Link</label>
      </element>
      <element name="username" type="hidden">
       </element>

@@ -183,7 +183,7 @@ as element(schema){
         <label>Ende</label>
     </element>
     <element name="notizen" type="textarea">
-         <label>Notizen</label>
+         <label>Link</label>
      </element>
      <element name="sharepoint-link" type="text">
         <label>Dokument in Sharepoint</label>

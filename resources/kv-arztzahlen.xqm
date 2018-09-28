@@ -39,7 +39,7 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     let $trace := trace($Schema)
     let $schema-fachrichtung-elements := 
         for $fachrichtung in $_:fachrichtungen
-        return "zahl-"||lower-case(translate($fachrichtung, " ", "-"))
+        return "zahl-"||lower-case(translate($fachrichtung, " /:;", "--"))
     let $columns := (("name","datum"), $schema-fachrichtung-elements)
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
@@ -74,7 +74,7 @@ as element(schema){
         <display-name>name</display-name>
     </element>
     <element name="notizen" type="textarea">
-        <label>Notizen</label>
+        <label>Link</label>
     </element>
   </schema>
 };

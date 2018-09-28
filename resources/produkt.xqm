@@ -70,7 +70,7 @@ as element(schema){
         <label>Indikation</label>
     </element>
     <element name="notizen" type="textarea">
-        <label>Notizen</label>
+        <label>Link</label>
      </element>
  </schema>
 };

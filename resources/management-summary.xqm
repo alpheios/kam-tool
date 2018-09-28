@@ -83,7 +83,7 @@ as element(schema){
         <label>Wie positioniert sich der Kunde?</label>
     </element>
     <element name="notizen" type="textarea">
-         <label>Notizen</label>
+         <label>Link</label>
      </element>
  </schema>
 };

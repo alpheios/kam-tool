@@ -68,7 +68,7 @@ as element(schema){
         <display-name>name</display-name>
     </element>
     <element name="notizen" type="textarea">
-        <label>Notizen</label>
+        <label>Link</label>
     </element>
   </schema>
 };
