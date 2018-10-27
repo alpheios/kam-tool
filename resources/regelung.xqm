@@ -13,7 +13,7 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 (:
 
- Menü-Eintrag in der side-navigation für "vertrag"
+ Menü-Eintrag in der side-navigation für "regelung"
 
 :)
 declare %plugin:provide('side-navigation')
@@ -195,19 +195,23 @@ as element(schema){
     <element name="impact" type="number" min="0" max="10">
       <label>Impactwert</label>
     </element>
+
+    <element name="tracking" type="text">
+        <label>Tracking</label>
+    </element>
     
     <element name="notizen" type="textarea">
          <label>Link</label>
-     </element>
+    </element>
  </schema>
 };
 
 declare %plugin:provide("schema", "kv")
 function _:schema-kv-kontext() as element(schema) {
-  trace(_:schema-regelung() update (
-      insert node attribute render {"context-item"} into ./element[@name="kv"],
+  _:schema-regelung() update (
+       insert node attribute render {"context-item"} into ./element[@name="kv"],
       delete node ./element[@name="kv"]/label
-  ))
+  )
 };
 
 (:~

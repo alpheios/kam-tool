@@ -129,14 +129,18 @@ let $name := $Item/name/string()
 let $kk-history-provider := "sanofi/kk-top-4"
 let $kk-history-schema := plugin:provider-lookup($kk-history-provider,"schema")!.()
 let $kk-history-items := plugin:provider-lookup($kk-history-provider,"datastore/dataobject/field",$context)!.("kk", $kk-id, $kk-history-schema, $Context)
-let $kk-history-years := for $item in $kk-history-items let $datum := $item/datum/string() order by $datum return $datum
+let $kk-history-years :=
+    for $item in $kk-history-items
+    let $datum := $item/datum/string()
+    order by $datum
+    return fn:format-date(xs:date($datum), "[D]. [M]. [Y]" )
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
-let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||.||'"')),',')
+let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||fn:format-date(xs:date(.), "[D]. [M]. [Y]" )||'"')),',')
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
-let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben/string()!('"'||.||'"')),',')
+let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/arzneimittelausgaben) div 1000) !('"'||.||'"')),',')
 let $arzneimittelausgaben-anteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben_marktanteil/string()!('"'||.||'"')),',')
-let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return $i/anzahl/string()!('"'||.||'"')),',')
+let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/anzahl) div 1000)!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
 let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
 return
@@ -158,7 +162,7 @@ return
             <div class="col-lg-6">
               <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} in tausend Versicherte</h5>
                 </div>
                 <div class="ibox-content">
                   <div>
@@ -239,7 +243,7 @@ return
             <div class="col-lg-6">
               <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                  <h5>Entwicklung der Arzneimittelausgaben im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]}</h5>
+                  <h5>Entwicklung der Arzneimittelausgaben im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} in tausend €</h5>
                 </div>
                 <div class="ibox-content">
                   <div>
