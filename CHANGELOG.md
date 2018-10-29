@@ -8,7 +8,7 @@ Version 1.0.0
 * removed trace()
 * fixed error in comment
 * dependency: schema 0.3.3
-* dependency: schema-exporter 1.0
+* dependency: schema-exporter 1.0.1
 
 
 Version 0.3.4
