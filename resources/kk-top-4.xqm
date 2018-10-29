@@ -50,13 +50,13 @@ as element(schema){
     <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
         <label>Datum</label>
     </element>
-    <element name="anzahl" type="number">
+    <element name="anzahl" type="number" number-format="#.###" number-locale="de">
         <label>Mitglieder Anzahl</label>
     </element>
     <element name="marktanteil" type="number" max="100">
         <label>Mitglieder Marktanteil (%)</label>
     </element>
-    <element name="arzneimittelausgaben" type="number">
+    <element name="arzneimittelausgaben" type="number" number-format="#.###" number-locale="de">
         <label>Arzneimittelausgaben (€)</label>
     </element>
     <element name="arzneimittelausgaben_marktanteil" type="number" max="100">

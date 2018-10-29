@@ -1,10 +1,8 @@
 module namespace _ = "sanofi/management-summary";
 
 (: import repo modules :)
-import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
-import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace global  = "influx/global";
 import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -140,12 +138,23 @@ let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/d
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
 let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/arzneimittelausgaben) div 1000) !('"'||.||'"')),',')
 let $arzneimittelausgaben-anteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben_marktanteil/string()!('"'||.||'"')),',')
-let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/anzahl) div 1000)!('"'||.||'"')),',')
+let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:decimal($i/anzahl))!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
 let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
 return
 <div xmlns="http://www.w3.org/1999/xhtml" id="kk-top-4" data-replace="#kk-top-4">
     <script src="{$global:inspinia-path}/js/plugins/chartJs/Chart.min.js"></script>
+    <script>//<![CDATA[
+var lineOptions = {
+    responsive: true,
+    scales: {
+        yAxes: [{
+            ticks: {
+                callback: function (value) {return value.toLocaleString()}
+            }
+        }]
+    }
+};]]></script>
           <div class="row">
               <div class="col-lg-12 col-md-12">
                   <div class="ibox float-e-margins">
@@ -162,7 +171,7 @@ return
             <div class="col-lg-6">
               <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} in tausend Versicherte</h5>
+                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} Versicherte</h5>
                 </div>
                 <div class="ibox-content">
                   <div>
@@ -186,16 +195,8 @@ return
                                 }
                             ]
                         };
-
-                        var lineOptions = {
-                            responsive: true
-                        };
-
-
                         var ctx = document.getElementById("lineChart2").getContext("2d");
                         new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
                     //]]></script>
                 </div>
               </div>
@@ -225,16 +226,8 @@ return
                                 }
                             ]
                         };
-
-                        var lineOptions = {
-                            responsive: true
-                        };
-
-
                         var ctx = document.getElementById("lineChart").getContext("2d");
                         new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
                     //]]></script>
               </div>
             </div>
@@ -265,16 +258,8 @@ return
                                 }
                             ]
                         };
-
-                        var lineOptions = {
-                            responsive: true
-                        };
-
-
                         var ctx = document.getElementById("lineChart3").getContext("2d");
                         new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
-
                     //]]></script>
                 </div>
               </div>
@@ -304,15 +289,8 @@ return
                                 }
                             ]
                         };
-
-                        var lineOptions = {
-                            responsive: true
-                        };
-
-
                         var ctx = document.getElementById("lineChart4").getContext("2d");
                         new Chart(ctx, {type: 'line', data: lineData, options:lineOptions});
-
 
                     //]]></script>
                 </div>
