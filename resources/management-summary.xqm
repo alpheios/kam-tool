@@ -138,7 +138,7 @@ let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/d
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
 let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/arzneimittelausgaben) div 1000) !('"'||.||'"')),',')
 let $arzneimittelausgaben-anteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben_marktanteil/string()!('"'||.||'"')),',')
-let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:decimal($i/anzahl))!('"'||.||'"')),',')
+let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:decimal($i/anzahl) div 1000)!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
 let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
 return
@@ -171,7 +171,7 @@ var lineOptions = {
             <div class="col-lg-6">
               <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} Versicherte</h5>
+                  <h5>Entwicklung der Versichertenanzahl im Zeitraum: {$kk-history-years[1]} - {$kk-history-years[last()]} Versicherte in tausend</h5>
                 </div>
                 <div class="ibox-content">
                   <div>
@@ -186,7 +186,7 @@ var lineOptions = {
                             datasets: [
 
                                 {
-                                    label: "Entwicklung der Versichertenzahl",
+                                    label: "Entwicklung der Versichertenzahl in tausend Mitglieder",
                                     backgroundColor: 'rgba(26,179,148,0.5)',
                                     borderColor: "rgba(26,179,148,0.7)",
                                     pointBackgroundColor: "rgba(26,179,148,1)",
@@ -249,7 +249,7 @@ var lineOptions = {
                             datasets: [
 
                                 {
-                                    label: "Entwicklung der Arzneimittelausgaben",
+                                    label: "Entwicklung der Arzneimittelausgaben in tausend €",
                                     backgroundColor: 'rgba(26,179,148,0.5)',
                                     borderColor: "rgba(26,179,148,0.7)",
                                     pointBackgroundColor: "rgba(26,179,148,1)",

@@ -53,13 +53,13 @@ as element(schema){
     <element name="anzahl" type="number" number-format="#.###" number-locale="de">
         <label>Mitglieder Anzahl</label>
     </element>
-    <element name="marktanteil" type="number" max="100">
+    <element name="marktanteil" type="number" number-format="#.###,0" number-locale="de" max="100">
         <label>Mitglieder Marktanteil (%)</label>
     </element>
     <element name="arzneimittelausgaben" type="number" number-format="#.###" number-locale="de">
         <label>Arzneimittelausgaben (€)</label>
     </element>
-    <element name="arzneimittelausgaben_marktanteil" type="number" max="100">
+    <element name="arzneimittelausgaben_marktanteil" type="number" number-format="#.###,0" number-locale="de" max="100">
         <label>Marktanteil Arzneimittelausgaben (%)</label>
     </element>
     <element name="kk" type="foreign-key" render="context-item" required="">
