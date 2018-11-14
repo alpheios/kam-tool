@@ -5,7 +5,7 @@
   <install-path>kam-tool</install-path>
   <type>manager</type>
   <plugins>kam-tool-import.xqm</plugins>
-  <description><span data-i18n="sanofi-kam-app-title">Key Account Management und Planung für Sanofi. Version 2018-01-19</span></description>
+  <description><span data-i18n="sanofi-kam-app-title">Key Account Management und Planung für Sanofi. Version 2018-11-14</span></description>
   <config>
     <url/>
   </config>
@@ -37,5 +37,5 @@
   <image>/influx_app/modules/kam-tool/static/Sanofi_2011_logo.svg.png</image>">
 
   <mod:id xmlns:mod="http://influx.adesso.de/module">34ff39f9-b0da-4328-9c4e-2e1664e7662f</mod:id>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </module>

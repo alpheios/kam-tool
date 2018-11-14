@@ -1,5 +1,8 @@
 # Changes
 
+## Version 1.0.3 [2018-11-14]
+* FIXED: Use cp1252 encoding for product import
+
 ## Version 1.0.2 [2018-10-28]
 * Management-Summary view:
     * CR: Marktanteil nur mit einer Nachkommastelle
