@@ -32,6 +32,7 @@ function _:upload-app-req(
 
     let $products := csv:parse($productsString, map {
         'separator': ';',
+        'encoding': 'cp1252',
         'header': true()
     })/*:csv/*:record
 
@@ -52,6 +53,7 @@ function _:api-import-products() {
     then 
       let $productsFromCsv := csv:parse(file:read-text($tempFilePath), map {
         'separator': ';',
+        'encoding': 'cp1252',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)
