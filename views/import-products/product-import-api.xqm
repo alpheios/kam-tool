@@ -25,14 +25,13 @@ function _:upload-app-req(
   else
     let $productsString := 
       for $fileName in map:keys($Files)
-      return convert:binary-to-string($Files($fileName))
+      return convert:binary-to-string($Files($fileName),"cp1252")
 
     let $tempFilePath := file:base-dir()||"temp-products.csv"
-    let $tempFile := file:write-text($tempFilePath, $productsString)
+    let $tempFile := file:write-text($tempFilePath, $productsString, "cp1252")
 
     let $products := csv:parse($productsString, map {
         'separator': ';',
-        'encoding': 'cp1252',
         'header': true()
     })/*:csv/*:record
 
@@ -51,9 +50,8 @@ function _:api-import-products() {
   let $products := 
     if(file:exists($tempFilePath))
     then 
-      let $productsFromCsv := csv:parse(file:read-text($tempFilePath), map {
+      let $productsFromCsv := csv:parse(file:read-text($tempFilePath,"cp1252"), map {
         'separator': ';',
-        'encoding': 'cp1252',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)

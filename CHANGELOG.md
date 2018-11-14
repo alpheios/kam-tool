@@ -1,5 +1,8 @@
 # Changes
 
+## Version 1.0.4 [2018-11-14]
+* FIXED: Use cp1252 encoding for product import (three more places)
+
 ## Version 1.0.3 [2018-11-14]
 * FIXED: Use cp1252 encoding for product import
 
