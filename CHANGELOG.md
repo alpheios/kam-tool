@@ -1,5 +1,9 @@
 # Changes
 
+## Version 1.0.5 [2018-11-15]
+* CR: removed admin constraint from add button for schema type "Regelung"
+
+
 ## Version 1.0.4 [2018-11-14]
 * FIXED: Use cp1252 encoding for product import (three more places)
 

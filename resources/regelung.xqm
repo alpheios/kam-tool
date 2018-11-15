@@ -42,14 +42,12 @@ function _:schema-render-button-modal-new(
   $Schema as element(schema), 
   $Context as map(*)
 ) as element()? {
-  if (plugin:lookup("is-admin")!.())
-  then
+
     let $context := $Context("context")
     let $provider := $Schema/@provider/string()
     let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
     return
       ui:modal-button($link,<a class="btn btn-sm"><span class="fa fa-plus"/></a>)
-  else ()
 };
 
 (:
