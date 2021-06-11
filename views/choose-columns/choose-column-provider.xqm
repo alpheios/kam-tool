@@ -2,7 +2,7 @@ module namespace _="sanofi/provider/choose-columns";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
-import module namespace ui='influx/ui2';
+import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";

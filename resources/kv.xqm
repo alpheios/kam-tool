@@ -4,15 +4,15 @@ module namespace _ = "sanofi/kv";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
-
-declare %plugin:provide('side-navigation')
+declare variable $_:merkmale-regelungen := plugin:lookup("plato/schema/enums/get")!.("Merkmale Regelungen");
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
@@ -63,6 +63,18 @@ as element(schema){
             <label>Ansprechpartner</label>
             <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
+    <element name="pruefmethode" type="textarea">
+        <label>Allgemeines zur Prüfmethode</label>
+    </element>
+        <element name="allgPBS" type="textarea">
+        <label>Infomationen zu Praxisbesonderheiten</label>
+    </element>
+    (: Merkmale Regelung ausbelden, da die Datenbank inhalte trägt, sodass der Wert nicht erneut verwendet werden kann :)
+     <element name="merkmale-regelungen" type="enum" multiple="">
+      {$_:merkmale-regelungen ! <enum key="{.}">{.}</enum>}
+      <label>Merkmale der Regelungen</label>
+    </element> 
+    (:   :)
     <element name="notizen" type="textarea">
         <label>Link</label>
     </element>

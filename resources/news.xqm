@@ -19,6 +19,39 @@ function _:schema-render-table-prepare-rows-only-name(
   Provider für die Profilseiten Widgets
 :)
 
+
+declare %plugin:provide("schema") 
+function _:schema-customer-influence()
+as element(schema){
+<schema xmlns="" name="news" domain="sanofi" provider="sanofi/news">
+    <modal>
+        <title>Neuigkeiten und Gesprächsthemen</title>
+    </modal>
+    <element name="kam" type="foreign-key" render="dropdown" multiple="" default="{_:get-current-key-accounter-id()}">
+      <provider>sanofi/key-accounter</provider>
+      <key>@id/string()</key>
+      <display-name>name/string()</display-name>
+      <label>Key Accounter</label>
+      <class>col-md-6</class>
+    </element>
+    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown">
+      <provider>sanofi/produkt</provider>
+      <key>@id</key>
+      <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
+      <label>Produkt</label>
+    </element>
+    <element name="thema" type="textarea">
+      <label>Thema</label>
+    </element>
+    <element name="notizen" type="textarea">
+        <label>Link</label>
+    </element>
+ </schema>
+};
+
+
+
+
 declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-regelungen($Profile as element())
 {
@@ -51,32 +84,5 @@ declare function _:get-current-key-accounter-id() {
     return $key-accounter-id
 };
 
-declare %plugin:provide("schema") 
-function _:schema-customer-influence()
-as element(schema){
-<schema xmlns="" name="news" domain="sanofi" provider="sanofi/news">
-    <modal>
-        <title>Neuigkeiten und Gesprächsthemen</title>
-    </modal>
-    <element name="kam" type="foreign-key" render="dropdown" multiple="" default="{_:get-current-key-accounter-id()}">
-      <provider>sanofi/key-accounter</provider>
-      <key>@id/string()</key>
-      <display-name>name/string()</display-name>
-      <label>Key Accounter</label>
-      <class>col-md-6</class>
-    </element>
-    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown">
-      <provider>sanofi/produkt</provider>
-      <key>@id</key>
-      <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
-      <label>Produkt</label>
-    </element>
-    <element name="thema" type="textarea">
-      <label>Thema</label>
-    </element>
-    <element name="notizen" type="textarea">
-        <label>Link</label>
-    </element>
- </schema>
-};
+
 

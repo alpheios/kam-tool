@@ -1,4 +1,61 @@
 # Changes
+## Version 1.4 [18.12.2020] Regelungen haben eine zusätzliche Beziehung zu einem neuen Schema sanofi/quote
+added: resources/quote.xqm
+added: feld quote in resource/regelung.xqm
+
+added: Regelungen können jetzt kopiert werden. Dazu kann ein copy button (fa-copy) in der Stammdaten Liste verwendet werden. Nach dem kopieren bekommt das Original-Item das Attribut "readonly". Die Buttons sind nur für Regelungen so angepasst, dass readonly Items mit einer Schneeflocke statt den Edit-Buttons angezeigt werden. 
+
+
+## Version 1.3 [14.12.2020] Regelungen können über Admin-Menü importiert werden.
+
+added: views/import-regelungen/
+added: views/import-regelungen/regelungen-import-api.xqm
+added: views/import-regelungen/regelungen-import.xqm
+added: static/js/configureDropzoneForRegelungenCSV.js
+
+kam-tool-import.xqm: added imports for "import-regelungen/*.xqm"
+kam-tool-providers.xqm: added navigation-item - damit der neue Importer auch in der Navigation angezeigt wird.
+
+Wenn Regelungen (CSV) ohne ID importiert werden, dann wird für jede Zeile ohne ID eine neue Regelung angelegt. 
+Gibt es für die ID schon eine Regelung, dann wird diese überschrieben. 
+In der Voransicht werden leerlaufende Referenzen auf Produkte und KVen rot markiert. Grün markierte Referenzen wurden gefunden. 
+
+## Version 1.2 [25.11.2020]
+*c: Regelungen SSB, Merkmale Regelungen hidden, neu QuotenTypen und Fachrichtung auf deie die Regelungen wirken. Neu KAM HC Fazit. Umbennung Ampel in Wetter
+*c: Allg zur Prüfmeth / PBS auf KV Ebene
+## Version 1.1.00 [2019-12-16]
+*c: Icon KK (Line 18 u.27) und LAV (Line 17)
+*New: Tracking.xqm, Eintrag in KAM-Tool-Import.xqm, Line 19
+*CR: Datenexport in Stammdaten Sichbarkeit für alle
+*c: Ansprechpartner - Einfluss -> Produkt mulitble Auswahl "ansprechpartner-einfluss.xqm" Zeile 32
+## Version 1.0.12 [2019-09-05]
+*c: Ansprechpartner - Einfluss -> Produkt mulitble Auswahl "ansprechpartner-einfluss.xqm" Zeile 32
+
+## Version 1.0.11 [2019-07-25]
+* c: Regelungen: Zeile ~200; Max Länge der Ampelbeschreibung auf 120 hoch gesetzt
+
+## Version 1.0.10 [2019-07-85]
+* cr: bug fix elemente können nicht gefundne werden: Lösung Element Tracking & Ampel Type-> hidden
+
+## Version 1.0.9 [2019-07-05]
+* c: Regelungen: Ampelsystem durch Effekt ersetzt
+* c: Regelungen:Datum ab jetz wird das Quelldatum AMV, SSB, & PBS im entsprechennen Datumsfeld eiingetragen, das Datum letzte Änderung zeigt die aktualität der Gesamteintragung
+* c: Regelungen: Merkmale der AMV hinzugefügt
+* c: Regelungen: Element impact auf max 0 gestellt; Felher beim speichern der aufgerufenen Regelung, sodass hoffentlich die Ampel gepfelgt wird
+* c: Regelungen: Hilfe erstellt
+
+## Version 1.0.8 [2019-06-27]
+* c: Try catch abfang des Fehlers für Kassen ohne Top4 - Import Werte managamentsummary Zeile 138ff
+
+## Version 1.0.7 [2019-06-05]
+* C: Farben Blauer Ozean Soll=blau, Zeile 260 & 186 verändert
+* C: KV Regerlungen EDIT als Modal (eigenes Fenster), nicht mehr als eigene Seite -> auto.aktualisierung; KV.xqm Zeile 25ff
+* C: Vertragseigenschaften KK ersetzt ServicePartner; Leider ist ServicePartner noch als Label bei AuswahlWerte festgelegt ->Vertrag.xqm Zeile 153ff 
+* C: Regelungen mit Quoten für Fachrichungen erweitert Regelungen Zeile 163ff
+* C: Hilfe möglich - Bsp siehe ganz unten in Regelungen
+
+## Version 1.0.6 [2019-06-04]
+* CR: Impactwert neues Element erstellt, Werte 0 bis 4 als  "enum"
 
 ## Version 1.0.5 [2018-11-15]
 * CR: removed admin constraint from add button for schema type "Regelung"

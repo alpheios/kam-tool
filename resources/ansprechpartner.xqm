@@ -4,7 +4,7 @@ module namespace _ = "sanofi/ansprechpartner";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -12,7 +12,7 @@ declare variable $_:gremien := plugin:lookup("plato/schema/enums/get")!.("Gremie
 declare variable $_:ausbildung := plugin:lookup("plato/schema/enums/get")!.("Ausbildungen");
 declare variable $_:position := plugin:lookup("plato/schema/enums/get")!.("Positionen");
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
@@ -20,7 +20,30 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide('side-navigation')
+(: adapter for ui:page to schema title :)
+declare %plugin:provide("ui/page/title")
+function _:render-page-form-ui-title-adapter($map as map(*))
+as xs:string{
+ _:schema-default()/modal/title/string()
+};
+
+declare %plugin:provide("ui/page/heading/breadcrumb")
+function _:render-page-form-ui-breadcrumb-adapter($Context as map(*))
+as element(xhtml:ol){
+let $context := $Context("context")
+let $provider := $Context("provider")
+return
+  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
+      <li>
+        <a href="javascript:window.history.back()">Zurück</a>
+      </li>
+      <li class="active">
+        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
+      </li>
+    </ol>
+};
+
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
@@ -85,19 +108,24 @@ as element(schema){
     </modal>
     <element name="titel" type="text">
         <label>Titel</label>
+              <class>col-md-3</class>
     </element>
     <element name="vorname" type="text" required="">
         <label>Vorname</label>
+              <class>col-md-3</class>
     </element>
     <element name="name" type="text" required="">
         <label>Name</label>
+              <class>col-md-6</class>
     </element>
     <element name="gremien" type="enum" multiple="">
         {$_:gremien ! <enum key="{.}">{.}</enum>}
         <label>Vertreten in den folgenden Gremien</label>
+              <class>col-md-6</class>
     </element>
     <element name="abteilung" type="text">
         <label>Abteilung</label>
+              <class>col-md-6</class>
     </element>
     <element name="position" type="enum">
         {$_:position ! <enum key="{.}">{.}</enum>}

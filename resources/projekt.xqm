@@ -4,14 +4,14 @@ module namespace _ = "sanofi/projekt";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-products()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
@@ -19,7 +19,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-products-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">

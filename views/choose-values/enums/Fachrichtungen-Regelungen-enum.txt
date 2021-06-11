@@ -1,0 +1,35 @@
+ALLE
+Anästhesiologie
+Allgemeinmedizin
+API
+Arbeitsmedizin
+Augenheilkunde
+Chirurgie
+Orthopädie
+Frauenheilkunde
+Gynäkologische Onkologie
+Hals-Nasen-Ohrenheilkunde
+Haut- und Geschlechtskrankheiten
+Hygiene und Umweltmedizin
+Innere und Allgemeinmedizin
+Innere Medizin
+Angiologie
+Endokrinologie und Diabetologie
+Gastroenterologie
+Hämatologie und Onkologie
+Kardiologie
+Nephrologie
+Pneumologie
+Rheumatologie
+Kinder- und Jugendmedizin
+Kinder-Hämatologie und -Onkologie
+Kinder-Kardiologie
+Laboratoriumsmedizin
+Mikrobiologie Virologie und Infektionsepidemiologie
+Neurochirurgie
+Neurologie
+Nuklearmedizin
+Praktischer Arzt
+Pharmakologie und Toxikologie
+Physiologie
+Transfusionsmedizin

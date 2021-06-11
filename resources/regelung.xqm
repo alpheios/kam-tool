@@ -4,19 +4,26 @@ module namespace _ = "sanofi/regelung";
 import module namespace global  = "influx/global";
 import module namespace plugin  = "influx/plugin";
 import module namespace db      = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 
-declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+
+declare namespace xhtml="http://www.w3.org/1999/xhtml";
+(: hier werden die Auswahlwerte für die ab Version 1.07 verwendeten neuen Regeleungswerte deklariert :)
+declare variable $_:fachrichtungen-regelungen := plugin:lookup("plato/schema/enums/get")!.("Fachrichtungen Regelungen");
+declare variable $_:merkmale-regelungen := plugin:lookup("plato/schema/enums/get")!.("Merkmale Regelungen");
+declare variable $_:PBS-Typ := plugin:lookup("plato/schema/enums/get")!.("PBS-Typ");
+declare variable $_:merkmale-quote := plugin:lookup("plato/schema/enums/get")!.("Merkmale Quote");
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
 
-(:
+(: 
 
  Menü-Eintrag in der side-navigation für "regelung"
+ 2020-12-18: mit copy button
 
 :)
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
@@ -24,7 +31,21 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
+(: 
+  2020-12-18: Variante ohne "readonly" und ohne kopieren :)
+declare %plugin:provide('side-navigation-item')
+  function _:nav-item-stammdaten-regelungen-admin()
+  as element(xhtml:li) {
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
+      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
+  </li>
+};
+
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
+
+declare %plugin:provide("schema/render/button/page/edit","kv") function _:swap-button-to-modal-edit ($Item,$Schema,$Context){
+plugin:provider-lookup("default","schema/render/button/modal/edit")($Item,$Schema,$Context)
+};
 
 
 
@@ -155,17 +176,84 @@ as element(schema){
         <label>Produkt</label>
         <class>col-md-6</class>
     </element>
-
+ (: Fachrichungen-Quoten ausgeblendet, Label unterhalb von element :)   
+     <element name="fachrichtung1" type="hidden" multiple="">
+      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
+     </element>
+     (: <label>Fachrichtung 1</label> :)
+     
+     <element name="fachrichtung1-quote" type="hidden" max="100">  
+    </element>
+     (: <label>Fachrichtung 1 Quote in %</label>:) 
+     
+     <element name="fachrichtung2" type="hidden" multiple="">
+      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
+    </element> 
+    (:  <label>Fachrichtung 2</label> :)
+     <element name="fachrichtung2-quote" type="hidden" max="100">
+      
+    </element>
+    (:  <label>Fachrichtung 2 Quote in %</label>  :)
+     <element name="fachrichtung3" type="hidden" multiple="">
+      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
+    </element> 
+    (:  <label>Fachrichtung 3</label> :)
+    
+     <element name="fachrichtung3-quote" type="hidden" max="100">
+    </element>
+    (:  <label>Fachrichtung 3 Quote in %</label> :)
+    
+     <element name="fachrichtung4" type="hidden" multiple="">
+      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}   
+    </element> 
+    (: <label>Fachrichtung 4</label> :)
+    
+     <element name="fachrichtung4-quote" type="hidden" max="100">
+    </element>
+    (:  <label>Fachrichtung 4 Quote in %</label> :)
+    
+    (: Merkmale Regelung ausbelden, da die Datenbank inhalte trägt, sodass der Wert nicht erneut verwendet werden kann :)
+     <element name="merkmale-regelungen" type="hidden" multiple="">
+      {$_:merkmale-regelungen ! <enum key="{.}">{.}</enum>}
+    </element> 
+    (:  <label>Merkmale der Regelungen</label> :)
+    
+     <element name="letzte-aenderung" type="date">
+        <label>Letzte Änderung am</label>
+    </element>
+    
+   <element name="merkmale-quote" type="enum" multiple="">
+      {$_:merkmale-quote ! <enum key="{.}">{.}</enum>}
+      <label> Quoten Typen + Wirkung</label>
+    </element>  
+    
+   <element name="fachrichtungX" type="enum" multiple="">
+      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>} 
+      <label>Von Quoten betroffene Fachrichung(en)</label>  
+    </element>   
+    
+  (: neu!!! :)     
+    <element name="amr-Quoten_Fachgruppen" type="textarea">
+      <label>Auflistung Quote(n) + Fachgruppen </label>
+    </element>   
+      
     <element name="amr-beschreibung" type="textarea">
-      <label>AMR/Ziele Beschreibung</label>
+      <label>AMV/Ziele Beschreibung, weitere Ergänzungen</label>
     </element>
+    
     <element name="amr-stand" type="date">
-        <label>AMR Stand</label>
+        <label>AMV Stand</label>
     </element>
+    
     <element name="amr-quelle" type="text">
-        <label>AMR Quelle</label>
+        <label>AMV Quelle</label>
     </element>
 
+ <element name="pbs-typ" type="enum" multiple="">
+      {$_:PBS-Typ ! <enum key="{.}">{.}</enum>}
+      <label>Typ(en) der Praxisbesonderheit</label>
+     </element>
+     
     <element name="pbs-beschreibung" type="textarea">
       <label>PBS Beschreibung</label>
     </element>
@@ -175,42 +263,54 @@ as element(schema){
     <element name="pbs-quelle" type="text">
         <label>PBS Quelle</label>
     </element>
-
-    <element name="ssp-beschreibung" type="textarea">
-      <label>SSP/OVB Beschreibung</label>
+    <element name="ssp-beschreibung" type="hidden">
     </element>
-    <element name="ssp-stand" type="date">
-        <label>SSP Stand</label>
+    <element name="ssp-stand" type="hidden">
     </element>
-    <element name="ssp-quelle" type="text">
-        <label>SSP Quelle</label>
+    <element name="ssp-quelle" type="hidden">
     </element>
-
-    <element name="mapt" type="text" maxlength="180">
-      <label>Impact Beschreibung</label>
+    <element name="mapt" type="text" maxlength="160">
+      <label>Kurz - Wetterbericht</label>
     </element>
-
-    <element name="impact" type="number" min="0" max="10">
-      <label>Impactwert</label>
-    </element>
-
-    <element name="tracking" type="text">
-        <label>Tracking</label>
+        
+    <element name="impact2" type="enum">
+      <label>Produktwetter</label>
+      <enum key="1">1 - sonnig - keine bzw. kleine negative Auswirkungen auf das Produkt</enum>
+      <enum key="2">2 - bewölkt - mittlere negative Auswirkungen auf das Produkt</enum>
+      <enum key="3">3 - regnerisch - große negative Auswirkungen auf das Produkt</enum>
     </element>
     
-    <element name="notizen" type="textarea">
-         <label>Link</label>
+     <element name="kamhc_fazit" type="textarea">
+      <label>KAM HC Fazit</label>
+    </element>   
+    <element name="notizen" type="textarea" default="https://">
+         <label>Link (https://) </label>
     </element>
+   <element name="regelung-quote" render="table" type="foreign-key" required="">
+      <provider>sanofi/quote</provider>
+      <key>regelung</key>
+      <label>Quoten</label>
+      <display-name>{(: Todo: Add display name:)}</display-name>
+   </element>
  </schema>
 };
 
 declare %plugin:provide("schema", "kv")
 function _:schema-kv-kontext() as element(schema) {
   _:schema-regelung() update (
-       insert node attribute render {"context-item"} into ./element[@name="kv"],
-      delete node ./element[@name="kv"]/label
+       insert node attribute render {"context-item"} into ./element[@name="kv"]
+       (:,
+      delete node ./element[@name="kv"]/label:)
+      (: Label wird weiter angezeigt, damit das layout nicht zerschossen wird. :)
   )
 };
+
+declare %plugin:provide("schema", "schema-exporter")
+function _:schema-export-kontext() as element(schema) {
+  _:schema-regelung() update (
+    insert node <element name="hallo" type="text"/> into .  )
+};
+
 
 (:~
 This is more or less copy and paste code from the
@@ -220,6 +320,8 @@ we don't have a working validation concept.
 
 @author Jan Meischner
 @deprecated
+
+Neuer Autor, ab Version 1.06 Martin Waechter
 :)
 declare %plugin:provide("schema/datastore/dataobject/put")
 function _:schema-datastore-dataobject-put(
@@ -242,7 +344,8 @@ function _:schema-datastore-dataobject-put(
     if (
       $new-item/amr-stand/string() = $old-item/amr-stand/string() and
       $new-item/pbs-stand/string() = $old-item/pbs-stand/string() and
-      $new-item/ssp-stand/string() = $old-item/ssp-stand/string()
+      $new-item/ssp-stand/string() = $old-item/ssp-stand/string() and
+      $new-item/letzte-aenderung/string() = $old-item/letzte-aenderung/string()
     )
     then
       ui:warn(<span data-i18n="no-regelungen-data-changed"></span>)
@@ -272,3 +375,163 @@ function _:schema-datastore-dataobject-put(
           else plugin:provider-lookup($provider,"schema/render/update",$context)!.($item, $schema, $Context)
    )
  };
+ (: _____________________ab hier kommt die Hilfe_______________________ :)
+ 
+declare %plugin:provide("schema/help") 
+function _:help ($Items as element()*, $Schema as element(schema), $Context as map(*)){
+<div xmlns="http://www.w3.org/1999/xhtml" class="col-md-60">
+   <div class="ibox float-e-margins">
+          <div class="ibox-title">
+          <h2><p align="center"><font color="#4C5CB0">HILFETEXT</font></p></h2>
+          </div>
+          
+          <div class="ibox-content">
+          <h3><p align="center"><font color="#4C5CB0"> {$Schema/*:modal/*:title/data()}</font></p></h3>      
+          </div>
+          
+          <div>
+          <p align="center"><font color="D5B078">KV-Regelungen Übersicht:</font></p>
+          </div>
+          <div>  <p align="center">Bild vergößern mit strg + </p></div>
+          <div>
+          <img class = "col-md-12" src="https://spirit.sanofi.com/cs/KAMHCProjekte/KAM%20uebergreifend/Projekte/KAIMAN/Hilfedatei/Help Reg1.png"/>
+          </div>
+          <div>
+          <li>A: Volltextsuche nach einzelnen Zeichen und Kombinationen im kompletten Text ALLER Regelungen</li>
+           </div> <div>
+          <li>B: Regelung bearbeiten</li>
+          </div> <div>
+          <li>C: sortieren</li>
+          </div> <div>
+          <li>D: links beginnen mit http</li>
+          </div> <div>
+          <li>E: Hilfe aufrufen</li>
+          </div> <div>
+          <li>F: Datendownload </li>
+          </div> <div>
+          <li>G: neue Regelung anlegen</li>
+          </div> <div>
+          <li>H: Nächste bzw. vorherige Seite</li>
+          </div> <div>
+          <p align="center">********************************************************</p>
+          </div>
+          <div>
+          <p align="center"><font color="D5B078">KV-Regelung bearbeiten:</font></p>
+          </div>
+          
+           <div>
+          <img class = "col-md-12" src="https://spirit.sanofi.com/cs/KAMHCProjekte/KAM%20uebergreifend/Projekte/KAIMAN/Hilfedatei/Help Reg2.png"/>
+          </div>
+          <div>
+          <li> 1: Produktsuche (mind. 3 Zeichen) nach Name, Wirkstoff und Hersteller - MEHRFACHAUSWAHL möglich </li>
+          </div> <div>
+          <li> 2: Spezielle Quoten für Fachrichtungen (- MEHRFACHAUSWAHL möglich) auswählen. Wert in % </li>
+          </div> <div>
+          <li> 3: Merkmale der Regelung zb.: Medikationskatalog - MEHRFACHAUSWAHL möglich </li>
+          </div> <div>
+          <li> 4: Letzter Stand der Eintragungen, zeigt die Aktualität der Gesamtdaten zur Regelung </li>
+          </div> <div>
+          <li> 5: AMR, Ziele, SSB, PBS mit Quelle (! keine Link) und Datum des Inkrafttreten </li>
+          </div> <div>
+          <li> 6: Ampel von 1 bis 3 - Bezug auf die Negativwirkung der Regelungen. Die Kurzbeschreibung max. 50 Zeichen!, Impactwert ist noch vorübergehend, Wert bitte auf NULL setzen! </li>
+          </div> <div>
+          <li> 7: Linkliste, mehrere Links möglich </li>
+          </div> <div>
+          <li> Speichern: Die Daten werden gespeichert sofern Pflichtfelder ausgefüllt wurden, eine Meldung erscheint wenn nicht wenigstens ein Datumsfeld verändert wurde. </li>
+          </div>
+   </div>     
+</div>
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions")
+function _:schema-render-table-tbody-tr-td-action-edit(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else (plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context))}</td>
+};
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions")
+function _:schema-render-table-tbody-tr-td-action-copy(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then () else <a class="ajax fa fa-copy" href="{$global:servlet-prefix}/sanofi/regelung/copy/{$Item/@id}"/>}</td>
+};
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
+function _:schema-render-table-tbody-tr-td-actions-admin-2(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context)}</td>
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
+function _:schema-render-table-tbody-tr-td-actions-admin-1(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else ()}</td>
+};
+
+declare %plugin:provide("schema/render/table/thead/tr/actions")
+function _:schema-render-table-thead-tr-td-actions(
+  $Item as element()*, 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:th) {
+  <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
+};
+declare %plugin:provide("schema/render/table/thead/tr/actions")
+function _:schema-render-table-thead-tr-td-actions2(
+  $Item as element()*, 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:th) {
+  <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
+};
+
+(: Funktione für deutsches, aktuelles Datum :)
+declare function _:current-date-to-html5-input-date-de() 
+as xs:string? {
+    format-dateTime(current-dateTime(), "[D01].[M01].[Y0001]", "de", (), ())
+};

@@ -4,7 +4,7 @@ module namespace _ = "sanofi/vertrag";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 
 
@@ -12,7 +12,7 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare namespace functx = "http://www.functx.com";
 
 declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
-declare variable $_:service-partner := plugin:lookup("plato/schema/enums/get")!.("Service Partner");
+declare variable $_:vertragseigenschaften := plugin:lookup("plato/schema/enums/get")!.("Vertragseigenschaften");
 
 
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
@@ -22,7 +22,7 @@ declare variable $_:service-partner := plugin:lookup("plato/schema/enums/get")!.
  Menü-Eintrag in der side-navigation für "vertrag"
 
 :)
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
@@ -30,7 +30,7 @@ declare %plugin:provide('side-navigation')
   </li>
 };
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contracts-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
@@ -148,10 +148,13 @@ as element(schema){
     <element name="indikation" type="text">
             <label>Indikation</label>
     </element>
-    <element name="service-partner" type="enum">
-      {$_:service-partner ! <enum key="{.}">{.}</enum>}
-      <label>Service Partner</label>
-    </element>
+  
+    
+   <element name="Vertragseigenschaften" type="enum" multiple="">
+      {$_:vertragseigenschaften ! <enum key="{.}">{.}</enum>}
+      <label>Vertragseigenschaften</label>
+    </element>  
+    
     <element name="kk" type="foreign-key" multiple="">
             <provider>sanofi/kk</provider>
             <key>@id</key>
@@ -187,6 +190,8 @@ as element(schema){
      </element>
      <element name="sharepoint-link" type="text">
         <label>Dokument in Sharepoint</label>
+     </element>
+     <element name="service-partner" type="hidden">
      </element>
  </schema>
 };
@@ -397,4 +402,27 @@ return
 if ($Item/name()='sharepoint-link' and $link)
     then <td xmlns="http://www.w3.org/1999/xhtml"><a target="window" href="{$link}">{$Item/text()}</a></td>
     else <td xmlns="http://www.w3.org/1999/xhtml">{$Item/text()}</td>
+ };
+declare %plugin:provide("schema/help") 
+function _:help ($Items as element()*, $Schema as element(schema), $Context as map(*)){
+<div xmlns="http://www.w3.org/1999/xhtml" class="col-md-12">
+   <div class="ibox float-e-margins">
+          <div class="ibox-title">
+             <h2><p align="center"><font color="#4C5CB0">HILFETEXT</font></p></h2>
+          </div>
+          <div class="ibox-content">
+          <h3><p align="center"><font color="#4C5CB0"> {$Schema/*:modal/*:title/data()}</font></p></h3>
+         ><p align="left"><font color="#BDBD0">
+        In Sanofi gelbgrün: Für das Schema "{$Schema/*:modal/*:title/data()}" gibt die folgenden Felder: <br/>
+          {$Schema/*:element/@name/string() ! <li>{.}</li>}
+          </font></p>
+          
+          <div>
+          <p align="center"><font color="D5B078">Dies ist ein sanofi-braun Text, der mittig zentriert ist.</font></p>
+          </div>
+          </div>
+        <img class = "col-md-12" src="https://spirit.sanofi.com/cs/KAMHCProjekte/KAM%20uebergreifend/Projekte/KAIMAN/Hilfedatei/th.jpg"/>
+      </div>
+      
+</div>
 };

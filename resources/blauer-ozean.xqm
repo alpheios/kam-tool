@@ -4,7 +4,7 @@ module namespace _ = "sanofi/blauer-ozean";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -183,7 +183,7 @@ return
                                 {
                                     label: "SOLL",
                                     backgroundColor: "rgba(220,220,220,0.2)",
-                                    borderColor: "rgba(155,120,120,1)",
+                                    borderColor: "rgba(0,0,250,1)",
                                     data: []]>{$soll}<![CDATA[]
                                 }
                             ]
@@ -257,7 +257,7 @@ return
                                 {
                                     label: "SOLL",
                                     backgroundColor: "rgba(220,220,220,0.2)",
-                                    borderColor: "rgba(155,120,120,1)",
+                                    borderColor: "rgba(0,0,250,1)",
                                     data: []]>{$soll}<![CDATA[]
                                 }
                             ]

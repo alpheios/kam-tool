@@ -3,7 +3,7 @@ module namespace _="sanofi/api/product-import";
 import module namespace plugin='influx/plugin';
 import module namespace rest = "http://exquery.org/ns/restxq";
 import module namespace global ='influx/global';
-import module namespace ui='influx/ui2';
+import module namespace ui='influx/ui';
 import module namespace db='influx/db';
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";

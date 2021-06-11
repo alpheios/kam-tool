@@ -4,17 +4,17 @@ module namespace _ = "sanofi/lav";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:kv-bezirk := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-lav()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav"><i class="fa fa-ambulance"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav"><i class="fa fa-eyedropper"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
   </li>
 };
 

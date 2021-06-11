@@ -4,13 +4,13 @@ module namespace _ = "sanofi/key-accounter";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui2";
+import module namespace ui =" influx/ui";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:interessen := plugin:lookup("plato/schema/enums/get")!.("Interessen");
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-key-accounter()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">

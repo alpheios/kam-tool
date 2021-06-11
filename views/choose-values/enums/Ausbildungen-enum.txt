@@ -1,6 +1,5 @@
-Ausbildung
-Bachelor
-Master
-Diplom
-Promotion
-Habilitation
+Arzt
+Apotheker
+Jurist
+BWL
+sonstige

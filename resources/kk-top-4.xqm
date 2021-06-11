@@ -4,7 +4,7 @@ module namespace _ = "sanofi/kk-top-4";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
-import module namespace ui =   "influx/ui2";
+import module namespace ui =   "influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";

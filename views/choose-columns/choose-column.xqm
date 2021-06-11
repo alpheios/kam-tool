@@ -2,7 +2,7 @@ module namespace _="sanofi/views/choose-columns";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
-import module namespace ui='influx/ui2';
+import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
@@ -12,7 +12,7 @@ declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
 declare variable $_:entities-path := file:base-dir()||"/entities/entities.csv";
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
         %plugin:allow("admin")
   function _:nav-item-kam()
   as element(xhtml:li) {

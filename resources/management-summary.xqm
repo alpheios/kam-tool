@@ -136,9 +136,15 @@ let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
 let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||fn:format-date(xs:date(.), "[D]. [M]. [Y]" )||'"')),',')
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
-let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:integer($i/arzneimittelausgaben) div 1000) !('"'||.||'"')),',')
+let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (
+  try {
+    xs:integer($i/arzneimittelausgaben) div 1000
+  } catch * {0}) !('"'||.||'"')),',')
 let $arzneimittelausgaben-anteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/arzneimittelausgaben_marktanteil/string()!('"'||.||'"')),',')
-let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (xs:decimal($i/anzahl) div 1000)!('"'||.||'"')),',')
+let $mitglieder-values := string-join((for $i in $kk-history-items order by $i/datum return (
+  try {
+    xs:decimal($i/anzahl) div 1000
+  } catch * {0})!('"'||.||'"')),',')
 let $latest-marktanteil := (for $i in $kk-history-items order by $i/datum descending return $i/marktanteil/string())[1]
 let $rest-marktanteil := try {100 - xs:decimal($latest-marktanteil)} catch * {0}
 return

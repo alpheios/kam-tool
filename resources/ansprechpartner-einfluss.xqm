@@ -29,11 +29,12 @@ as element(schema){
       <provider>sanofi/ansprechpartner</provider>
       <display-name>name/string()</display-name>
     </element>
-    <element name="produkt" type="foreign-key" async="" minimumInputLength="2" render="dropdown">
-      <provider>sanofi/produkt</provider>
-      <key>@id</key>
-      <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
-      <label>Produkt</label>
+     <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="1" required="">
+        <provider>sanofi/produkt</provider>
+        <key>@id</key>
+        <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
+        <label>Produkt</label>
+        <class>col-md-6</class>
     </element>
     <element name="thema" type="text">
       <label>Thema</label>

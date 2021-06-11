@@ -4,7 +4,7 @@ module namespace _ = "sanofi/kk";
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace date-util ="influx/utils/date-utils";
-import module namespace ui      = "influx/ui2";
+import module namespace ui      = "influx/ui";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -12,19 +12,19 @@ declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundeslä
 declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkassen");
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kk()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
-declare %plugin:provide('side-navigation')
+declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kk-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk"><i class="fa fa-medkit"></i> <span class="nav-label">Krankenkassen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 

@@ -3,7 +3,7 @@ module namespace _="sanofi/api/kenngroessen-import";
 import module namespace plugin='influx/plugin';
 import module namespace rest = "http://exquery.org/ns/restxq";
 import module namespace global ='influx/global';
-import module namespace ui='influx/ui2';
+import module namespace ui='influx/ui';
 import module namespace db='influx/db';
 import module namespace date-util ="influx/utils/date-utils";
 
@@ -15,6 +15,14 @@ declare namespace mod="http://influx.adesso.de/module";
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
 
+(:
+ Das hier passiert, wenn man die Datei hochlädt.
+ Die Datei wird z.B. auf die dropzone gezogen und fallengelassen.
+ Nach dem Upload wir die Datei als eine temporäre Datei auf dem Server gespeichert.
+ Die temporäre CSV Datei wird in XML konvertiert und dann als Preview gerendert, damit man sehen kann, 
+ was als Spalten und Daten erkannt worden ist.
+
+:)
 declare %rest:path("/api/sanofi/import-kenngroessen")
         %rest:POST
         %rest:form-param("file", "{$Files}")
@@ -30,9 +38,11 @@ function _:upload-app-req(
       for $fileName in map:keys($Files)
       return convert:binary-to-string($Files($fileName), "iso-8859-1")
 
+    (: CSV auf dem Server als temporäre Datei speichern :)
     let $tempFilePath := file:base-dir()||"temp-kenngroessen.csv"
     let $tempFile := file:write-text($tempFilePath, $kenngroessenString)
 
+    (: Datei parsen -> von CSV nach XML :)
     let $kenngroessen := csv:parse($kenngroessenString, map {
         'separator': ';',
         'header': true()
@@ -40,12 +50,17 @@ function _:upload-app-req(
     
     let $header := $kenngroessen[1]/*/name()
 
+    (: Preview anzeigen :)
     return _:render-kenngroessen(
       $kenngroessen,
       $header
     )
 };
 
+
+(:
+  Der Import liest aus der temporären Datei.
+:)
 declare %rest:path("/api/sanofi/import-kenngroessen/import")
         %rest:GET
 function _:api-import-kenngroessen() {
