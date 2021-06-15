@@ -5,6 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
+import module namespace user="influx/user";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -147,12 +148,7 @@ declare %plugin:provide("schema/security")
 function _:schema-security($Item as element()*, $Schema as element(schema)*, $Context as map(*))
 as xs:boolean
 {
-let $me := plugin:lookup("username")!.()
-let $admin := (plugin:lookup("api/user-manager/users/get/realm-roles")!.($me) = "admin") or plugin:lookup("is-admin")()
-return
-        if ($admin)
-        then true()
-        else false()
+  user:is-admin()
 };
 
 declare %plugin:provide("schema/render/button/modal/new")
@@ -162,14 +158,9 @@ as element()*
 let $context := $Context("context")
 let $provider := $Schema/@provider/string()
 let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
-  return
-    let $me := plugin:lookup("username")!.()
-    let $admin := (plugin:lookup("api/user-manager/users/get/realm-roles")!.($me) = "admin") or plugin:lookup("is-admin")()
-    return
-        if ($admin)
-        then ui:modal-button($link,<a class="btn btn-sm"><span class="fa fa-plus"/></a>)
-        else ()
-
+return
+    if (user:is-admin())
+    then ui:modal-button(<a class="btn btn-sm"><span class="fa fa-plus"/></a>,$link)
 };
 
 (::: Remove Buttons from modal if key-accounter details are opened from table-view :::)
