@@ -68,7 +68,7 @@ function _:schema-render-button-modal-new(
     let $provider := $Schema/@provider/string()
     let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
     return
-      ui:modal-button($link,<a class="btn btn-sm"><span class="fa fa-plus"/></a>)
+      ui:modal-button(<a class="btn btn-sm"><span class="fa fa-plus"/></a>,$link)
 };
 
 (:
