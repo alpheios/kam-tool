@@ -10,12 +10,58 @@ import module namespace date-util ="influx/utils/date-utils";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+(: ----------------- :)
+
+declare %plugin:provide("ui/page/heading/breadcrumb")
+function _:render-page-table-ui-breadcrumb-adapter($Context as map(*))
+as element(xhtml:ol){
+let $context := $Context("context")
+let $provider := $Context("provider")
+return
+  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
+      <li>
+        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}"><i class="fa fa-chevron"></i>Übersicht laden</a>
+      </li>
+    </ol>
+};
+declare %plugin:provide("ui/page/title") function _:html-title($Params as map(*))  
+{
+  let $schema := $Params?schema?:plugin:provider-lookup($Params?provider,"schema")()
+  return $schema//title/string()
+};
+
+declare %plugin:provide("ui/page/heading") function _:page-heading($Params as map(*))
+ as element() {
+  let $schema := $Params?schema?:plugin:provider-lookup($Params?provider,"schema")()
+  return
+  <div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+      <h2>{$schema//title/string()}</h2>
+    </div>
+  </div>
+};
+
+declare %plugin:provide-default('ui/page/custom-css') function _:page-custom-css(
+    $Params as map(*)
+) as element(xhtml:link)* {
+  (:<!-- schema -->:)
+    <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
+};
+
+declare %plugin:provide-default('ui/page/custom-js') function _:page-custom-js(
+    $Params as map(*)
+) as element(xhtml:script)* {
+    <script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript" src="{$global:inspinia-path}/js/plugins/validate/jquery.validate.min.js"></script>
+};
+
+(: ----------------- :)
+
 declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 declare variable $_:merkmale-regelungen := plugin:lookup("plato/schema/enums/get")!.("Merkmale Regelungen");
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kv()
   as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
+  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="AAA">
       <a href="{$global:servlet-prefix}/schema/list/items?context=kv&amp;provider=sanofi/kv"><i class="fa fa-user-md"></i> <span class="nav-label">Kassenärztliche Vereinigungen</span></a>
   </li>
 };
@@ -50,7 +96,7 @@ as element(schema){
         {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
         <label>Name</label>
     </element>
-    <element name="verantwortlich" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" render="dropdown" required="">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id/string()</key>
                 <display-name>name/string()</display-name>
