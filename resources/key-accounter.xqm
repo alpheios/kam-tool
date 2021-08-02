@@ -3,9 +3,9 @@ module namespace _ = "sanofi/key-accounter";
 (: import repo modules :)
 import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
-import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace user="influx/user";
+
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -21,74 +21,6 @@ declare %plugin:provide('side-navigation-item')
 
 declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
-};
-
-(:
- If there is no user-id but a username, that means: no user has been created so far
-:)
-declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
-        %plugin:provide("datastore/dataobject/put/pre-hook")
-function _:schema-datastore-dataobject-put-pre-hook(
-  $Item as element(),
-  $Schema as element(schema),
-  $Context as map(*)
-) {
-let $username := $Item/username/string()
-let $firstname := $Item/vorname/string()
-let $lastname := $Item/nachname/string()
-let $role := $Item/role/string()
-let $userid := $Item/userid/string()
-return
-    if ($userid="")
-        then
-            let $newUsername := _:extract-username($firstname, $lastname)
-            let $userid := try {
-              plugin:lookup("api/user-manager/users/create")!.(map {
-                'username': $newUsername,
-                'firstName':$firstname,
-                'lastName':$lastname,
-                'email':"",
-                'enabled':'true',
-                'requiredActions':
-                'UPDATE_PASSWORD',
-                'realmRoles':$role
-              })
-            } catch Q{http://influx.adesso.de/error}IN0002 {
-              if (contains($err:description, "User exists with same username"))
-              then ()
-              else global:error("IN0002", $err:description)
-            }
-            return
-              if ($userid)
-              then $Item update {
-                  replace value of node ./userid with $userid 
-                } update {
-                  replace value of node ./username with $newUsername
-                } 
-              else ()
-        else 
-          let $keycloakUser := plugin:lookup('api/user-manager/users/id')!.($userid)
-          let $userMap := map {
-            'username': $username,
-            'firstName': $firstname,
-            'lastName': $lastname
-          }
-          let $updatedKeycloakUserItem := $keycloakUser update {
-              for $node in map:keys($userMap)
-              return replace value of node ./element()[name() = $node] with $userMap($node)
-            }
-
-          let $updateUserInKeycloak := plugin:lookup('api/user-manager/users/put/json')!.($updatedKeycloakUserItem)
-          let $deleteOldRealmRole := plugin:lookup('api/user-manager/users/delete/realm-role')!.($userid)
-          let $updateRealmRoleOfKeycloakUser := plugin:lookup('api/user-manager/users/add/realm-role')!.($userid, $role)
-          return $Item
-};
-
-declare function _:extract-username(
-  $Firstname as xs:string,
-  $Lastname as xs:string
-) as xs:string {
-  lower-case(substring($Firstname, 1, 1)||$Lastname)
 };
 
 (: provide sorting for items :)
@@ -131,13 +63,13 @@ as element(schema){
     <element name="notizen" type="textarea">
          <label>Link</label>
      </element>
-     <element name="username" type="hidden">
-      </element>
      <element name="role" type="enum">
-          <label>Rolle</label>
+        <label>Rolle</label>
         {("admin","user") ! <enum key="{.}">{.}</enum>}
       </element>
-      <element name="userid" type="hidden">
+      <element name="username" type="enum">
+        <label>User</label>
+        {user:list()! <enum key="{.}">{.}</enum>}
       </element>
  </schema>
 };

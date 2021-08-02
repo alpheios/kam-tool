@@ -3,10 +3,10 @@ module namespace _="sanofi/providers";
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
 import module namespace db = "influx/db";
-import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
 import module namespace rest = "http://exquery.org/ns/restxq";
 import module namespace request = "http://exquery.org/ns/request";
+import module namespace user="influx/user";
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
@@ -52,7 +52,7 @@ as xs:boolean
                 let $key-accounter-schema := plugin:provider-lookup("sanofi/key-accounter","schema",$context)!.()
                 let $key-accounter := plugin:provider-lookup("sanofi/key-accounter","datastore/dataobject",$context)!.($verantwortlich,$key-accounter-schema,$Context)
                 return
-                if ($key-accounter/username = plugin:lookup("username")!.() or plugin:lookup("is-admin")())
+                if ($key-accounter/username = user:current() or user:is-admin())
                 then true()
                 else false()
             else true()
