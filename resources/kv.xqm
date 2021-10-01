@@ -6,40 +6,20 @@ import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace common = "sanofi/common" at "common.xqm";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 (: ----------------- :)
 
-declare %plugin:provide("ui/page/heading/breadcrumb")
-function _:render-page-table-ui-breadcrumb-adapter($Context as map(*))
-as element(xhtml:ol){
-let $context := $Context("context")
-let $provider := $Context("provider")
-return
-  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
-      <li>
-        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}"><i class="fa fa-chevron"></i>Übersicht laden</a>
-      </li>
-    </ol>
-};
-declare %plugin:provide("ui/page/title") function _:html-title($Params as map(*))  
-{
-  let $schema := $Params?schema?:plugin:provider-lookup($Params?provider,"schema")()
-  return $schema//title/string()
+declare %plugin:provide('side-navigation-item') function _:nav-item-kv() as element(xhtml:li) {
+  common:nav-item(_:schema())
 };
 
-declare %plugin:provide("ui/page/heading") function _:page-heading($Params as map(*))
- as element() {
-  let $schema := $Params?schema?:plugin:provider-lookup($Params?provider,"schema")()
-  return
-  <div class="row wrapper border-bottom white-bg page-heading">
-    <div class="col-lg-9">
-      <h2>{$schema//title/string()}</h2>
-    </div>
-  </div>
-};
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
 
 declare %plugin:provide-default('ui/page/custom-css') function _:page-custom-css(
     $Params as map(*)
@@ -86,12 +66,13 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     return $schema
 };
 
-declare %plugin:provide("schema") function _:schema2()
+declare %plugin:provide("schema") function _:schema()
 as element(schema){
 <schema xmlns="" name="kv" domain="sanofi" provider="sanofi/kv">
     <modal>
         <title>Kassenärztliche Vereinigung</title>
     </modal>
+    <nav-item sortkey="KV" context="kv" title="Kassenärztliche Vereinigung" icon="user-md"/>
     <element name="name" type="enum">
         {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
         <label>Name</label>
@@ -214,7 +195,7 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
+              {(:<li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>:)}
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
               <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
@@ -242,7 +223,7 @@ return
                   }
                   </div>
               </div>
-              <div id="tab-3" class="tab-pane">
+              {(:<div id="tab-3" class="tab-pane">
                   <div class="panel-body">
                     {
                     let $provider := "sanofi/blauer-ozean"
@@ -257,7 +238,7 @@ return
                         plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
                     }
                   </div>
-              </div>
+              </div>:)}
               <div id="tab-4" class="tab-pane">
                   <div class="panel-body">
                     {

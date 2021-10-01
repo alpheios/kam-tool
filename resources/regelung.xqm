@@ -6,6 +6,8 @@ import module namespace plugin  = "influx/plugin";
 import module namespace db      = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace common="sanofi/common" at "common.xqm";
+
 
 
 
@@ -27,7 +29,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/regelung&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
+      <a href="{$global:servlet-prefix}/schema/search/items?context=stammdaten/regelung&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
   </li>
 };
 
@@ -37,7 +39,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen-admin()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
+      <a href="{$global:servlet-prefix}/schema/search/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
   </li>
 };
 
@@ -48,6 +50,10 @@ plugin:provider-lookup("default","schema/render/button/modal/edit")($Item,$Schem
 };
 
 
+(: adapter for ui:page to schema title :)
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
 
 
 (:
@@ -153,7 +159,7 @@ function _:combine-regelung-name(
         $Item update replace value of node ./name with string-join(($products, $kv), "_")
 };
 
-declare %plugin:provide("schema") function _:schema-regelung()
+declare %plugin:provide("schema") function _:schema()
 as element(schema){
 <schema xmlns="" name="regelung" domain="sanofi" provider="sanofi/regelung">
     <modal>
@@ -175,49 +181,7 @@ as element(schema){
         <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
         <label>Produkt</label>
         <class>col-md-6</class>
-    </element>
- (: Fachrichungen-Quoten ausgeblendet, Label unterhalb von element :)   
-     <element name="fachrichtung1" type="hidden" multiple="">
-      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
-     </element>
-     (: <label>Fachrichtung 1</label> :)
-     
-     <element name="fachrichtung1-quote" type="hidden" max="100">  
-    </element>
-     (: <label>Fachrichtung 1 Quote in %</label>:) 
-     
-     <element name="fachrichtung2" type="hidden" multiple="">
-      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
-    </element> 
-    (:  <label>Fachrichtung 2</label> :)
-     <element name="fachrichtung2-quote" type="hidden" max="100">
-      
-    </element>
-    (:  <label>Fachrichtung 2 Quote in %</label>  :)
-     <element name="fachrichtung3" type="hidden" multiple="">
-      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}
-    </element> 
-    (:  <label>Fachrichtung 3</label> :)
-    
-     <element name="fachrichtung3-quote" type="hidden" max="100">
-    </element>
-    (:  <label>Fachrichtung 3 Quote in %</label> :)
-    
-     <element name="fachrichtung4" type="hidden" multiple="">
-      {$_:fachrichtungen-regelungen ! <enum key="{.}">{.}</enum>}   
-    </element> 
-    (: <label>Fachrichtung 4</label> :)
-    
-     <element name="fachrichtung4-quote" type="hidden" max="100">
-    </element>
-    (:  <label>Fachrichtung 4 Quote in %</label> :)
-    
-    (: Merkmale Regelung ausbelden, da die Datenbank inhalte trägt, sodass der Wert nicht erneut verwendet werden kann :)
-     <element name="merkmale-regelungen" type="hidden" multiple="">
-      {$_:merkmale-regelungen ! <enum key="{.}">{.}</enum>}
-    </element> 
-    (:  <label>Merkmale der Regelungen</label> :)
-    
+    </element>    
      <element name="letzte-aenderung" type="date">
         <label>Letzte Änderung am</label>
     </element>
@@ -233,11 +197,12 @@ as element(schema){
     </element>   
     
   (: neu!!! :)     
-    <element name="amr-Quoten_Fachgruppen" type="textarea">
+    <element name="amr-Quoten_Fachgruppen" type="link">
       <label>Auflistung Quote(n) + Fachgruppen </label>
+      <class>col-md-6</class>
     </element>   
       
-    <element name="amr-beschreibung" type="textarea">
+    <element name="amr-beschreibung" type="summernote">
       <label>AMV/Ziele Beschreibung, weitere Ergänzungen</label>
     </element>
     
@@ -249,12 +214,12 @@ as element(schema){
         <label>AMV Quelle</label>
     </element>
 
- <element name="pbs-typ" type="enum" multiple="">
+    <element name="pbs-typ" type="enum" multiple="">
       {$_:PBS-Typ ! <enum key="{.}">{.}</enum>}
       <label>Typ(en) der Praxisbesonderheit</label>
      </element>
      
-    <element name="pbs-beschreibung" type="textarea">
+    <element name="pbs-beschreibung" type="summernote">
       <label>PBS Beschreibung</label>
     </element>
     <element name="pbs-stand" type="date">
@@ -280,10 +245,10 @@ as element(schema){
       <enum key="3">3 - regnerisch - große negative Auswirkungen auf das Produkt</enum>
     </element>
     
-     <element name="kamhc_fazit" type="textarea">
+     <element name="kamhc_fazit" type="summernote">
       <label>KAM HC Fazit</label>
     </element>   
-    <element name="notizen" type="textarea" default="https://">
+    <element name="notizen" type="summernote" default="https://">
          <label>Link (https://) </label>
     </element>
    <element name="regelung-quote" render="table" type="foreign-key" required="">
@@ -297,7 +262,7 @@ as element(schema){
 
 declare %plugin:provide("schema", "kv")
 function _:schema-kv-kontext() as element(schema) {
-  _:schema-regelung() update (
+  _:schema() update (
        insert node attribute render {"context-item"} into ./element[@name="kv"]
        (:,
       delete node ./element[@name="kv"]/label:)
@@ -307,7 +272,7 @@ function _:schema-kv-kontext() as element(schema) {
 
 declare %plugin:provide("schema", "schema-exporter")
 function _:schema-export-kontext() as element(schema) {
-  _:schema-regelung() update (
+  _:schema() update (
     insert node <element name="hallo" type="text"/> into .  )
 };
 

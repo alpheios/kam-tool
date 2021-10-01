@@ -1,4 +1,12 @@
 # Changes
+## Version 2.0 [01.10.2021] BugFixes
+Update auf 9.6.1
+## Version 2.0b [17.09.2021] Update auf BaseX 9.6
+fixed: kk-management-summary / kk-top-4: Datum wird jetzt korrekt als z.B. 2021/Q1 angezeigt in den Kenngrößen bei KK
+Update auf BaseX 9.6
+
+TODO: refresh einzelner Forms
+
 ## Version 1.4 [18.12.2020] Regelungen haben eine zusätzliche Beziehung zu einem neuen Schema sanofi/quote
 added: resources/quote.xqm
 added: feld quote in resource/regelung.xqm

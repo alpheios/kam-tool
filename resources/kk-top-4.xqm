@@ -25,7 +25,21 @@ function _:datastore-name(
 declare %plugin:provide("schema/process/table/items","kk-history")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
-for $item in $Items order by $item/datum return $item
+for $item in $Items order by $item/datum 
+let $fixed-date-item := try {$item update replace value of node ./datum with fn:format-date(./datum, "[YYYY]/[DD]" )}catch * {$item}
+let $fixed-date-item := 
+  try {
+      $fixed-date-item update replace value of node ./datum with 
+        ((./datum=>substring-before("/"))||"/"||(
+              switch (./datum=>substring-after('/')) 
+              case '1' return "Q1" 
+              case '10' return "Q4"
+              case '4' return "Q2"
+              case '7' return "Q3"
+              default return "Q1"))}
+  catch * {$fixed-date-item} 
+
+return $fixed-date-item
 };
 
 declare %plugin:provide("schema/set/elements","kk-history")
@@ -34,6 +48,8 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     let $schema := $Schema update delete node ./*:element
     let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
     let $schema := $schema update insert node $elements-in-order as last into .
+    (: :)
+    let $schema := $schema update replace value of node ./element[@name='datum']/@type with "text"
     return $schema
 };
 

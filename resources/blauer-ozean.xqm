@@ -20,6 +20,29 @@ return <li>{$key} : {$Context($key)}</li>
 </pre>
 };
 
+(: adapter for ui:page to schema title :)
+declare %plugin:provide("ui/page/title")
+function _:render-page-form-ui-title-adapter($map as map(*))
+as xs:string{
+ _:schema()/modal/title/string()
+};
+
+declare %plugin:provide("ui/page/heading/breadcrumb")
+function _:render-page-form-ui-breadcrumb-adapter($Context as map(*))
+as element(xhtml:ol){
+let $context := $Context("context")
+let $provider := $Context("provider")
+return
+  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
+      <li>
+        <a href="javascript:window.history.back()">Zurück</a>
+      </li>
+      <li class="active">
+        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
+      </li>
+    </ol>
+};
+
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
@@ -33,7 +56,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     return $schema};
 
 
-declare %plugin:provide("schema","kk") function _:schema-kk()
+declare %plugin:provide("schema","kk") function _:schema()
 as element(schema){
 <schema xmlns="" name="blauer-ozean" domain="sanofi" provider="sanofi/blauer-ozean">
     <modal>

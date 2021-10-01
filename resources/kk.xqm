@@ -5,20 +5,18 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace ui      = "influx/ui";
+import module namespace user    = "influx/user";
+import module namespace db			= "influx/db";
+import module namespace common  = "sanofi/common" at "common.xqm";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundesländer");
 declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkassen");
+declare variable $_:kk-items := db:eval("collection('datastore-sanofi-kk')/kk");
 
-declare %plugin:provide('side-navigation-item')
-  function _:nav-item-stammdaten-kk()
-  as element(xhtml:li) {
-  <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=kk&amp;provider=sanofi/kk"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
-  </li>
-};
+
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kk-fusioniert()
@@ -27,6 +25,14 @@ declare %plugin:provide('side-navigation-item')
       <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
+
+declare %plugin:provide('side-navigation-item') function _:nav-item(){
+    common:nav-item(_:schema-default())
+};
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+
 
 declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
   $Item as element(),
@@ -69,22 +75,19 @@ as element(schema){
     <modal>
         <title>Gesetzliche Krankenkasse</title>
     </modal>
+    <nav-item sortkey="KK" context="kk" title="Gesetzliche Krankenkassen" icon="user-md"/>
     <element name="name" type="enum">
     <label>Name</label>
     {
       $_:kk ! <enum key="{.}">{.}</enum>
     }
     </element>
-    <element name="kv-bezirk" type="enum" multiple="">
-      <label>KV Bezirke</label>
-      {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
-    </element>
-    <element name="verantwortlich" type="foreign-key" render="dropdown"     required="">
+    <element name="verantwortlich" type="foreign-key" render="dropdown" required="">
       <provider>sanofi/key-accounter</provider>
       <key>@id/string()</key>
       <display-name>name/string()</display-name>
       <label>Zuständig</label>
-      <class>col-md-6</class>
+      <class>col-md-6 hidden-sm hidden-xs</class>
     </element>
     <element name="ansprechpartner" type="foreign-key" render="table" required="">
       <provider>sanofi/ansprechpartner</provider>
@@ -102,11 +105,17 @@ as element(schema){
     <element name="fusionsdatum" type="date">
       <label>Wurde fusioniert am</label>
     </element>
-    <element name="notizen" type="textarea">
+    <element name="kv-bezirk" type="enum" multiple="">
+      <label>KV Bezirke</label>
+      {$_:kv-bezirke ! <enum key="{.}">{.}</enum>}
+    </element>
+    <element name="notizen" type="link">
         <label>Link</label>
     </element>
+
   </schema>
 };
+
 
 declare %plugin:provide("schema/render/form/field/enum/datasource/filter")
 function _:filter-enum-datasource(
@@ -191,14 +200,14 @@ function _:render-no-form-buttons($Item as element(), $Schema as element(schema)
   und der Kontextswitch im Edit Link eingebaut werden, sonst kann beim neu anlegen einer KK kein Name
   für die KK ausgewählt werden.
 :)
-(:
+
 declare %plugin:provide("schema", "kk")
 function _:schema-kk() {  
   _:schema-default() update (
     replace value of node ./element[@name="name"]/@type with "hidden"
     ,delete node ./element[@name="name"]/label
   )
-};:)
+};
 
 declare %plugin:provide("schema/render/form/field/enum/datasource/filter", "name") 
 function _:filter-kk-names(
@@ -207,8 +216,8 @@ function _:filter-kk-names(
   $Context as map(*)
 ) as element(enum)* {
   let $schema := $Element/ancestor::schema
-  let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]
-  let $assigned-names := $kks/name/string()
+  (:let $kks := plugin:lookup("datastore/dataobject/all")!.($schema,map{})[@id!=$Item/@id]:)
+  let $assigned-names := $_:kk-items[@id!=$Item/@id]/name/string()
   let $names := $_:kk[not(.=$assigned-names)]
   return
     $names ! <enum key="{.}">{.}</enum>
@@ -260,7 +269,7 @@ declare %plugin:provide("profile/dashboard/widget")
 function _:profile-dashboard-widget-kk($Profile as element())
 {
     let $schema := plugin:provider-lookup("sanofi/key-accounter", "schema")!.()
-    let $key-accounter := plugin:lookup("datastore/dataobject/field")!.("username", plugin:lookup("username")!.(), $schema, map {})
+    let $key-accounter := plugin:lookup("datastore/dataobject/field")!.("username", user:current(), $schema, map {})
 
     let $Context := map{
       "context":"profile",
@@ -299,7 +308,7 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>
+              {(:<li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>:)}
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
               <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
@@ -326,7 +335,7 @@ return
                   }
                   </div>
               </div>
-              <div id="tab-3" class="tab-pane">
+              {(:<div id="tab-3" class="tab-pane">
                   <div class="panel-body">
                     {
                     let $provider := "sanofi/blauer-ozean"
@@ -341,7 +350,7 @@ return
                         plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
                     }
                   </div>
-              </div>
+              </div>:)}
               <div id="tab-4" class="tab-pane">
                   <div class="panel-body">
                     {

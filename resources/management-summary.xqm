@@ -131,10 +131,11 @@ let $kk-history-years :=
     for $item in $kk-history-items
     let $datum := $item/datum/string()
     order by $datum
-    return fn:format-date(xs:date($datum), "[D]. [M]. [Y]" )
+    return fn:format-date(xs:date($datum), "[D]/[Y]" )
 let $edit-button := plugin:provider-lookup($provider,"schema/render/button/modal/edit")!.($Item,$schema,$Context)
 let $add-button := plugin:provider-lookup($provider,"schema/render/button/modal/new")!.($schema,$Context)
-let $marktanteil-names := string-join((for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||fn:format-date(xs:date(.), "[D]. [M]. [Y]" )||'"')),',')
+let $marktanteil-names := (for $i in $kk-history-items order by $i/datum return $i/datum/string()!('"'||fn:format-date(xs:date(.), "[D]/[Y]" )||'"'))
+                          =>string-join(',')
 let $marktanteil-values := string-join((for $i in $kk-history-items order by $i/datum return $i/marktanteil/string()!('"'||.||'"')),',')
 let $arzneimittelausgaben-values := string-join((for $i in $kk-history-items order by $i/datum return (
   try {

@@ -19,6 +19,29 @@ declare %plugin:provide('side-navigation-item')
   </li>
 };
 
+(: adapter for ui:page to schema title :)
+declare %plugin:provide("ui/page/title")
+function _:page-title($map as map(*))
+as xs:string{
+ _:schema()/modal/title/string()
+};
+
+declare %plugin:provide("ui/page/heading/breadcrumb")
+function _:page-breadcrumb($Context as map(*))
+as element(xhtml:ol){
+let $context := $Context("context")
+let $provider := $Context("provider")
+return
+  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
+      <li>
+        <a href="javascript:window.history.back()">Zurück</a>
+      </li>
+      <li class="active">
+        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
+      </li>
+    </ol>
+};
+
 declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
 };
@@ -41,7 +64,7 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
     let $schema := $schema update insert node $elements-in-order as last into .
     return $schema};
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") function _:schema()
 as element(schema){
 <schema xmlns="" name="key-accounter" domain="sanofi" provider="sanofi/key-accounter">
     <modal>

@@ -5,6 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
+import module namespace common  = "sanofi/common" at "common.xqm";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -17,6 +18,12 @@ declare %plugin:provide('side-navigation-item')
       <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav"><i class="fa fa-eyedropper"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
   </li>
 };
+
+
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+
 
 declare %plugin:provide("schema/process/table/items","lav")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
@@ -33,7 +40,7 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
     return $schema
 };
 
-declare %plugin:provide("schema") function _:schema2()
+declare %plugin:provide("schema") function _:schema-default()
 as element(schema){
 <schema xmlns="" name="lav" domain="sanofi" provider="sanofi/lav">
     <modal>
@@ -59,7 +66,7 @@ as element(schema){
             <label>Ansprechpartner</label>
             <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
-    <element name="notizen" type="textarea">
+    <element name="notizen" type="html">
         <label>Link</label>
     </element>
 </schema>
