@@ -43,4 +43,3 @@ import module namespace choose-values-api       = "sanofi/api/choose-values" at 
 import module namespace choose-columns          = "sanofi/views/choose-columns" at "views/choose-columns/choose-column.xqm";
 import module namespace choose-columns-provider = "sanofi/provider/choose-columns" at "views/choose-columns/choose-column-provider.xqm";
 import module namespace choose-columns-api      = "sanofi/api/choose-columns" at "views/choose-columns/choose-column-api.xqm";
-import module namespace glossar-api						 = "sanofi/glossar/api" at "resources/glossar-api.xqm";
