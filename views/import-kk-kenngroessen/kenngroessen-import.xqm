@@ -10,17 +10,19 @@ declare namespace mod="http://influx.adesso.de/module";
 
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
+declare variable $_:ns:=namespace-uri(<_:ns/>);
+
 
 declare %plugin:provide('side-navigation-item')
         %plugin:allow("admin")
   function _:nav-item-kam()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="M">
-      <a href="{$global:servlet-prefix}/admin/sanofi/import-kenngroessen"><i class="fa fa-upload"></i> <span data-i18n="side-navigation-import-kenngroessen" class="nav-label">Kenngrößen Import</span></a>
+      <a href="{$global:servlet-prefix}/admin/api/page?provider={$_:ns}"><i class="fa fa-upload"></i> <span data-i18n="side-navigation-import-kenngroessen" class="nav-label">Kenngrößen Import</span></a>
   </li>
 };
 
-declare %plugin:provide("ui/page/content","sanofi/import-kenngroessen")
+declare %plugin:provide("ui/page/content")
 function _:sanofi-kenngroessen-importer(
   $map as map(*)
 ) as element(xhtml:div) {
@@ -45,13 +47,13 @@ function _:sanofi-kenngroessen-importer(
   </div>
 };
 
-declare %plugin:provide("ui/page/custom-js","sanofi/import-kenngroessen")
+declare %plugin:provide("ui/page/custom-js")
 function _:page-custom-js($map){  
   <script type="text/javascript" src="{$global:inspinia-path}/js/plugins/dropzone/dropzone.js"></script>,
   <script type="text/javascript" src="{$_:module-static}/js/configureDropzoneForKenngroessenCSV.js"></script>
 };
 
-declare %plugin:provide("ui/page/footer","sanofi/import-kenngroessen") 
+declare %plugin:provide("ui/page/footer") 
 function _:page-footer-app-manager(
     $Params as map(*)
 ) as element() {

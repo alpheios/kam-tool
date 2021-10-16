@@ -6,6 +6,7 @@ import module namespace global ='influx/global';
 import module namespace ui='influx/ui';
 import module namespace db='influx/db';
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace import="influx/modules";
 
 declare namespace functx = "http://www.functx.com";
 
