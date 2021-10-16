@@ -2,15 +2,11 @@ module namespace _="sanofi/api/user-import";
 
 import module namespace plugin='influx/plugin';
 import module namespace rest = "http://exquery.org/ns/restxq";
-import module namespace global ='influx/global';
-import module namespace ui='influx/ui';
-import module namespace db='influx/db';
+import module namespace alert='influx/ui/alert';
+import module namespace import="influx/modules";
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
-
-declare variable $_:meta := doc("../../module.xml")/mod:module;
-declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
 
 declare %rest:path("/api/sanofi/import-users")
         %rest:POST
@@ -21,7 +17,7 @@ function _:upload-app-req(
 
   if (count(map:keys($Files)) > 1)
   then
-    ui:error(<span data-i18n="to-many-files-uploaded">You uploaded to many files.</span>)
+    alert:error(<span data-i18n="to-many-files-uploaded">You uploaded to many files.</span>)
   else
     let $usersString := 
       for $fileName in map:keys($Files)
@@ -65,12 +61,12 @@ function _:api-import-users() {
       return
         if (not($importUsersFailed))
         then (
-          ui:info(<span data-i18n="import-users-success">users successfully imported.</span>),
+          alert:info(<span data-i18n="import-users-success">users successfully imported.</span>),
           <div data-remove="#users-list" data-animation="fadeOutRight"></div>
         )
-        else ui:error(<span data-i18n="import-users-failed-during-db-operation">Import of users failed due to database operations.</span>)
+        else alert:error(<span data-i18n="import-users-failed-during-db-operation">Import of users failed due to database operations.</span>)
     else
-      ui:error(<span data-i18n="import-users-failed-no-users">No users to import.</span>)
+      alert:error(<span data-i18n="import-users-failed-no-users">No users to import.</span>)
 };
 
 declare function _:extract-username($entry as element()) {
@@ -142,7 +138,7 @@ declare function _:render-users(
       </tbody>
     </table>
     <h4><strong>Insgesamt: </strong>{count($users)}</h4>
-    <a href="{$global:servlet-prefix}/api/sanofi/import-users/import" class="ajax pull-right btn btn-primary">Benutzer importieren</a>
+    <a href="{rest:base-uri()}/api/sanofi/import-users/import" class="ajax pull-right btn btn-primary">Benutzer importieren</a>
   </div>
 };
 

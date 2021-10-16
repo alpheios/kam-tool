@@ -11,17 +11,18 @@ declare namespace mod="http://influx.adesso.de/module";
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
 declare variable $_:entities-path := file:base-dir()||"/entities/entities.csv";
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide('side-navigation-item')
         %plugin:allow("admin")
   function _:nav-item-kam()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="M">
-      <a href="{$global:servlet-prefix}/admin/sanofi/choose-columns"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-columns" class="nav-label">Spalten festlegen</span></a>
+      <a href="{$global:servlet-prefix}/admin/api/page?provider={$_:ns}"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-columns" class="nav-label">Spalten festlegen</span></a>
   </li>
 };
 
-declare %plugin:provide("ui/page/custom-js","sanofi/choose-columns")
+declare %plugin:provide("ui/page/custom-js")
 function _:page-custom-js($map){  
   <script type="text/javascript" src="{$_:module-static}/js/choose-columns.js"></script>
 };
@@ -35,7 +36,7 @@ declare function _:read-entities() {
   return $entities
 };
 
-declare %plugin:provide("ui/page/content","sanofi/choose-columns")
+declare %plugin:provide("ui/page/content")
 function _:sanofi-choose-columns(
   $map as map(*)
 ) as element(xhtml:div) {

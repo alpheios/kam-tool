@@ -5,6 +5,7 @@ import module namespace rest = "http://exquery.org/ns/restxq";
 import module namespace global ='influx/global';
 import module namespace ui='influx/ui';
 import module namespace db='influx/db';
+import module namespace import="influx/modules";
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
