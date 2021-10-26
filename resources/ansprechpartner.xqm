@@ -5,12 +5,14 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
+import module namespace common  = "sanofi/common" at "common.xqm";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:gremien := plugin:lookup("plato/schema/enums/get")!.("Gremien");
 declare variable $_:ausbildung := plugin:lookup("plato/schema/enums/get")!.("Ausbildungen");
 declare variable $_:position := plugin:lookup("plato/schema/enums/get")!.("Positionen");
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs()
@@ -20,28 +22,9 @@ declare %plugin:provide('side-navigation-item')
   </li>
 };
 
-(: adapter for ui:page to schema title :)
-declare %plugin:provide("ui/page/title")
-function _:render-page-form-ui-title-adapter($map as map(*))
-as xs:string{
- _:schema-default()/modal/title/string()
-};
-
-declare %plugin:provide("ui/page/heading/breadcrumb")
-function _:render-page-form-ui-breadcrumb-adapter($Context as map(*))
-as element(xhtml:ol){
-let $context := $Context("context")
-let $provider := $Context("provider")
-return
-  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
-      <li>
-        <a href="javascript:window.history.back()">Zurück</a>
-      </li>
-      <li class="active">
-        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
-      </li>
-    </ol>
-};
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs-fusioniert()
@@ -278,11 +261,7 @@ declare function _:render-unternehmensstruktur(
 ) as element(xhtml:div) {
   <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
       <div data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
-        <div class="ibox float-e-margins ">
-          <div class="ibox-title">
             <h5>Ansprechpartner</h5>
-          </div>
-          <div class="ibox-content">
             <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
               <div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
                 <div class="table-responsive">
@@ -325,8 +304,6 @@ declare function _:render-unternehmensstruktur(
                     }
                     </tbody>
                   </table>
-                </div>
-              </div>
             </div>
           </div>
         </div>

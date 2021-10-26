@@ -1,6 +1,7 @@
 module namespace _ = "sanofi/news";
 
 import module namespace plugin  = "influx/plugin";
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name(

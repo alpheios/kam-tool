@@ -10,6 +10,7 @@ import module namespace common  = "sanofi/common" at "common.xqm";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:kv-bezirk := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-lav()
@@ -72,15 +73,16 @@ as element(schema){
 </schema>
 };
 
-declare %plugin:provide("schema/ui/page/content","lav")
+declare %plugin:provide("schema/ui/page/content")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
-let $context := $Context("context")
-let $Context := map:remove($Context,"context")
-let $Context := map:put($Context,"context",$context)
+let $context := "lav"
+let $Context := $Context=>map:put("lav",$Item/@id/string())
+                        =>map:put("provider",$provider)
+
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar sanofi-lav-page" data-replace=".sanofi-lav-page">
   <div class="ibox float-e-margins">
@@ -88,34 +90,17 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/form", $context)!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-5" class="tab-pane">
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/vertrag"
-                        let $context := "lav"
-                        let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                        let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-                            let $date := $item/@last-modified-date
-                            order by $date descending
-                            return $item
-                        return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
-                    }
-                  </div>
-              </div>
-              <div id="tab-6" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                        let $provider := "sanofi/ansprechpartner"
                         let $context := "lav"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                         let $items :=

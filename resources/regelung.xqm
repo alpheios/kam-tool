@@ -17,6 +17,8 @@ declare variable $_:fachrichtungen-regelungen := plugin:lookup("plato/schema/enu
 declare variable $_:merkmale-regelungen := plugin:lookup("plato/schema/enums/get")!.("Merkmale Regelungen");
 declare variable $_:PBS-Typ := plugin:lookup("plato/schema/enums/get")!.("PBS-Typ");
 declare variable $_:merkmale-quote := plugin:lookup("plato/schema/enums/get")!.("Merkmale Quote");
+declare variable $_:ns := namespace-uri(<_:ns/>);
+
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
 
 (: 
@@ -494,6 +496,13 @@ function _:schema-render-table-thead-tr-td-actions2(
 ) as element(xhtml:th) {
   <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
 };
+
+declare %plugin:provide("content/view/context","kv")
+function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+};
+
 
 (: Funktione für deutsches, aktuelles Datum :)
 declare function _:current-date-to-html5-input-date-de() 

@@ -5,11 +5,13 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace ui =" influx/ui";
 import module namespace user="influx/user";
+import module namespace common="sanofi/common" at "common.xqm";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:interessen := plugin:lookup("plato/schema/enums/get")!.("Interessen");
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-key-accounter()
@@ -19,28 +21,37 @@ declare %plugin:provide('side-navigation-item')
   </li>
 };
 
-(: adapter for ui:page to schema title :)
-declare %plugin:provide("ui/page/title")
-function _:page-title($map as map(*))
-as xs:string{
- _:schema()/modal/title/string()
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+
+
+declare %plugin:provide('side-navigation-item') function _:nav-item(){
+    common:nav-item(_:schema())
 };
 
-declare %plugin:provide("ui/page/heading/breadcrumb")
-function _:page-breadcrumb($Context as map(*))
-as element(xhtml:ol){
-let $context := $Context("context")
-let $provider := $Context("provider")
+declare %plugin:provide("schema/ui/page/content")
+function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
+{
+let $form-id := "id-"||random:uuid()
+let $title := $Schema/*:modal/*:title/string()
+let $provider := $Schema/@provider
+let $context:=$Context("context")
+let $context-item-id:=$Context("context-item")/@id
+let $Context := $Context => map:put("modal", true())
+                         => map:put("contextTyp","page")
+                         => map:put("provider",$provider)
+                         => map:put("form-id",$form-id)
 return
-  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
-      <li>
-        <a href="javascript:window.history.back()">Zurück</a>
-      </li>
-      <li class="active">
-        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
-      </li>
-    </ol>
-};
+<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
+  <div class="ibox float-e-margins">
+      <div class="ibox-content">
+         {plugin:provider-lookup($provider,"schema/render/form")!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))}
+      </div>
+  </div>
+ </div>
+ };
+
 
 declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
@@ -115,7 +126,7 @@ let $provider := $Schema/@provider/string()
 let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
 return
     if (user:is-admin())
-    then ui:modal-button(<a class="btn btn-sm"><span class="fa fa-plus"/></a>,$link)
+    then ui:modal-button(<a><span class="fa fa-plus"/></a>,$link)
 };
 
 (::: Remove Buttons from modal if key-accounter details are opened from table-view :::)

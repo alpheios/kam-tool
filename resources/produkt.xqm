@@ -6,11 +6,13 @@ import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace common="sanofi/common" at "common.xqm";
 
 declare namespace functx = "http://www.functx.com";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 
 declare %plugin:provide('side-navigationX')
@@ -20,12 +22,16 @@ declare %plugin:provide('side-navigationX')
       <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/produkt&amp;provider=sanofi/produkt"><i class="fa fa-cubes"></i> <span class="nav-label">Produkte</span></a>
   </li>
 };
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
 
 declare %plugin:provide("schema/render/form/field/foreign-key/datasource/search")
+%plugin:provide("schema/render/form/field/foreign-key/datasource/search","produkt")
 function _:search-through-all-fields(
   $Item as element()?,
   $DisplayName as xs:string,
@@ -40,7 +46,6 @@ function _:search-through-all-fields(
   return functx:contains-case-insensitive(concat($name, $wirkstoff, $hersteller, $indikation), $Search)
 };
 
-
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
     let $columns := ("name","indikationen")
@@ -51,7 +56,9 @@ function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Sch
 };
 
 
-declare %plugin:provide("schema") function _:schema-customer()
+declare %plugin:provide("schema") 
+
+function _:schema()
 as element(schema){
 <schema xmlns="" name="produkt" domain="sanofi" provider="sanofi/produkt">
     <modal>

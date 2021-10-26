@@ -10,6 +10,7 @@ import module namespace date-util ="influx/utils/date-utils";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 declare variable $_:fachrichtungen := plugin:lookup("plato/schema/enums/get")!.("Fachrichtungen KV Kennzahlen");
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>

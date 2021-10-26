@@ -7,9 +7,11 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common = "sanofi/common" at "common.xqm";
+import module namespace import = "influx/modules";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 (: ----------------- :)
 
@@ -20,19 +22,6 @@ declare %plugin:provide('side-navigation-item') function _:nav-item-kv() as elem
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
-
-declare %plugin:provide-default('ui/page/custom-css') function _:page-custom-css(
-    $Params as map(*)
-) as element(xhtml:link)* {
-  (:<!-- schema -->:)
-    <link xmlns="http://www.w3.org/1999/xhtml" href="{$global:inspinia-path}/css/plugins/select2/select2.min.css" rel="stylesheet"/>
-};
-
-declare %plugin:provide-default('ui/page/custom-js') function _:page-custom-js(
-    $Params as map(*)
-) as element(xhtml:script)* {
-    <script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript" src="{$global:inspinia-path}/js/plugins/validate/jquery.validate.min.js"></script>
-};
 
 (: ----------------- :)
 
@@ -180,7 +169,7 @@ function _:render-no-form-buttons($Item as element(), $Schema as element(schema)
 ()
 };
 
-declare %plugin:provide("schema/ui/page/content","kv")
+declare %plugin:provide("schema/ui/page/content")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
@@ -188,6 +177,9 @@ let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
 let $context:=$Context("context")
 let $context-item-id:=$Context("context-item")/@id
+let $Context := $Context => map:put("modal", true())
+                         => map:put("contextTyp","page")
+                         => map:put("provider",$provider)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
   <div class="ibox float-e-margins">
@@ -195,16 +187,14 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
-              {(:<li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>:)}
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
               <li class=""><a data-toggle="tab" href="#tab-7">Regelungen</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/page/form")!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/form")!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))}
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">
@@ -212,6 +202,9 @@ return
                   {
                       let $provider := "sanofi/management-summary"
                       let $schema := plugin:provider-lookup($provider,"schema", "kv-top-4")!.()
+                      let $Context := $Context => map:put("schema",$schema)
+                                               => map:put("provider",$provider)
+                      let $context := "kv"
                       let $items :=
                           for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
                           let $date := $item/@last-modified-date
@@ -219,26 +212,10 @@ return
                           return $item
                       let $item-latest := $items[1]
                       return
-                          plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                          trace(plugin:provider-lookup($provider,"content/view/context",$context))!.($item-latest,$schema,$Context)
                   }
                   </div>
               </div>
-              {(:<div id="tab-3" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                    let $provider := "sanofi/blauer-ozean"
-                    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                    let $blauer-ozean-items :=
-                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/field",$context)!.("kv",$context-item-id,$schema,$Context)
-                        let $date := $item/@last-modified-date
-                        order by $date descending
-                        return $item
-                    let $blauer-ozean-item-latest := $blauer-ozean-items[1]
-                    return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
-                    }
-                  </div>
-              </div>:)}
               <div id="tab-4" class="tab-pane">
                   <div class="panel-body">
                     {
@@ -272,22 +249,6 @@ return
                     }
                   </div>
               </div>
-              <div id="tab-6" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                        let $provider := "sanofi/ansprechpartner"
-                        let $context := "kv"
-                        let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                        let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-                            let $date := $item/@last-modified-date
-                            order by $date descending
-                            return $item
-                        return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
-                    }
-                  </div>
-              </div>
               <div id="tab-7" class="tab-pane">
                   <div class="panel-body">
                     {
@@ -301,7 +262,7 @@ return
                             where $item/*:kv/string() = $context-item-id
                             return $item
                         return
-                        plugin:provider-lookup($provider,"schema/ibox/table/div",$context)!.($items,$schema,$Context)
+                        plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$schema,$Context)
                     }
                   </div>
               </div>

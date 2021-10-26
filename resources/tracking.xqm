@@ -6,12 +6,22 @@
   import module namespace db	    = "influx/db";
   import module namespace ui =" influx/ui";
   import module namespace date-util ="influx/utils/date-utils";
+  import module namespace common="sanofi/common" at "common.xqm";
+
+  
   declare namespace xhtml="http://www.w3.org/1999/xhtml";
   declare namespace functx = "http://www.functx.com";
   declare variable $_:ns := namespace-uri(<_:ns/>);
   
   (: hier werden die Auswahlwerte für die ab Version 1.1 verwendeten neuen Tracking - Kamapagne deklariert :)
   declare variable $_:tracking_kampange := plugin:lookup("plato/schema/enums/get")!.("Tracking Kampagne");
+
+
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+
+
   (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
   
   (:

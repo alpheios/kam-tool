@@ -6,6 +6,7 @@ import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace common="sanofi/common" at "common.xqm";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -13,6 +14,11 @@ declare namespace functx = "http://www.functx.com";
 
 declare variable $_:vertragsarten := plugin:lookup("plato/schema/enums/get")!.("Vertragsarten");
 declare variable $_:vertragseigenschaften := plugin:lookup("plato/schema/enums/get")!.("Vertragseigenschaften");
+declare variable $_:ns := namespace-uri(<_:ns/>);
+
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
 
 
 (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
@@ -38,29 +44,6 @@ declare %plugin:provide('side-navigation-item')
   </li>
 };
 
-
-(: adapter for ui:page to schema title :)
-declare %plugin:provide("ui/page/title")
-function _:render-page-form-ui-title-adapter($map as map(*))
-as xs:string{
- _:schema-default()/modal/title/string()
-};
-
-declare %plugin:provide("ui/page/heading/breadcrumb")
-function _:render-page-form-ui-breadcrumb-adapter($Context as map(*))
-as element(xhtml:ol){
-let $context := $Context("context")
-let $provider := $Context("provider")
-return
-  <ol xmlns="http://www.w3.org/1999/xhtml" class="breadcrumb">
-      <li>
-        <a href="javascript:window.history.back()">Zurück</a>
-      </li>
-      <li class="active">
-        <a href="{rest:base-uri()}/schema/list/items?provider={$provider}&amp;context={$context}">Übersicht</a>
-      </li>
-    </ol>
-};
 
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
 
@@ -162,7 +145,14 @@ as element(schema){
         {$_:vertragsarten ! <enum key="{.}">{.}</enum>}
         <label>Vertragsart</label>
     </element>
-    <element name="produkt" type="foreign-key" multiple="" async="" required="">
+    <!--element name="produkt" type="foreign-key" multiple="" async="" required="">
+        <provider>sanofi/produkt</provider>
+        <key>@id</key>
+        <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
+        <label>Produkt</label>
+        <class>col-md-6</class>
+    </element-->
+    <element name="produkt" type="datalist" multiple="" required="">
         <provider>sanofi/produkt</provider>
         <key>@id</key>
         <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
@@ -226,6 +216,58 @@ function _:schema-stammdaten-kk() {
     insert node attribute render {"context-item"} into ./element[@name="kk"]
     ,delete node ./element[@name="kk"]/label
   )
+};
+
+declare %plugin:provide("schema/render/form/field/datalist")
+function _:schema-form-field-enum-datasource($Item as element()?,
+    $Element as element(element),
+    $Context as map(*)
+) as item()* {
+  let $inp :=     
+    <div class="input-group">
+        <input name="produkt" list="produkt" class="form-control"/>
+        <span class="input-group-btn">
+            <a class="btn btn-warning" onclick="this.closest('div.input-group').remove()"><i class="fa fa-trash"/></a>
+        </span>
+    </div>
+  let $datalist :=   
+   <datalist id="produkt">
+      {
+        for $p in collection("datastore-sanofi-produkt")/produkt 
+        order by $p/name 
+        return <option>{string-join(($p/name/string(),$p/herstellername),' - ')=>normalize-space()}</option>
+      }
+    </datalist>
+
+return
+<fieldset id="prodlist">
+  {$datalist}
+  <div class="input-group">
+    <input name="produkt" list="produkt" class="form-control"/>
+    <span class="input-group-btn">
+    <a class="btn btn-primary" onclick="this.closest('fieldset').append(document.importNode(document.querySelector('#new_produkt_t').content, true))">      <i class="fa fa-plus"/>
+    </a>
+    </span>
+  </div>
+ {
+  for $k in trace($Item/produkt/key/text())
+  let $option := trace($datalist/option[.=normalize-space($k)])
+  where $option
+  return $inp update insert node attribute value {$option} into .//input[@name="produkt"]
+  }
+  <template id="new_produkt_t">
+   {$inp}
+  </template>
+</fieldset>
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/td/datalist")
+function _:schema-render-table-tbody-tr-td-enum(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:td) {
+    <td xmlns="http://www.w3.org/1999/xhtml">{string-join($Item/*:key/string(),", ")}</td>
 };
 
 declare %plugin:provide("schema", "kv")
@@ -350,41 +392,32 @@ function _:render-page-lav-table($Items as element(vertrag)*, $Schema as element
   let $context := $Context("context")
   return
     <div xmlns="http://www.w3.org/1999/xhtml" id="kk-vertrag" data-replace="#kk-vertrag">
-      <div class="ibox float-e-margins">
-          <div class="ibox-title">
-                  <div class="col-md-12"><label class="form-label pull-right">Vertrag hinzufügen {$Add-Button}</label></div>
-          </div>
-          <div class="ibox-content">
-          </div>
-
-      </div>
-      <div class="col-md-6">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>Verträge mit Sanofi</h5>
-              </div>
-              <div class="ibox-content">
+    <div class="row">
+      <div class="col-md-12"><label class="form-label pull-right">Vertrag hinzufügen {$Add-Button}</label></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 form-group">
+                  <h5 class="form-label">Verträge mit Sanofi</h5>
               {
                   let $items := $Vertraege[@herstellername="Sanofi"]/*:vertrag
                   return
-                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context) update (
+            delete node .//*:table/@data-filter,
+            delete node .//*:div[contains(@id,"search-")]
+          )
                }
-              </div>
-          </div>
       </div>
-      <div class="col-md-6">
-          <div class="ibox float-e-margins">
-              <div class="ibox-title">
-                  <h5>Verträge anderer Hersteller</h5>
-              </div>
-              <div class="ibox-content">
+      <div class="col-md-6 form-group">
+                  <h5 class="form-label">Verträge anderer Hersteller</h5>
               {
                   let $items := $Vertraege[@herstellername="Sonstige"]/*:vertrag
                   return
-                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context)
+                  plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$Schema,$Context) update (
+            delete node .//*:table/@data-filter,
+            delete node .//*:div[contains(@id,"search-")]
+          )
                }
-              </div>
-          </div>
+      </div>
       </div>
    </div>
 };

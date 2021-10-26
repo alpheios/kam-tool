@@ -1,11 +1,12 @@
 module namespace _ = "sanofi/glossar";
 import module namespace import ="influx/modules";
+import module namespace common  = "sanofi/common" at "common.xqm";
 
 (: import repo modules :)
 declare namespace plugin	= "influx/plugin";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
-import module namespace common  = "sanofi/common" at "common.xqm";
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 (:
   Quote von Ärzten nach Fachrichtung je Regelung

@@ -15,7 +15,7 @@ declare variable $_:land := plugin:lookup("plato/schema/enums/get")!.("Bundeslä
 declare variable $_:kv-bezirke := plugin:lookup("plato/schema/enums/get")!.("KV-Bezirke");
 declare variable $_:kk := plugin:lookup("plato/schema/enums/get")!.("Krankenkassen");
 declare variable $_:kk-items := db:eval("collection('datastore-sanofi-kk')/kk");
-
+declare variable $_:ns := namespace-uri(<_:ns/>);
 
 
 declare %plugin:provide('side-navigation-item')
@@ -75,7 +75,7 @@ as element(schema){
     <modal>
         <title>Gesetzliche Krankenkasse</title>
     </modal>
-    <nav-item sortkey="KK" context="kk" title="Gesetzliche Krankenkassen" icon="user-md"/>
+    <nav-item sortkey="KK" context="kk" title="Gesetzliche Krankenkassen" icon="bank"/>
     <element name="name" type="enum">
     <label>Name</label>
     {
@@ -290,17 +290,15 @@ function _:profile-dashboard-widget-kk($Profile as element())
 
 };
 
-declare %plugin:provide("schema/ui/page/content","kk")
+declare %plugin:provide("schema/ui/page/content")
 function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
 {
 let $form-id := "id-"||random:uuid()
 let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
-let $context := $Context("context")
-(: ToDo: Was sollen die 2 Zeilen? :)
-let $Context := map:remove($Context,"context")
-let $Context := map:put($Context,"context",$context)
-let $Context := if (map:contains($Context,"kk")) then $Context else map:put($Context,"kk",$Item/@id/string())
+let $context := "kk"
+let $Context := $Context=>map:put("kk",$Item/@id/string())
+                        =>map:put("provider",$_:ns)
 return
 <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar sanofi-kk-page" data-replace=".sanofi-kk-page">
   <div class="ibox float-e-margins">
@@ -308,15 +306,15 @@ return
           <ul class="nav nav-tabs">
               <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
-              {(:<li class=""><a data-toggle="tab" href="#tab-3">Blauer Ozean</a></li>:)}
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
-              <li class=""><a data-toggle="tab" href="#tab-6">Unternehmensstruktur</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context)}
+                     {                        
+                       plugin:provider-lookup($provider,"schema/render/form", $context)!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))
+                     }
                   </div>
               </div>
               <div id="tab-2" class="tab-pane">
@@ -335,22 +333,6 @@ return
                   }
                   </div>
               </div>
-              {(:<div id="tab-3" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                    let $provider := "sanofi/blauer-ozean"
-                    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                    let $blauer-ozean-items :=
-                        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
-                        let $date := $item/@last-modified-date
-                        order by $date descending
-                        return $item
-                    let $blauer-ozean-item-latest := $blauer-ozean-items[1]
-                    return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($blauer-ozean-item-latest,$schema,$Context)
-                    }
-                  </div>
-              </div>:)}
               <div id="tab-4" class="tab-pane">
                   <div class="panel-body">
                     {
@@ -372,22 +354,6 @@ return
                   <div class="panel-body">
                     {
                         let $provider := "sanofi/vertrag"
-                        let $context := "kk"
-                        let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                        let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-                            let $date := $item/@last-modified-date
-                            order by $date descending
-                            return $item
-                        return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
-                    }
-                  </div>
-              </div>
-              <div id="tab-6" class="tab-pane">
-                  <div class="panel-body">
-                    {
-                        let $provider := "sanofi/ansprechpartner"
                         let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
                         let $items :=

@@ -26,20 +26,14 @@ import module namespace kv-top-4                = "sanofi/kv-top-4" at "resource
 import module namespace kv-arztzahlen           = "sanofi/kv-arztzahlen" at "resources/kv-arztzahlen.xqm";
 
 import module namespace product-importer        = "sanofi/views/product-import" at "views/import-products/product-import.xqm";
-import module namespace product-importer-api    = "sanofi/api/product-import" at "views/import-products/product-import-api.xqm";
 import module namespace user-importer           = "sanofi/views/user-import" at "views/import-users/user-import.xqm";
-import module namespace user-importer-api       = "sanofi/api/user-import" at "views/import-users/user-import-api.xqm";
 import module namespace kenngroessen-importer        = "sanofi/views/kenngroessen-import" at "views/import-kk-kenngroessen/kenngroessen-import.xqm";
-import module namespace kenngroessen-importer-api    = "sanofi/api/kenngroessen-import" at "views/import-kk-kenngroessen/kenngroessen-import-api.xqm";
 (: REGELUNGEN IMPORTER -- 14.12.2020 :)
 import module namespace regelungen-importer        = "sanofi/views/regelungen-import" at "views/import-regelungen/regelungen-import.xqm";
-import module namespace regelungenssen-importer-api    = "sanofi/api/regelungen-import" at "views/import-regelungen/regelungen-import-api.xqm";
 
 
-import module namespace choose-values           = "sanofi/views/choose-values" at "views/choose-values/choose-values.xqm";
-import module namespace choose-values-provider  = "sanofi/provider/choose-values" at "views/choose-values/choose-values-provider.xqm";
-import module namespace choose-values-api       = "sanofi/api/choose-values" at "views/choose-values/choose-values-api.xqm";
+import module namespace choose-values           = "sanofi/views/choose-values" at "views/choose-values/view.xqm";
+import module namespace choose-values-ctrl		  = "sanofi/provider/choose-values" at "views/choose-values/controller.xqm";
 
 import module namespace choose-columns          = "sanofi/views/choose-columns" at "views/choose-columns/choose-column.xqm";
 import module namespace choose-columns-provider = "sanofi/provider/choose-columns" at "views/choose-columns/choose-column-provider.xqm";
-import module namespace choose-columns-api      = "sanofi/api/choose-columns" at "views/choose-columns/choose-column-api.xqm";
