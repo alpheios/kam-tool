@@ -45,7 +45,7 @@ function _:upload-app-req(
 
     (: Datei parsen -> von CSV nach XML :)
     let $kenngroessen := csv:parse($kenngroessenString, map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
     })/*:csv/*:record
     
@@ -70,7 +70,7 @@ function _:api-import-kenngroessen() {
     if(file:exists($tempFilePath))
     then 
       let $kenngroessenFromCsv := csv:parse(file:read-text($tempFilePath), map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)

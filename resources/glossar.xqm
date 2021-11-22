@@ -1,5 +1,4 @@
 module namespace _ = "sanofi/glossar";
-import module namespace import ="influx/modules";
 import module namespace common  = "sanofi/common" at "common.xqm";
 
 (: import repo modules :)
@@ -16,12 +15,8 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kk-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="AAA">
-      <a href="{rest:base-uri()}/schema/list/items?context=&amp;provider=sanofi/glossar"><i class="fa fa-book"></i> <span class="nav-label">Glossar</span></a>
+      <a href="{rest:base-uri()}/schema/list/items?context=&amp;provider=sanofi/glossar&amp;contextType=page"><i class="fa fa-book"></i> <span class="nav-label">Glossar</span></a>
   </li>
-};
-
-declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
-<pre>{serialize($Item)}</pre>
 };
 
 declare %plugin:provide("datastore/name")
@@ -32,9 +27,25 @@ function _:datastore-name(
     'datastore-sanofi-glossar'
 };
 
-declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("schema/ui/page/content")
+function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
+{
+  plugin:provider-lookup($Context?provider,"schema/render/page/form")!.($Item,$Schema,$Context)  
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions")
+function _:schema-render-table-tbody-tr-td-actions(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:td) {
+    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($_:ns,"schema/render/button/modal/edit")!.($Item,$Schema,$ContextMap)}</td>
+};
+
+
+declare %plugin:provide('ui/page/title') function _:title($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 declare %plugin:provide("schema") function _:schema()
@@ -43,7 +54,7 @@ as element(schema){
     <modal>
         <title>Glossar</title>
     </modal>
-   <element name="begriff" type="text">
+   <element name="name" type="text">
       <label>Begriff</label>
     </element> 
     <element name="beschreibung" type="html">
@@ -52,7 +63,7 @@ as element(schema){
     <element name="datum" type="date">
         <label>Datum</label>
     </element>
-    <element name="link" type="textarea" default="https://">
+    <element name="link" type="link" default="https://">
          <label>Link (https://) </label>
     </element>
   </schema>

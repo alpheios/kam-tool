@@ -18,6 +18,15 @@ function _:schema-render-table-prepare-rows-only-name(
     return $schema
 };
 
+declare %plugin:provide("schema/process/table/items")
+function _:schema-process-table-items(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  $Items[ansprechpartner=$Context?context-item-id]
+};
+
 declare %plugin:provide("schema") 
 function _:schema-customer-influence()
 as element(schema){
@@ -30,11 +39,20 @@ as element(schema){
       <provider>sanofi/ansprechpartner</provider>
       <display-name>name/string()</display-name>
     </element>
-     <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="1" required="">
+     <element name="produkt" type="foreign-key" render="dropdown" multiple="" async="" minimumInputLength="3" delay="250" required="">
         <provider>sanofi/produkt</provider>
         <key>@id</key>
         <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
         <label>Produkt</label>
+        <query><![CDATA[let $produkte := collection('datastore-sanofi-produkt')/produkt
+let $context-item := collection('datastore-sanofi-ansprechpartner-einfluss')/ansprechpartner-einfluss[@id=$context-item-id]
+let $linked-products := $context-item/produkt/key/string()
+let $selected := $produkte[@id=$linked-products]
+let $search := $produkte[lower-case(string-join(.//text(),' ')) => contains(lower-case($term))][not(@id=$linked-products)]
+return (
+  $selected ! <element id="{./@id/string()}" selected="true">{string-join((normalize-space(./name),./herstellername)," - ")}</element> 
+ ,$search   ! <element id="{./@id/string()}" selected="false">{string-join((normalize-space(./name),./herstellername)," - ")}</element>
+)]]></query>
         <class>col-md-6</class>
     </element>
     <element name="thema" type="text">

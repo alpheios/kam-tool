@@ -13,14 +13,14 @@ declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:ns := namespace-uri(<_:ns/>);
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-projekt()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-products()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/projekt&amp;provider=sanofi/projekt"><i class="fa fa-archive"></i> <span class="nav-label">Projekte</span></a>
+      <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/projekt&amp;provider=sanofi/projekt"><i class="fa fa-archive"></i> <span class="nav-label">Projekte</span></a>
   </li>
 };
 
@@ -28,7 +28,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-products-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/projekt&amp;provider=sanofi/projekt"><i class="fa fa-archive"></i> <span class="nav-label">Projekte</span></a>
+      <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/projekt&amp;provider=sanofi/projekt"><i class="fa fa-archive"></i> <span class="nav-label">Projekte</span></a>
   </li>
 };
 

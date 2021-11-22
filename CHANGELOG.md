@@ -1,6 +1,35 @@
 # Changes
+## Version 2.2 [21.11.2021] Refactoring, Performance Optimierungen, multimodale Dialoge
+* das Refactoring betrifft die Änderungen an influx -> insb. Abschaffung schema-ui-adapter
+* Performance Optimierungen -> Tabellen haben für bestimmte Einträge jeweils teure Abfragen gemacht, diese werden jetzt nur noch einmal gemacht
+** Request-Parameter
+* contextType = page | modal werden jetzt konsistenter behandelt
+* modal = zeigt die Tiefe der modalen Dialoge an
+* schema/list/items kann jetzt was schema/items/search kann -> daher wurde das ersetzt
+* regelungen waren so langsam, dass sie ihre eigene spezialisierte Tabelle bekommen haben. Die Abfrage z.B. von Produkten und die Aufbereitung für die Tabelle werden jetzt in einem db:eval() Aufruf erledigt statt in tausenden
+* in den stammdaten Bereichen werden jetzt aus der Basis-Liste direkt modale Dialoge aufgerufen, dann müssen die listen nicht mehr aktualisiert werden. Leider können die Basislisten nicht aktualisiert werden (TODO?)
+* Auslagern von gemeinsamen Code in "common.xqm"
+* ACHTUNG: CSV Import und Export verwenden nun Tabulatoren an Stelle von ";"
+* ui/page/logo hinzugefügt
+* schema/process/table/items wird jetzt konsistenter genutzt um die Elemente einer Tabelle zu filtern
+* minimumInputLength wird verwendet für async dropdowns
+* 
+
+## Version 2.1 [01.11.2021] Update auf BaseX 9.6.3
+refactoring: Code wurde zusammengelegt
+diese Version funktioniert nur mit der aktuellen influx Version
+* ui/page und ui/provider-page wurden endlich zusammengelegt
+* influx/schema/ui-adapter wurde durch provider logik ergänzt
+
+Migration für Produkte Felder:
+Am besten über einen neuerlichen Import müssen die IDs durch "produktname" + " - " + "herstellername" ersetzt werden
+Vorteil: 
+die Anzeige der Liste, in denen Produkte angezeigt werden lädt schneller
+die Auswahl von Produkten ist um ein vielfaches schneller
+
 ## Version 2.0 [01.10.2021] BugFixes
 Update auf 9.6.1
+
 ## Version 2.0b [17.09.2021] Update auf BaseX 9.6
 fixed: kk-management-summary / kk-top-4: Datum wird jetzt korrekt als z.B. 2021/Q1 angezeigt in den Kenngrößen bei KK
 Update auf BaseX 9.6

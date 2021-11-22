@@ -12,7 +12,7 @@ declare variable $_:ns := namespace-uri(<_:ns/>);
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide('ui/page/heading') function _:breadcrumb($m){common:ui-page-heading($m)};
 
 
 declare
@@ -34,18 +34,32 @@ function _:management-summary-render-new(
     plugin:provider-lookup($provider,"content/view/context",$context)!.($Item,$schema,$Context)
 };
 
-
 (: provide sorting for items :)
-declare %plugin:provide("schema/process/table/items")
+declare %plugin:provide("schema/process/table/items","kv")
+%plugin:provide("schema/process/table/items","kv-top-4")
 function _:schema-render-table-prepare-rows(
-  $Items as element()*, 
-  $Schema as element(schema),
-  $Context as map(*)
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
 ) {
-  for $item in $Items 
-  order by $item/datum 
-  return $item
+  if ($Context?context-item-id) 
+  then $Items[kv=$Context?context-item-id]
+  else for $x in $Items order by $x/datum return $x
 };
+
+declare %plugin:provide("schema/process/table/items","kk")
+%plugin:provide("schema/process/table/items","kk-top-4")
+function _:schema-process-table-items-kk(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  if ($Context?context-item-id) 
+  then $Items[kk=$Context?context-item-id]
+  else for $x in $Items order by $x/datum return $x
+};
+
+
 
 (: provide for columns :)
 declare %plugin:provide("schema/set/elements")
@@ -322,7 +336,8 @@ var lineOptions = {
                 return
                   plugin:provider-lookup($kk-history-provider,"schema/render/form",$context)!.($kk,$kk-history,$Context)
               }
-          </div></div>
+          </div>
+  </div>
 };
 
 declare %plugin:provide("content/view/context","kv")
@@ -332,7 +347,7 @@ function _:content-view-for-kv(
   $Context as map(*)
 ) {
   let $context := "kv"
-  let $kv := $Context("context-item")
+  let $kv := $Context?context-item
   let $kv-top4-provider := "sanofi/kv-top-4"
   let $kv-arztzahlen-provider := "sanofi/kv-arztzahlen"
   return
@@ -353,7 +368,6 @@ function _:content-view-for-kv(
           {
             let $ap-schema := plugin:provider-lookup("sanofi/ansprechpartner", "schema")!.()
             let $kv-ap := db:eval("collection('datastore-sanofi-ansprechpartner')/ansprechpartner[kv=$id][position='Vorstand']",map{"id":$kv/@id/string()})
-            (:trace(plugin:lookup("datastore/dataobject/field")!.("kv", $kv/@id/string(), $ap-schema, $Context)):)
             let $Context := map:put($Context, "context", "kv-top-4")
             let $vorstaende := $kv-ap[*:position = "Vorstand"]
             return if (count($vorstaende)>0) then

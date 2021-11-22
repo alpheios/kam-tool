@@ -17,13 +17,13 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-key-accounter()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/key-accounter&amp;provider=sanofi/key-accounter"><i class="fa fa-male"></i> <span class="nav-label">Key Accounter</span></a>
+      <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/key-accounter&amp;provider=sanofi/key-accounter"><i class="fa fa-male"></i> <span class="nav-label">Key Accounter</span></a>
   </li>
 };
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 declare %plugin:provide('side-navigation-item') function _:nav-item(){
@@ -38,18 +38,12 @@ let $title := $Schema/*:modal/*:title/string()
 let $provider := $Schema/@provider
 let $context:=$Context("context")
 let $context-item-id:=$Context("context-item")/@id
-let $Context := $Context => map:put("modal", true())
+let $Context := $Context 
                          => map:put("contextTyp","page")
                          => map:put("provider",$provider)
                          => map:put("form-id",$form-id)
-return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-  <div class="ibox float-e-margins">
-      <div class="ibox-content">
-         {plugin:provider-lookup($provider,"schema/render/form")!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))}
-      </div>
-  </div>
- </div>
+return plugin:provider-lookup($provider,"schema/render/form")!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns)) => common:schema-ui-page($Item,$Schema,$Context)
+
  };
 
 
@@ -103,7 +97,7 @@ as element(schema){
       </element>
       <element name="username" type="enum">
         <label>User</label>
-        {user:list()! <enum key="{.}">{.}</enum>}
+        {user:list() ! <enum key="{.}">{.}</enum>}
       </element>
  </schema>
 };

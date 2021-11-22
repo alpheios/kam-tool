@@ -5,6 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
+import module namespace item = "influx/schema/item";
 import module namespace common  = "sanofi/common" at "common.xqm";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -18,13 +19,13 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/ansprechpartner&amp;provider=sanofi/ansprechpartner"><i class="fa fa-address-book"></i> <span class="nav-label">Ansprechpartner</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/ansprechpartner&amp;provider=sanofi/ansprechpartner&amp;contextType=page"><i class="fa fa-address-book"></i> <span class="nav-label">Ansprechpartner</span></a>
   </li>
 };
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contacs-fusioniert()
@@ -35,24 +36,31 @@ declare %plugin:provide('side-navigation-item')
 };
 
 (: provide sorting for items :)
-declare %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows(
+declare %plugin:provide("schema/process/table/items","lav")
+function _:schema-process-table-items-lav(
     $Items as element()*, 
     $Schema as element(schema),
     $Context as map(*)
 ) {
-  let $context := $Context("context")
-  let $kk-provider := "sanofi/kk"
-  let $kk-schema := plugin:provider-lookup($kk-provider, "schema", $context)!.()
-  return
-    for $item in $Items
-    let $kk := 
-      if ($item/kk/string())
-      then plugin:lookup("datastore/dataobject")!.($item/kk/string(), $kk-schema, $Context)
-      else ()
-    order by $item/name
-    where not($kk/fusioniert/string() = "true")
-    return $item
+  $Items[lav=$Context?context-item-id]
+};
+
+declare %plugin:provide("schema/process/table/items","kk")
+function _:schema-process-table-items-kk(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  $Items[kk=$Context?context-item-id]
+};
+
+declare %plugin:provide("schema/process/table/items","kv")
+function _:schema-process-table-items-kv(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  $Items[kv=$Context?context-item-id]
 };
 
 declare %plugin:provide("schema/process/table/items", "fusioniert/ansprechpartner")
@@ -182,40 +190,32 @@ function _:schema-lav() {
   )
 };
 
-declare %plugin:provide("datastore/dataobject/delete", "kk")
-function _:clear-connection-to-kk(
+declare 
+%plugin:provide("datastore/dataobject/delete", "kk")
+%plugin:provide("datastore/dataobject/delete", "kv")
+%plugin:provide("datastore/dataobject/delete", "lav")
+function _:clear-connection(
   $Item-Id as xs:string,
   $Schema as element(schema),
   $Context as map(*)
 ) {
-  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
-  let $item := $item update replace value of node ./kk with ()
-  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
+  if ($Context?item) 
+  then (
+    $Context?item => item:set($Context?context,"") => item:put($Schema,$Context)
+   ,plugin:provider-lookup($Context?provider,"schema/render/delete",$Context?context)!.($Context?item, $Schema, $Context)
+  )
 };
 
-declare %plugin:provide("datastore/dataobject/delete", "kv")
-function _:clear-connection-to-kv(
-  $Item-Id as xs:string,
-  $Schema as element(schema),
-  $Context as map(*)
-) {
-  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
-  let $item := $item update replace value of node ./kk with ()
-  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
-};
 
-declare %plugin:provide("datastore/dataobject/delete", "lav")
-function _:clear-connection-to-lav(
-  $Item-Id as xs:string,
+declare %plugin:provide("schema/ui/page/content")
+function _:sanofi-ansprechpartner(
+  $Items as element(ansprechpartner)*,
   $Schema as element(schema),
   $Context as map(*)
-) {
-  let $item := plugin:lookup("datastore/dataobject")!.($Item-Id, $Schema, $Context)
-  let $item := $item update replace value of node ./lav with ()
-  let $updateItem := plugin:lookup("datastore/dataobject/put")!.($item, $Schema, $Context)
-  return <tr data-remove="#item-{$Item-Id}" data-animation="fadeOutRight"></tr>
+) as element(xhtml:div) {
+  if (count($Items)=1) then
+    plugin:provider-lookup($Context?provider,"schema/render/page/form")!.($Items,$Schema,$Context) => common:schema-ui-page($Items,$Schema,$Context)
+    else if (count($Items)>1) then plugin:provider-lookup($Context?provider,"schema/render/table")!.($Items,$Schema,$Context)
 };
 
 declare %plugin:provide("content/view/context","kk")
@@ -254,14 +254,23 @@ function _:sanofi-ansprechpartner-lav(
     _:render-unternehmensstruktur($ap-items, $Items[1]/@id/string(), "lav")
 };
 
+declare %plugin:provide("schema/render/table/tbody/tr/actions","stammdaten/ansprechpartner")
+function _:schema-render-table-tbody-tr-td-actions(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:td) {
+    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($_:ns,"schema/render/button/modal/edit","stammdaten/ansprechpartner")!.($Item,$Schema,$ContextMap)}</td>
+};
+
 declare function _:render-unternehmensstruktur(
   $Ansprechpartner as element(ansprechpartner)*,
   $Context-Item-Id as xs:string?,
   $Context as xs:string
 ) as element(xhtml:div) {
-  <div xmlns="http://www.w3.org/1999/xhtml" data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
+  <div xmlns="http://www.w3.org/1999/xhtml">
       <div data-replace="#kk-ansprechpartner" id="kk-ansprechpartner">
-            <h5>Ansprechpartner</h5>
+            <h2>Ansprechpartner</h2>
             <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 100%;">
               <div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
                 <div class="table-responsive">
@@ -284,11 +293,11 @@ declare function _:render-unternehmensstruktur(
                             let $id := $item/@id/string()
                             let $name := $item/*:name/string()
                             let $einfluss-id := $item/*:einfluss/string()
-                            let $einfluesse := plugin:lookup("datastore/dataobject/field")!.("ansprechpartner",$id,$einfluss-schema,map{})
+                            let $einfluesse := plugin:provider-lookup("sanofi/ansprechpartner/einfluss","datastore/dataobject/field")!.("ansprechpartner",$id,$einfluss-schema,map{})
                             return
                                 for $einfluss in $einfluesse
                                 let $produkt-id := $einfluss/*:produkt/string()
-                                let $produkt := if ($produkt-id!="") then plugin:lookup("datastore/dataobject")!.($produkt-id,$produkt-schema,map{}) else ()
+                                let $produkt := if ($produkt-id!="") then plugin:provider-lookup("sanofi/produkt","datastore/dataobject")!.($produkt-id,$produkt-schema,map{}) else ()
                                 return
                                   <tr id="item-{$id}">
                                     <td>

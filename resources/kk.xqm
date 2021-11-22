@@ -22,7 +22,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-kk-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/kk&amp;provider=sanofi/kk&amp;contextType=page"><i class="fa fa-bank"></i> <span class="nav-label">Krankenkassen</span></a>
   </li>
 };
 
@@ -31,7 +31,7 @@ declare %plugin:provide('side-navigation-item') function _:nav-item(){
 };
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
@@ -299,12 +299,11 @@ let $provider := $Schema/@provider
 let $context := "kk"
 let $Context := $Context=>map:put("kk",$Item/@id/string())
                         =>map:put("provider",$_:ns)
+                        =>map:put("context-item",$Item)
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar sanofi-kk-page" data-replace=".sanofi-kk-page">
-  <div class="ibox float-e-margins">
-      <div class="tabs-container">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="tabs-container">
           <ul class="nav nav-tabs">
-              <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
+              <li class="active"><a data-toggle="tab" href="#tab-1">Stammdaten</a></li>
               <li class=""><a data-toggle="tab" href="#tab-2">Kenngrößen</a></li>
               <li class=""><a data-toggle="tab" href="#tab-4">Projekte</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
@@ -313,7 +312,7 @@ return
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
                      {                        
-                       plugin:provider-lookup($provider,"schema/render/form", $context)!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))
+                       plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context=>map:put("context-provider",$_:ns))
                      }
                   </div>
               </div>
@@ -322,8 +321,13 @@ return
                   {
                       let $provider := "sanofi/management-summary"
                       let $schema := plugin:provider-lookup($provider,"schema", "kk-top-4")!.()
+                      let $Context := $Context =>map:put("provider",$provider)
+                                         =>map:put("context-provider",$_:ns)
+                                         =>map:put("context-item", $Item)
+                                         =>map:put("schema",$schema)
+                                         =>map:put("context-schema",$Schema)
                       let $items :=
-                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/all",$context)!.($schema,$Context)
+                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/search",$context)!.("kk",$Item/@id,$schema,$Context)
                           let $date := $item/@last-modified-date
                           order by $date descending
                           return $item
@@ -339,8 +343,13 @@ return
                         let $provider := "sanofi/projekt"
                         let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+                        let $Context := $Context =>map:put("provider",$provider)
+                                         =>map:put("context-provider",$_:ns)
+                                         =>map:put("context-item", $Item)
+                                         =>map:put("schema",$schema)
+                                         =>map:put("context-schema",$Schema)
                         let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/search",$Context?context)!.("kk",$Item/@id,$schema,$Context)
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
@@ -356,8 +365,13 @@ return
                         let $provider := "sanofi/vertrag"
                         let $context := "kk"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
+                        let $Context := $Context =>map:put("provider",$provider)
+                                         =>map:put("context-provider",$_:ns)
+                                         =>map:put("context-item", $Item)
+                                         =>map:put("schema",$schema)
+                                         =>map:put("context-schema",$Schema)
                         let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/search")!.("kk",$Item/@id,$schema,$Context)
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
@@ -367,7 +381,5 @@ return
                   </div>
               </div>
           </div>
-      </div>
-  </div>
- </div>
+      </div> 
  };

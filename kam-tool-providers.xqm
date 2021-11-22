@@ -12,6 +12,12 @@ declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
 
 
+declare %plugin:provide-default('ui/page/logo') function _:page-logo(
+    $Params as map(*)
+) as element(xhtml:img)* {
+<img src="/influx_app/modules/kam-tool/static/Sanofi_2011_logo.svg.png" xmlns="http://www.w3.org/1999/xhtml" width="60%" style="position:absolute;left:35px"/>
+};
+
 declare %plugin:provide('should/have/navbar/sidenav')
   function _:use-side-nav($map){true()};
 declare %plugin:provide('should/have/navbar/topnav')

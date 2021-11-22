@@ -16,14 +16,14 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-lav()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/" data-sortkey="AAA">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav"><i class="fa fa-eyedropper"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=lav&amp;provider=sanofi/lav&amp;contextType=page"><i class="fa fa-eyedropper"></i> <span class="nav-label">Landes-Apotheker-Vereine/Verbände</span></a>
   </li>
 };
 
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 declare %plugin:provide("schema/process/table/items","lav")
@@ -50,12 +50,19 @@ as element(schema){
     <element name="name" type="text">
         <label>Name:</label>
     </element>
-    <element name="verantwortlich" type="foreign-key" required="">
+    <element name="verantwortlich" type="foreign-key" required="" async="" minimumInputLength="0">
                 <provider>sanofi/key-accounter</provider>
                 <key>@id</key>
                 <display-name>name/string()</display-name>
                 <label>Zuständig</label>
                 <class>col-md-6</class>
+                <query><![CDATA[let $lav := collection('datastore-sanofi-lav')/lav[@id=$context-item-id]
+                  let $key-accounter := collection('datastore-sanofi-key-accounter')/key-accounter
+                  let $selected := $key-accounter[@id=$lav/key-accounter/key]
+return (
+  $selected ! <element id="{./@id/string()}" selected="true">{string-join((./name,./vorname)," - ")}</element> 
+  ,$key-accounter ! <element id="{./@id/string()}" selected="true">{string-join((./name,./vorname)," - ")}</element> 
+)]]></query>
     </element>
     <element name="kv-bezirk" type="enum" required="">
             {$_:kv-bezirk ! <enum key="{.}">{.}</enum>}
@@ -84,17 +91,16 @@ let $Context := $Context=>map:put("lav",$Item/@id/string())
                         =>map:put("provider",$provider)
 
 return
-<div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar sanofi-lav-page" data-replace=".sanofi-lav-page">
-  <div class="ibox float-e-margins">
-      <div class="tabs-container">
+
+       <div xmlns="http://www.w3.org/1999/xhtml" class="tabs-container">
           <ul class="nav nav-tabs">
-              <li class="active"><a data-toggle="tab" href="#tab-1">Formular</a></li>
+              <li class="active"><a data-toggle="tab" href="#tab-1">Stammdaten</a></li>
               <li class=""><a data-toggle="tab" href="#tab-5">Verträge</a></li>
           </ul>
           <div class="tab-content">
               <div id="tab-1" class="tab-pane active">
                   <div class="panel-body">
-                     {plugin:provider-lookup($provider,"schema/render/form", $context)!.($Item,$Schema,$Context)}
+                     {plugin:provider-lookup($provider,"schema/render/page/form", $context)!.($Item,$Schema,$Context)}
                   </div>
               </div>
               <div id="tab-5" class="tab-pane">
@@ -103,11 +109,12 @@ return
                         let $provider := "sanofi/vertrag"
                         let $context := "lav"
                         let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-                        let $items :=
-                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-                            let $date := $item/@last-modified-date
-                            order by $date descending
-                            return $item
+                        let $Context := $Context =>map:put("provider",$provider)
+                                                 =>map:put("context-provider",$_:ns)
+                                                 =>map:put("context-item", $Item)
+                                                 =>map:put("schema",$schema)
+                                                 =>map:put("context-schema",$Schema)
+                        let $items := db:eval("collection('datastore-sanofi-vertrag')/vertrag")
                         return
                         plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
                     }
@@ -115,6 +122,5 @@ return
               </div>
           </div>
       </div>
-  </div>
- </div>
+
  };

@@ -4,6 +4,7 @@ import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
 import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
+import module namespace common="sanofi/common/view" at "../common.xqm";
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
@@ -11,6 +12,7 @@ declare namespace mod="http://influx.adesso.de/module";
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
 declare variable $_:ns:=namespace-uri(<_:ns/>);
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 declare %plugin:provide('side-navigation-item')
         %plugin:allow("admin")
@@ -25,25 +27,19 @@ declare %plugin:provide("ui/page/content")
 function _:sanofi-product-importer(
   $map as map(*)
 ) as element(xhtml:div) {
-  <div xmlns="http://www.w3.org/1999/xhtml" class="content-with-sidebar row">
-    <div class="row">
-        <div class="col-lg-12 col-md-12">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h5>Produkte importieren</h5>
-                </div>
-                <div class="ibox-content">
-                    <div class="m-b">
-                      {
-                        _:render-products-dropzone()
-                      }
-                    </div>
-                  <div id="products-list"></div>
-                </div>
-            </div>
+<div class="ibox float-e-margins" xmlns="http://www.w3.org/1999/xhtml">
+    <div class="ibox-title">
+        <h2>Produkte importieren</h2>
+    </div>
+    <div class="ibox-content">
+        <div class="m-b">
+          {
+            _:render-products-dropzone()
+          }
         </div>
-      </div>
-  </div>
+      <div id="products-list"></div>
+    </div>
+</div>
 };
 
 declare %plugin:provide("ui/page/custom-js")

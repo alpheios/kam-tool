@@ -22,13 +22,13 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/quote&amp;provider=sanofi/quote"><i class="fa fa-balance-scale"></i> <span class="nav-label">Quote</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=&amp;provider=sanofi/quote&amp;contextType=page"><i class="fa fa-balance-scale"></i> <span class="nav-label">Quote</span></a>
   </li>
 };
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
@@ -61,6 +61,11 @@ function _:schema-column-filter-kv($Item as element()*, $Schema as element(schem
     return $schema
 };
 
+declare %plugin:provide("schema/ui/page/content")
+function _:render-page-form($Item as element()?, $Schema as element(schema), $Context)
+{
+  plugin:provider-lookup($Context?provider,"schema/render/page/form")!.($Item,$Schema,$Context)  
+};
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){

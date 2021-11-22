@@ -34,7 +34,7 @@ function _:upload-app-req(
     let $tempFile := file:write-text($tempFilePath, $regelungenString)
 
     let $regelungen := csv:parse($regelungenString, map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
     })/*:csv/*:record
     
@@ -54,7 +54,7 @@ function _:api-import-regelungen() {
     if(file:exists($tempFilePath))
     then 
       let $regelungenFromCsv := csv:parse(file:read-text($tempFilePath), map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)

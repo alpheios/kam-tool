@@ -1,12 +1,13 @@
 module namespace _ = "sanofi/regelung";
 
 (: import repo modules :)
-import module namespace global  = "influx/global";
-import module namespace plugin  = "influx/plugin";
-import module namespace db      = "influx/db";
-import module namespace ui =" influx/ui";
+import module namespace global  	= "influx/global";
+import module namespace plugin  	= "influx/plugin";
+import module namespace db      	= "influx/db";
+import module namespace ui 		 	="influx/ui";
+import module namespace modal	 	="influx/ui/modal";
 import module namespace date-util ="influx/utils/date-utils";
-import module namespace common="sanofi/common" at "common.xqm";
+import module namespace common		="sanofi/common" at "common.xqm";
 
 
 
@@ -31,7 +32,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/search/items?context=stammdaten/regelung&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/regelung&amp;provider=sanofi/regelung&amp;contextType=page"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
   </li>
 };
 
@@ -41,7 +42,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen-admin()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/search/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
   </li>
 };
 
@@ -55,7 +56,7 @@ plugin:provider-lookup("default","schema/render/button/modal/edit")($Item,$Schem
 (: adapter for ui:page to schema title :)
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide('ui/page/heading') function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
 (:
@@ -110,13 +111,16 @@ function _:profile-dashboard-widget-regelungen($Profile as element())
 :)
 
 (: provide sorting for items :)
-declare %plugin:provide("schema/process/table/items")
+declare %plugin:provide("schema/process/table/items","kv")
+ %plugin:provide("schema/process/table/items","kk")
+  %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows(
   $Items as element()*, 
   $Schema as element(schema),
   $Context as map(*)
 ) {
-  for $item in $Items 
+  let $items := if ($Context?context) then $Items[*[name()=$Context?context][.=$Context?context-item-id]]
+  for $item in $Items
   order by $item/regelungsbeginn, $item/priority 
   return $item
 };
@@ -167,11 +171,58 @@ as element(schema){
     <modal>
         <title>Regelung</title>
     </modal>
+    <list>
+      <query><![CDATA[
+declare variable $ContextMap external := map{};
+declare variable $start := $ContextMap?page-start ?: 1;
+declare variable $size  := $ContextMap?page-size ?: 20;
+declare variable $search := $ContextMap?search;
+declare variable $field := $ContextMap?field;
+declare variable $order-by := $ContextMap?order-by?:'name';
+
+let $produkte := collection('datastore-sanofi-produkt')/produkt
+let $kv := collection('datastore-sanofi-kv')/kv[@id=$ContextMap?context-item-id]
+let $regelungen := 
+  for $item in collection('datastore-sanofi-regelung')/regelung
+  order by $item/*[name()=$order-by] ascending
+  return 
+  <regelung>
+    {$item/@id}
+    {$item/name}
+    <kv>
+    {
+      for $kv in $kv[@id=$item/kv]
+      return <key>{$kv/@id}{$kv/name/string()}</key>
+        }
+    </kv>
+    <produkt>{
+      (
+        for $p in $produkte[contains($item/(name,wirkstoffname),normalize-space(./name))] 
+        return <key>{$p/@id}{string-join(($p/name/string(),$p/herstellername/string()),' - ')}</key> 
+      , for $p in $produkte[@id=$item/produkt/key] 
+        return <key>{$p/@id}{string-join(($p/name/string(),$p/herstellername/string()),' - ')}</key>
+    )
+      }
+    </produkt>
+    {$item/mapt}
+    {$item/impact2}
+    {$item/amr-beschreibung}
+    {$item/bps-beschreibung}
+  </regelung>
+let $search-result := 
+  if ($search and $field) then $regelungen[*[name()=$field] contains text {$search}]
+  else if ($search) then $regelungen[node() contains text {$search}]
+  else $regelungen
+let $page := <page count="{count($search-result)}">{$search-result => subsequence($start,$size)}</page>
+return $page
+          ]]>
+      </query>
+    </list>
     <element name="name" type="hidden">
     </element>
     <element name="kv" type="foreign-key" required="">
             <provider>sanofi/kv</provider>
-            <key>@id</key>
+            <key>kv</key>
             <display-name>name/string()</display-name>
             <label>KV</label>
             <class>col-md-6</class>
@@ -183,6 +234,15 @@ as element(schema){
         <display-name>string-join((name/string(), " - (", herstellername/string(), ")"))</display-name>
         <label>Produkt</label>
         <class>col-md-6</class>
+        <query><![CDATA[let $produkte := collection('datastore-sanofi-produkt')/produkt
+let $context-item := collection('datastore-sanofi-regelung')/regelung[@id=$context-item-id]
+let $linked-products := $context-item/produkt/key/string()
+let $selected := $produkte[@id=$linked-products]
+let $search := $produkte[lower-case(string-join(.//text(),' ')) => contains(lower-case($term))][not(@id=$linked-products)]
+return (
+  $selected ! <element id="{./@id/string()}" selected="true">{string-join((normalize-space(./name),./herstellername)," - ")}</element> 
+ ,$search   ! <element id="{./@id/string()}" selected="false">{string-join((normalize-space(./name),./herstellername)," - ")}</element>
+)]]></query>
     </element>    
      <element name="letzte-aenderung" type="date">
         <label>Letzte Änderung am</label>
@@ -257,7 +317,7 @@ as element(schema){
       <provider>sanofi/quote</provider>
       <key>regelung</key>
       <label>Quoten</label>
-      <display-name>{(: Todo: Add display name:)}</display-name>
+      <display-name>name/string()</display-name>
    </element>
  </schema>
 };
@@ -272,11 +332,15 @@ function _:schema-kv-kontext() as element(schema) {
   )
 };
 
+
 declare %plugin:provide("schema", "schema-exporter")
 function _:schema-export-kontext() as element(schema) {
   _:schema() update (
     insert node <element name="hallo" type="text"/> into .  )
 };
+
+
+
 
 
 (:~
@@ -488,14 +552,6 @@ function _:schema-render-table-thead-tr-td-actions(
 ) as element(xhtml:th) {
   <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
 };
-declare %plugin:provide("schema/render/table/thead/tr/actions")
-function _:schema-render-table-thead-tr-td-actions2(
-  $Item as element()*, 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:th) {
-  <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
-};
 
 declare %plugin:provide("content/view/context","kv")
 function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
@@ -504,6 +560,132 @@ function _:render-page-table($Items as element(vertrag)*, $Schema as element(sch
 };
 
 
+declare 
+%plugin:provide("schema/ui/page/content")
+function _:render-page-table-stammdaten2($Items as element(regelung)*, $Schema as element(schema), $Context)
+{
+  if ($Context?items) then
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+  else if ($Context?item) then
+  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
+};
+
+
+
+declare %plugin:provide("schema/render/table")
+function _:schema-render-table(
+  $Items as element()*, 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:div) {
+  let $context :=$ContextMap => map:get('context')
+  let $provider := $Schema/@provider/string()
+  let $uuid := random:uuid()
+  let $table-class := "schema-"||$Schema/@name||"-table"
+  (: select, sort, filter and process items :)
+  let $page  := xquery:eval($Schema/list/query/text(),map{"ContextMap":$ContextMap})
+  let $count := $page/@count?:0 => xs:integer()
+  let $items := $page/element()
+  (: next line fixes: page-size must not be greater than the total count :)
+  (:let $ContextMap := if ($ContextMap?page-size > $count) then $ContextMap=>map:put("page-size",$count) else $ContextMap:)
+  (: prepare schema to only contain fields ("elements"), that were created in the items :)
+  let $schema := $Schema update delete node ./element
+  let $schema := $schema update for $element in subsequence($items,1,1)/element() return insert node $Schema/element[@name=$element/name()] into .
+  return
+  
+<div xmlns="http://www.w3.org/1999/xhtml" 
+     class="slimScrollDiv bg-gray" style="position: relative; overflow: hidden; width: auto; height: 100%;">
+	<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
+    {plugin:provider-lookup($provider,"schema/render/table/debug")!.($items,$schema,$ContextMap)}
+			<form method="GET" action="/schema/list/items" class="ajax">
+      
+ 		<div class="row col-md-12">
+        <div class="row col-md-6">
+			<div class="input-group">
+				<input id="filter-{$uuid}" type="text" class="form-control" placeholder="Search" data-i18n="search-table" name="search" value="{$ContextMap?search}"/>
+				<span class="input-group-btn">
+					<button type="submit" onclick="document.querySelector(&quot;input[name='page-start']&quot;).value=1" class="btn btn-primary">Go!</button>
+				</span>
+        </div>
+			</div>
+        <div class="col-md-2">
+				<div class="input-group">
+					<input type="number" min="1" max="100" value="{$ContextMap?page-size?:15}" name="page-size" class="form-control" size="4"/>
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-primary">set</button>
+					</span>
+          </div>
+       </div>
+       </div>
+     <div class="form-group">
+         {
+            for $name in ('provider','context-provider','context','field','page-start','order-by')
+            return <input type="hidden" name="{$name}" value="{$ContextMap=>map:get($name)}"/>
+          }
+          {
+            let $page-count := ($count div $ContextMap?page-size) => floor() => xs:integer()
+            let $page-size := $ContextMap?page-size
+            let $page-start := if ($ContextMap?page-start=1) then $page-size else $ContextMap?page-start
+            for $i in 1 to $page-count
+            let $page-oversize := if ($i = $page-count) then $page-size - ($count mod $page-size) else 0
+            let $class := attribute class {if ($page-start div $page-size = $i) then "btn btn-primary" else "btn btn-outline"}
+            return <button onclick="document.querySelector(&quot;input[name='page-start']&quot;).value={$i*$ContextMap?page-size}">
+                      {$class}
+                      {($i*$page-size)-$page-size + 1} - {$i*$page-size - $page-oversize}
+                   </button>
+          }
+       </div>
+			</form>
+      {plugin:default("schema/render/table")!.($items,$schema,$ContextMap)//xhtml:div[contains(@class,"ibox-content")]}
+	</div>
+</div>
+};
+
+declare %plugin:provide("schema/render/table/tbody/tr/td/foreign-key")
+function _:schema-render-table-tbody-tr-td-foreign-key(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:td) {
+  let $mode := if ($ContextMap?contextType='page') then "" else "-2"
+  return 
+    <td xmlns="http://www.w3.org/1999/xhtml">
+      { if ($Item/*:key) then
+        for $key in $Item/*:key 
+        return
+        modal:button("influx-modal-dialog"||$mode,
+          "/schema/form/modal/"||$key/@id||"?provider="||$Schema/*:element[@name=$Item/name()]/*:provider||"&amp;context=&amp;context-provider="||$Schema/@provider||"&amp;context-item-id="||$key/../../@id||"&amp;mode=view",
+          <a>{$key/node()}</a>
+        )
+        else $Item/node()}
+    </td>
+};
+
+(: Stammdaten/Regelung :)
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","stammdaten/regelung")
+function _:schema-render-table-tbody-tr-td-actions(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:td) {
+    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($_:ns,"schema/render/button/modal/edit","stammdaten/regelung")!.($Item,$Schema,$ContextMap)}</td>
+};
+
+
+declare 
+%plugin:provide("content/view/context","stammdaten/regelung")
+function _:render-page-table-stammdaten($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  if ($Context?items) then
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+  else if ($Context?item) then
+  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
+};
+
+
+
+(: helper functions :)
 (: Funktione für deutsches, aktuelles Datum :)
 declare function _:current-date-to-html5-input-date-de() 
 as xs:string? {

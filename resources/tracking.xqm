@@ -19,7 +19,7 @@
 
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading/breadcrumb') function _:breadcrumb($m){common:breadcrumb($m)};
+declare %plugin:provide('ui/page/heading') function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
   (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)

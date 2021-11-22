@@ -23,10 +23,16 @@ function _:datastore-name(
     'datastore-sanofi-kv-kenngroessen'
 };
 
-declare %plugin:provide("schema/process/table/items","kv-history")
-function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
-{
-for $item in $Items order by $item/datum return $item
+(: provide sorting for items :)
+declare %plugin:provide("schema/process/table/items")
+function _:schema-render-table-prepare-rows(
+    $Items as element()*, 
+    $Schema as element(schema),
+    $Context as map(*)
+) {
+  if ($Context?context-item-id) 
+  then $Items[kv=$Context?context-item-id]
+  else for $x in $Items order by $x/datum return $x
 };
 
 declare %plugin:provide("schema/set/elements","kv-history")

@@ -32,7 +32,7 @@ function _:upload-app-req(
     let $tempFile := file:write-text($tempFilePath, $productsString, "cp1252")
 
     let $products := csv:parse($productsString, map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
     })/*:csv/*:record
 
@@ -52,7 +52,7 @@ function _:api-import-products() {
     if(file:exists($tempFilePath))
     then 
       let $productsFromCsv := csv:parse(file:read-text($tempFilePath,"cp1252"), map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)

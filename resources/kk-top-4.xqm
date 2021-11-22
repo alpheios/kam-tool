@@ -24,7 +24,7 @@ function _:datastore-name(
 };
 
 declare %plugin:provide("schema/process/table/items","kk-history")
-function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
+function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$ContextMap as map(*))
 {
 for $item in $Items order by $item/datum 
 let $fixed-date-item := try {$item update replace value of node ./datum with fn:format-date(./datum, "[YYYY]/[DD]" )}catch * {$item}
@@ -40,7 +40,7 @@ let $fixed-date-item :=
               default return "Q1"))}
   catch * {$fixed-date-item} 
 
-return $fixed-date-item
+return $fixed-date-item[kk=$ContextMap?context-item-id]
 };
 
 declare %plugin:provide("schema/set/elements","kk-history")

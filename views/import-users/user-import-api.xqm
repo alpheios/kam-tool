@@ -27,7 +27,7 @@ function _:upload-app-req(
     let $tempFile := file:write-text($tempFilePath, $usersString)
 
     let $users := csv:parse($usersString, map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
     })/*:csv/*:record
 
@@ -47,7 +47,7 @@ function _:api-import-users() {
     if(file:exists($tempFilePath))
     then 
       let $usersFromCsv := csv:parse(file:read-text($tempFilePath), map {
-        'separator': ';',
+        'separator': 'tab',
         'header': true()
       })/*:csv/*:record
       let $deleteTempFile := file:delete($tempFilePath)
