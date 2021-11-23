@@ -14,7 +14,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen-admin()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/news"><i class="fa fa-clipboard"></i> <span class="nav-label">News (admin)</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider={$_:ns}"><i class="fa fa-clipboard"></i> <span class="nav-label">News (admin)</span></a>
   </li>
 };
 
@@ -48,7 +48,7 @@ function _:schema-render-table-prepare-rows-only-name(
 };
 
 declare %plugin:provide("ui/page/welcome") function _:login-plugin($map){
-  web:redirect("/api/page?provider="||$_:ns||"&amp;context=&amp;contextType=page&amp;modal=0")
+  web:redirect("/schema/list/items?context=admin&amp;provider="||$_:ns||"&amp;contextType=page&amp;modal=0")
 };
 
 
@@ -60,7 +60,7 @@ declare %plugin:provide("ui/page/welcome") function _:login-plugin($map){
 declare %plugin:provide("schema") 
 function _:schema()
 as element(schema){
-<schema xmlns="" name="news" domain="sanofi" provider="sanofi/news">
+<schema xmlns="" name="news" domain="sanofi" provider="{$_:ns}">
     <modal>
         <title>Neuigkeiten und Gesprächsthemen</title>
     </modal>
