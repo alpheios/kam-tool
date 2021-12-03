@@ -1,6 +1,8 @@
 module namespace _ = "sanofi/ansprechpartner/einfluss";
 
 import module namespace plugin  = "influx/plugin";
+import module namespace import = "influx/modules";
+
 
 declare variable $_:rollen := plugin:lookup("plato/schema/enums/get")!.("Rollen");
 declare variable $_:ns := namespace-uri(<_:ns/>);

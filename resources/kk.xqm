@@ -8,6 +8,7 @@ import module namespace ui      = "influx/ui";
 import module namespace user    = "influx/user";
 import module namespace db			= "influx/db";
 import module namespace common  = "sanofi/common" at "common.xqm";
+import module namespace import = "influx/modules";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 

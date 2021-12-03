@@ -5,6 +5,7 @@ import module namespace global	= "influx/global";
 import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
+import module namespace import = "influx/modules";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
