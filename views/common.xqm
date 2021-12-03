@@ -39,10 +39,10 @@ declare function _:ui-page-heading($ContextMap as map(*)) as element(xhtml:div){
       <a href="{$global:servlet-prefix}/admin/api/page?provider=sanofi/views/product-import"><i class="fa fa-upload"></i> <span data-i18n="side-navigation-import-products" class="nav-label">Produktimport</span></a>
   </li>
   <li>
-      <a href="{$global:servlet-prefix}/admin/api/page?provider=sanofi/views/choose-columns"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-columns" class="nav-label">Spalten festlegen</span></a>
+      <a href="{$global:servlet-prefix}/admin/api/page?provider=sanofi/choose-columns/provider"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-columns" class="nav-label">Spalten festlegen</span></a>
   </li>
    <li>
-      <a href="{$global:servlet-prefix}/admin/api/page?provider=sanofi/views/choose-values"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-values" class="nav-label">Auswahlwerte festlegen</span></a>
+      <a href="{$global:servlet-prefix}/admin/api/page?provider=sanofi/choose-values/provider"><i class="fa fa-list-alt"></i> <span data-i18n="side-navigation-choose-values" class="nav-label">Auswahlwerte festlegen</span></a>
   </li>
     </ol>
   </div>

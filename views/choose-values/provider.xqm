@@ -1,20 +1,66 @@
-module namespace _="sanofi/views/choose-values";
+module namespace _="sanofi/choose-values/provider";
 
+import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
+import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
-import module namespace alert="influx/ui/alert";
+import module namespace import = "influx/modules";
 import module namespace common="sanofi/common/view" at "../common.xqm";
-import module namespace import="influx/modules";
+import module namespace alert="influx/ui/alert";
 
+declare namespace functx = "http://www.functx.com";
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
-declare namespace functx = "http://www.functx.com";
-
 
 declare variable $_:meta := doc("../../module.xml")/mod:module;
-declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
+declare variable $_:enum-path := file:base-dir()||"/enums/";
 declare variable $_:ns := namespace-uri(<_:ns/>);
 declare variable $_:title := "Auswahlwerte für Auswahlfelder festlegen";
+declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
+
+declare %plugin:provide("plato/schema/enums/get")
+function _:get-enums(
+  $Name as xs:string
+) as xs:string* {
+  let $filepath := $_:enum-path||translate($Name, " ", "-")||"-enum.txt"
+
+  return
+    if (file:exists($filepath))
+    then file:read-text-lines($filepath)
+    else ""
+};
+
+declare %plugin:provide("plato/schema/enums/get/filecontent")
+function _:get-enums-file(
+  $Name as xs:string
+) as xs:string {
+  let $filepath := $_:enum-path||translate($Name, " ", "-")||"-enum.txt"
+
+  return
+    if (file:exists($filepath))
+    then file:read-text($filepath)
+    else ""
+};
+
+declare %plugin:provide("plato/schema/enums/set/filecontent")
+function _:write-enum-file(
+  $Name as xs:string,
+  $Content as xs:string
+) {
+  let $filepath := $_:enum-path||translate($Name, " ", "-")||"-enum.txt"
+
+  return file:write-text($filepath, $Content)
+};
+
+declare %plugin:provide("plato/schema/enums/set")
+function _:write-enum(
+  $Name as xs:string,
+  $Content as xs:string*
+) {
+  let $filepath := $_:enum-path||translate($Name, " ", "-")||"-enum.txt"
+
+  return file:write-text-lines($filepath, $Content)
+};
 
 declare %plugin:provide('side-navigation-item')
         %plugin:allow("admin")
@@ -29,14 +75,6 @@ declare %plugin:provide('ui/page/title') function _:heading($m){$_:title};
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
-declare %plugin:provide-default("editor/code")
-function _:default-code-editor(
-  $Content as xs:string,
-  $ParamMap as map(*)
-) {
-  <h4 class="text-danger">No Code Editor Installed</h4>
-};
-
 declare %plugin:provide("ui/page/custom-js")
 function _:page-custom-js($map){  
 plugin:provider-lookup(plugin:lookup("editor/code")=>plugin:provider(),"ui/page/custom-js")!.($map)
@@ -44,8 +82,6 @@ plugin:provider-lookup(plugin:lookup("editor/code")=>plugin:provider(),"ui/page/
 
   <script type="text/javascript" src="{$_:module-static}/js/choose-values.js"></script>
 };
-
-
 
 declare %plugin:provide("ui/page/content")
 function _:sanofi-choose-values(

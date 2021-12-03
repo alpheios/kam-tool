@@ -1,4 +1,4 @@
-module namespace _="sanofi/views/choose-columns";
+module namespace _="sanofi/choose-columns/provider";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
@@ -6,13 +6,17 @@ import module namespace ui='influx/ui';
 import module namespace plugin='influx/plugin';
 import module namespace common="sanofi/common/view" at "../common.xqm";
 import module namespace import="influx/modules";
+import module namespace functx = "http://www.functx.com";
 
 declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 declare namespace mod="http://influx.adesso.de/module";
 
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:module-static := $global:module-path||"/"||$_:meta/mod:install-path||"/static";
-declare variable $_:entities-path := file:base-dir()||"/entities/entities.csv";
+
+declare variable $_:entities-path := file:base-dir()||"/entities/";
+declare variable $_:entities-file := $_:entities-path||"entities.csv";
+
 declare variable $_:ns := namespace-uri(<_:ns/>);
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
@@ -35,7 +39,7 @@ plugin:provider-lookup(plugin:lookup("editor/code")=>plugin:provider(),"ui/page/
   
 
 declare function _:read-entities() {
-  let $entities := csv:parse(file:read-text($_:entities-path), map {
+  let $entities := csv:parse(file:read-text($_:entities-file), map {
       'separator': ';',
       'header': true()
     })/*:csv/*:record
@@ -70,4 +74,76 @@ function _:sanofi-choose-columns(
         </div>
     </div>
 </div>
+};
+
+
+declare %plugin:provide("plato/schema/columns/get")
+function _:get-columns(
+  $Name as xs:string
+) as xs:string* {
+  let $filepath := $_:entities-path||translate($Name, " ", "-")||"-columns.txt"
+
+  return
+    if (file:exists($filepath))
+    then 
+      let $text-lines := file:read-text-lines($filepath)
+      return distinct-values($text-lines)
+    else ""
+};
+
+declare %plugin:provide("plato/schema/columns/get/filecontent")
+function _:get-columns-file(
+  $Name as xs:string
+) as xs:string {
+  let $filepath := $_:entities-path||translate($Name, " ", "-")||"-columns.txt"
+
+  return
+    if (file:exists($filepath))
+    then file:read-text($filepath)
+    else ""
+};
+
+declare %plugin:provide("plato/schema/columns/set/filecontent")
+function _:write-columns-file(
+  $Name as xs:string,
+  $Content as xs:string
+) {
+  let $filepath := $_:entities-path||translate($Name, " ", "-")||"-columns.txt"
+
+  return file:write-text($filepath, $Content)
+};
+
+declare %plugin:provide("plato/schema/columns/set")
+function _:write-columns(
+  $Name as xs:string,
+  $Content as xs:string*
+) {
+  let $filepath := $_:entities-path||translate($Name, " ", "-")||"-columns.txt"
+
+  return file:write-text-lines($filepath, $Content)
+};
+
+
+
+declare %plugin:provide("editor/code/save/content")
+function _:save-enum-file(
+  $Id as xs:string,
+  $Filename as xs:string,
+  $Content as xs:string
+) {
+  let $content := replace(functx:trim($Content), "(\n\r)", "")
+  let $saveFile := plugin:lookup("plato/schema/columns/set/filecontent")!.($Filename, $content)
+  return
+    ui:info('Spalten für die Entität "'||translate($Filename, "-", " ")||'" sind erfolgreich gespeichert worden.')
+};
+
+declare %plugin:provide("editor/code/custom/js", "sanofi/spalten")
+function _:adjust-editor-height(
+  $Content as xs:string,
+  $Config as map(*)
+) as xs:string {
+  "
+    editor.setOptions({maxLines: 40});
+    editor.focus();
+  "
 };

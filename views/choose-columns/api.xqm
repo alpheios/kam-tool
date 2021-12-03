@@ -1,4 +1,4 @@
-module namespace _="sanofi/api/choose-columns";
+module namespace _="sanofi/choose-columns/api";
 
 import module namespace i18n = 'influx/i18n';
 import module namespace global ='influx/global';
@@ -12,6 +12,7 @@ declare namespace functx = "http://www.functx.com";
 
 declare variable $_:meta := doc("../../module.xml")/mod:module;
 declare variable $_:enum-path := file:base-dir()||"/enums/";
+declare variable $_:ns := "sanofi/choose-columns/provider";
 
 declare %rest:path("/api/sanofi/choose-columns")
         %rest:GET
@@ -24,12 +25,12 @@ function _:replace-editor-field(
   let $filename := substring-after($Field, "/")
   let $schema := plugin:provider-lookup($Field, "schema")!.()
   let $possibleValues := $schema/*:element/@name/string()
-  let $file := plugin:lookup("plato/schema/columns/get/filecontent")!.($filename)
+  let $file := plugin:provider-lookup($_:ns,"plato/schema/columns/get/filecontent")!.($filename)
   let $paramMap := map {
     "id": $filename||"-editor",
     "height": "700px",
     "filename": $filename,
-    "modifier": "sanofi/spalten"
+    "modifier": $_:ns
   }
 
   return 
@@ -51,36 +52,14 @@ function _:replace-editor-field(
       </div>
       <div>
       {
-        plugin:lookup("editor/code")!.($file, $paramMap)
+        plugin:provider-lookup($_:ns,"editor/code")!.($file, $paramMap)
       }
       </div>
       <div class="pull-right m-t-sm">
       {
-        plugin:lookup("editor/code/save/button")!.($paramMap)
+        plugin:provider-lookup($_:ns,"editor/code/save/button")!.($paramMap)
       }
       </div>
     </div>
 };
 
-declare %plugin:provide("editor/code/save/content", "sanofi/spalten")
-function _:save-enum-file(
-  $Id as xs:string,
-  $Filename as xs:string,
-  $Content as xs:string
-) {
-  let $content := replace(functx:trim($Content), "(\n\r)", "")
-  let $saveFile := plugin:lookup("plato/schema/columns/set/filecontent")!.($Filename, $content)
-  return
-    ui:info('Spalten für die Entität "'||translate($Filename, "-", " ")||'" sind erfolgreich gespeichert worden.')
-};
-
-declare %plugin:provide("editor/code/custom/js", "sanofi/spalten")
-function _:adjust-editor-height(
-  $Content as xs:string,
-  $Config as map(*)
-) as xs:string {
-  "
-    editor.setOptions({maxLines: 40});
-    editor.focus();
-  "
-};

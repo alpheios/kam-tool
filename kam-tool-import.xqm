@@ -32,8 +32,6 @@ import module namespace kenngroessen-importer        = "sanofi/views/kenngroesse
 import module namespace regelungen-importer        = "sanofi/views/regelungen-import" at "views/import-regelungen/regelungen-import.xqm";
 
 
-import module namespace choose-values           = "sanofi/views/choose-values" at "views/choose-values/view.xqm";
-import module namespace choose-values-ctrl		  = "sanofi/provider/choose-values" at "views/choose-values/controller.xqm";
+import module namespace choose-values-ctrl		  = "sanofi/choose-values/provider" at "views/choose-values/provider.xqm";
 
-import module namespace choose-columns          = "sanofi/views/choose-columns" at "views/choose-columns/choose-column.xqm";
-import module namespace choose-columns-provider = "sanofi/provider/choose-columns" at "views/choose-columns/choose-column-provider.xqm";
+import module namespace choose-column           = "sanofi/choose-columns/provider" at "views/choose-columns/provider.xqm";
