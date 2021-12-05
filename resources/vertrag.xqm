@@ -1,12 +1,13 @@
 module namespace _ = "sanofi/vertrag";
 
 (: import repo modules :)
-import module namespace global	= "influx/global";
-import module namespace plugin	= "influx/plugin";
-import module namespace db	    = "influx/db";
-import module namespace ui =" influx/ui";
-import module namespace date-util ="influx/utils/date-utils";
-import module namespace common="sanofi/common" at "common.xqm";
+import module namespace global		= "influx/global";
+import module namespace plugin		= "influx/plugin";
+import module namespace db	    	= "influx/db";
+import module namespace ui 		 	= "influx/ui";
+import module namespace alert	 	= "influx/ui/alert";
+import module namespace date-util = "influx/utils/date-utils";
+import module namespace common		= "sanofi/common" at "common.xqm";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -350,6 +351,30 @@ function _:schema-render-table-tbody-tr-td-enum(
 };
 
 
+declare
+    %plugin:provide("schema/render/new")
+function _:vertrag-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neuer Vertrag angelegt.")
+};
+
+
+declare
+    %plugin:provide("schema/render/update")
+function _:vertrag-render-update($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Vertrag wurde geändert abgespeichert.")
+};
+
+declare
+    %plugin:provide("schema/render/delete")
+function _:vertrag-render-del($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Vertrag wurde gelöscht.")
+};
 
 declare
     %plugin:provide("schema/render/new","kk")
@@ -368,7 +393,6 @@ as element(xhtml:div)
         return $item
     return
     plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
-
 };
 
 declare %plugin:provide("content/view/context")
