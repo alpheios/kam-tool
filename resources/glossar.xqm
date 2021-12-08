@@ -54,7 +54,7 @@ as element(schema){
     <modal>
         <title>Glossar</title>
     </modal>
-   <element name="name" type="text">
+   <element name="begriff" type="text">
       <label>Begriff</label>
     </element> 
     <element name="beschreibung" type="html">
