@@ -1,4 +1,7 @@
 # Changes
+## Version 2.3 [14.12.2021]
+* Benutzer bekommen jetzt eine ordentliche Rückmeldung, wenn neue Items (alle) angelegt werdenn.
+
 ## Version 2.2 [21.11.2021] Refactoring, Performance Optimierungen, multimodale Dialoge
 * das Refactoring betrifft die Änderungen an influx -> insb. Abschaffung schema-ui-adapter
 * Performance Optimierungen -> Tabellen haben für bestimmte Einträge jeweils teure Abfragen gemacht, diese werden jetzt nur noch einmal gemacht
