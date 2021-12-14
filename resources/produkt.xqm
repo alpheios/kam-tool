@@ -7,6 +7,7 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common="sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
 declare namespace functx = "http://www.functx.com";
 
@@ -29,6 +30,15 @@ declare %plugin:provide('ui/page/heading') function _:breadcrumb($m){common:ui-p
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows($Items as element()*, $Schema as element(schema),$Context as map(*)){for $item in $Items order by $item/name, $item/priority return $item};
+
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neues Produkt angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+};
 
 declare %plugin:provide("schema/render/form/field/foreign-key/datasource/search")
 %plugin:provide("schema/render/form/field/foreign-key/datasource/search","produkt")

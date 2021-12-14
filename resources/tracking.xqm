@@ -7,6 +7,7 @@
   import module namespace ui =" influx/ui";
   import module namespace date-util ="influx/utils/date-utils";
   import module namespace common="sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
   
   declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -21,6 +22,15 @@ declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 declare %plugin:provide('ui/page/heading') function _:ui-page-heading($m){common:ui-page-heading($m)};
 
+
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neuer Tracking-Eintrag angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+};
 
   (: ------------------------------- STAMMDATEN ANFANG -------------------------------------------- :)
   

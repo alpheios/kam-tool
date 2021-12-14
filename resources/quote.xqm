@@ -8,6 +8,7 @@ import module namespace ui =   "influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common="sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:ns := namespace-uri(<_:ns/>);
@@ -43,6 +44,14 @@ function _:datastore-name(
     'datastore-sanofi-quote'
 };
 
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neue Quote angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+};
 
 declare %plugin:provide("schema/set/elements","stammdaten/regelung")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){

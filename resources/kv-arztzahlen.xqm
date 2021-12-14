@@ -6,6 +6,7 @@ import module namespace plugin	= "influx/plugin";
 import module namespace db	    = "influx/db";
 import module namespace ui =   "influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -22,6 +23,20 @@ function _:datastore-name(
     $Context as map(*)
 ) as xs:string {
     'datastore-sanofi-kv-arztzahlen'
+};
+
+declare
+    %plugin:provide("schema/render/new")
+    %plugin:provide("schema/render/new","kv")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neue Zahlen angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
 
 declare %plugin:provide("schema/process/table/items")

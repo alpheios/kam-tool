@@ -9,6 +9,7 @@ import module namespace user    = "influx/user";
 import module namespace db			= "influx/db";
 import module namespace common  = "sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -35,14 +36,19 @@ declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
 
-declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk (
-  $Item as element(),
-  $Schema as element(schema),
+declare
+    %plugin:provide("schema/render/new")
+    %plugin:provide("schema/render/new","kk")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
   $Context as map(*)
-) as element(pre) {
-  <pre>{serialize($Item)}</pre>
+) {
+    (
+        alert:info("Neue Krankenkasse angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
-
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {

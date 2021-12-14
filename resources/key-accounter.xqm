@@ -7,6 +7,7 @@ import module namespace ui =" influx/ui";
 import module namespace user="influx/user";
 import module namespace common="sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
+import module namespace alert="influx/ui/alert";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -25,6 +26,19 @@ declare %plugin:provide('side-navigation-item')
 declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
+
+declare
+    %plugin:provide("schema/render/new")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neuer Key-Account angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
+};
 
 
 declare %plugin:provide('side-navigation-item') function _:nav-item(){
@@ -123,6 +137,8 @@ return
     if (user:is-admin())
     then ui:modal-button(<a><span class="fa fa-plus"/></a>,$link)
 };
+
+
 
 (::: Remove Buttons from modal if key-accounter details are opened from table-view :::)
 declare %plugin:provide("schema/render/modal/form/buttons", "stammdaten/kk")

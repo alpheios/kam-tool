@@ -6,6 +6,7 @@ import module namespace global  = "influx/global";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace db 		 = "influx/db";
 import module namespace common="sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:ns := namespace-uri(<_:ns/>);
@@ -16,22 +17,18 @@ declare %plugin:provide('ui/page/heading') function _:breadcrumb($m){common:ui-p
 
 
 declare
+    %plugin:provide("schema/render/new")
     %plugin:provide("schema/render/new","kk")
-    %plugin:provide("schema/render/update","kk")
-    %plugin:provide("schema/render/delete","kk")
     %plugin:provide("schema/render/new","kv")
-    %plugin:provide("schema/render/update","kv")
-    %plugin:provide("schema/render/delete","kv")
 function _:management-summary-render-new(
   $Item as element(management-summary), 
   $Schema as element(schema), 
   $Context as map(*)
-) as element(xhtml:div) {
-    let $provider := $Context("provider")
-    let $context := $Context("context")
-    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-    return
-    plugin:provider-lookup($provider,"content/view/context",$context)!.($Item,$schema,$Context)
+) {
+    (
+        alert:info("Neue Management Summary angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
 
 (: provide sorting for items :)

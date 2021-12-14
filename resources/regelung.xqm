@@ -8,6 +8,7 @@ import module namespace ui 		 	="influx/ui";
 import module namespace modal	 	="influx/ui/modal";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common		="sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
 
 
@@ -44,6 +45,15 @@ declare %plugin:provide('side-navigation-item')
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
       <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
   </li>
+};
+
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neue Regelung angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
 };
 
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
@@ -571,6 +581,15 @@ function _:render-page-table-stammdaten2($Items as element(regelung)*, $Schema a
 };
 
 
+
+declare %plugin:provide("schema/render/table","influx/schema/import/app")
+function _:schema-render-table-import-app(
+  $Items as element()*, 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:div) {
+  plugin:default("schema/render/table")!.($Items,$Schema,$ContextMap)
+};
 
 declare %plugin:provide("schema/render/table")
 function _:schema-render-table(

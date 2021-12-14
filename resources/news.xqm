@@ -5,6 +5,7 @@ import module namespace common="sanofi/common" at "common.xqm";
 import module namespace global="influx/global";
 import module namespace table-view = "influx/schema/table-view";
 import module namespace schema = "influx/schema";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:ns := namespace-uri(<_:ns/>);
@@ -32,7 +33,15 @@ declare %plugin:provide("ui/page/content","admin") function _:admin-ui-page-cont
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 
 
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neue News angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
 
+};
 
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name(

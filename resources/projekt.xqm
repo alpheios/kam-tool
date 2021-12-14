@@ -7,6 +7,7 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common="sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -30,6 +31,15 @@ declare %plugin:provide('side-navigation-item')
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
       <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/projekt&amp;provider=sanofi/projekt"><i class="fa fa-archive"></i> <span class="nav-label">Projekte</span></a>
   </li>
+};
+
+declare
+    %plugin:provide("schema/render/new")
+function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
+as element(xhtml:div)
+{
+    alert:info("Neues Projekt angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
 };
 
 declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){

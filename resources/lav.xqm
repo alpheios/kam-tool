@@ -7,6 +7,7 @@ import module namespace db	    = "influx/db";
 import module namespace ui =" influx/ui";
 import module namespace common  = "sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
+import module namespace alert="influx/ui/alert";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -27,6 +28,19 @@ declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
+declare
+    %plugin:provide("schema/render/new")
+    %plugin:provide("schema/render/new","lav")
+function _:management-summary-render-new(
+  $Item as element(lav), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neue LAV angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
+};
 
 declare %plugin:provide("schema/process/table/items","lav")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))

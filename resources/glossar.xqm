@@ -1,5 +1,6 @@
 module namespace _ = "sanofi/glossar";
 import module namespace common  = "sanofi/common" at "common.xqm";
+import module namespace alert="influx/ui/alert";
 
 (: import repo modules :)
 declare namespace plugin	= "influx/plugin";
@@ -40,6 +41,19 @@ function _:schema-render-table-tbody-tr-td-actions(
   $ContextMap as map(*)
 ) as element(xhtml:td) {
     <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($_:ns,"schema/render/button/modal/edit")!.($Item,$Schema,$ContextMap)}</td>
+};
+
+declare
+    %plugin:provide("schema/render/new")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neue Krankenkasse angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
 
 

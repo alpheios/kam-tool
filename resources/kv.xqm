@@ -8,6 +8,7 @@ import module namespace ui =" influx/ui";
 import module namespace date-util ="influx/utils/date-utils";
 import module namespace common = "sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
+import module namespace alert="influx/ui/alert";
 
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
@@ -38,6 +39,20 @@ declare %plugin:provide('side-navigation-item')
 
 declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv ($Item,$Schema,$Context){
 <pre>{serialize($Item)}</pre>
+};
+
+declare
+    %plugin:provide("schema/render/new")
+    %plugin:provide("schema/render/new","kv")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neue KV angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
 
 

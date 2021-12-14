@@ -8,7 +8,7 @@ import module namespace ui =" influx/ui";
 import module namespace item = "influx/schema/item";
 import module namespace common  = "sanofi/common" at "common.xqm";
 import module namespace import = "influx/modules";
-
+import module namespace alert="influx/ui/alert";
 
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
@@ -206,6 +206,20 @@ function _:clear-connection(
     $Context?item => item:set($Context?context,"") => item:put($Schema,$Context)
    ,plugin:provider-lookup($Context?provider,"schema/render/delete",$Context?context)!.($Context?item, $Schema, $Context)
   )
+};
+
+declare
+    %plugin:provide("schema/render/new")
+    %plugin:provide("schema/render/new","kk")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neuer Ansprechpartner angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
 };
 
 

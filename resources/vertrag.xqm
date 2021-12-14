@@ -357,6 +357,7 @@ function _:vertrag-render-new($Item as element(vertrag), $Schema as element(sche
 as element(xhtml:div)
 {
     alert:info("Neuer Vertrag angelegt.")
+   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
 };
 
 

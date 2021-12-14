@@ -2,6 +2,8 @@ module namespace _ = "sanofi/ansprechpartner/einfluss";
 
 import module namespace plugin  = "influx/plugin";
 import module namespace import = "influx/modules";
+import module namespace alert ="influx/ui/alert";
+declare namespace xhtml="http://www.w3.org/1999/xhtml";
 
 
 declare variable $_:rollen := plugin:lookup("plato/schema/enums/get")!.("Rollen");
@@ -28,6 +30,20 @@ function _:schema-process-table-items(
 ) {
   $Items[ansprechpartner=$Context?context-item-id]
 };
+
+declare
+    %plugin:provide("schema/render/new")
+function _:management-summary-render-new(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) {
+    (
+        alert:info("Neue Ansprechpartner-Einfluss angelegt.")
+        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
+    )
+};
+
 
 declare %plugin:provide("schema") 
 function _:schema-customer-influence()
