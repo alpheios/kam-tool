@@ -1,4 +1,8 @@
 # Changes
+## Version 2.3.1 [20.01.2022]
+* Fehlermeldungen wegen falscher Rückgabewerte (mehrere statt einer)
+Bug-Fixes
+
 ## Version 2.3 [14.12.2021]
 * Benutzer bekommen jetzt eine ordentliche Rückmeldung, wenn neue Items (alle) angelegt werdenn.
 
