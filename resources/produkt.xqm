@@ -34,7 +34,7 @@ function _:schema-render-table-prepare-rows($Items as element()*, $Schema as ele
 declare
     %plugin:provide("schema/render/new")
 function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
+as element()*
 {
     alert:info("Neues Produkt angelegt.")
    ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)

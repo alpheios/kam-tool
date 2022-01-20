@@ -47,7 +47,7 @@ function _:datastore-name(
 declare
     %plugin:provide("schema/render/new")
 function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
+as element()*
 {
     alert:info("Neue Quote angelegt.")
    ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)

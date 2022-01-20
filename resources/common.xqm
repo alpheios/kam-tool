@@ -24,7 +24,7 @@ declare function _:schema-ui-page($html,$Item, $Schema, $ContextMap as map(*)){
       <h3>{$Item/*:name/string()}</h3>
       {
         if ($ContextMap?context-item and ($ContextMap?item/@id != $Item/@id)) 
-        then <h5>{$ContextMap?context-item/name/string()}</h5>
+        then <h5>{$ContextMap?context-item/*:name/string()}</h5>
       }
     </div>
     <div class="ibox-content">

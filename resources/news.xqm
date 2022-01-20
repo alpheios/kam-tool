@@ -36,7 +36,7 @@ declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common
 declare
     %plugin:provide("schema/render/new")
 function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
+as element()*
 {
     alert:info("Neue News angelegt.")
    ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)

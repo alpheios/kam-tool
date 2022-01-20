@@ -49,6 +49,7 @@ function _:management-summary-render-new(
         ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
     )
 };
+
 declare %plugin:provide("schema/process/table/items")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
@@ -334,13 +335,12 @@ return
                                          =>map:put("schema",$schema)
                                          =>map:put("context-schema",$Schema)
                       let $items :=
-                          for $item in plugin:provider-lookup($provider,"datastore/dataobject/search",$context)!.("kk",$Item/@id,$schema,$Context)
+                            for $item in plugin:provider-lookup($provider,"datastore/dataobject/search",$Context?context)!.("kk",$Item/@id,$schema,$Context)
                           let $date := $item/@last-modified-date
                           order by $date descending
                           return $item
-                      let $item-latest := $items[1]
                       return
-                          plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                          plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
                   }
                   </div>
               </div>
@@ -360,9 +360,8 @@ return
                             let $date := $item/@last-modified-date
                             order by $date descending
                             return $item
-                        let $item-latest := $items[1]
                         return
-                        plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                        plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
                     }
                   </div>
               </div>

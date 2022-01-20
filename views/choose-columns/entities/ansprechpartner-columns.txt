@@ -1,6 +1,4 @@
 vorname
 name
-kv
-kk
 position
 gremien

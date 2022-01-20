@@ -11,11 +11,6 @@ import module namespace alert="influx/ui/alert";
 declare namespace xhtml="http://www.w3.org/1999/xhtml";
 declare variable $_:ns := namespace-uri(<_:ns/>);
 
-
-declare %plugin:provide("schema/render/page/debug/itemXXX") function _:debug-kk ($Item,$Schema,$Context){
-<pre>{serialize($Item)}</pre>
-};
-
 declare %plugin:provide("datastore/name")
 function _:datastore-name(
     $Schema as element(schema),
@@ -28,7 +23,7 @@ declare
     %plugin:provide("schema/render/new")
     %plugin:provide("schema/render/new","kk")
 function _:management-summary-render-new(
-  $Item as element(lav), 
+  $Item as element(), 
   $Schema as element(schema), 
   $Context as map(*)
 ) {

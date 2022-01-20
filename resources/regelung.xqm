@@ -50,7 +50,7 @@ declare %plugin:provide('side-navigation-item')
 declare
     %plugin:provide("schema/render/new")
 function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
+as element()*
 {
     alert:info("Neue Regelung angelegt.")
    ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
@@ -129,8 +129,8 @@ function _:schema-render-table-prepare-rows(
   $Schema as element(schema),
   $Context as map(*)
 ) {
-  let $items := if ($Context?context) then $Items[*[name()=$Context?context][.=$Context?context-item-id]]
-  for $item in $Items
+  let $items := if ($Context?context) then $Items[*[name()=$Context?context][.=$Context?context-item-id]] else $Items
+  for $item in $items
   order by $item/regelungsbeginn, $item/priority 
   return $item
 };
@@ -148,6 +148,21 @@ function _:schema-render-table-prepare-rows-only-name(
     return $schema
 };
 
+declare %plugin:provide("schema/set/elements","kv")
+function _:schema-render-table-prepare-rows-only-name-kv(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("regelung")
+    let $schema := $Schema update delete node ./*:element
+    let $elements-in-order := 
+      for $name in $columns 
+      where $name != "kv"
+      return $Schema/element[@name=$name]
+    let $schema := $schema update insert node $elements-in-order as last into .
+    return $schema
+};
 
 declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
 function _:combine-regelung-name(
@@ -181,53 +196,6 @@ as element(schema){
     <modal>
         <title>Regelung</title>
     </modal>
-    <list>
-      <query><![CDATA[
-declare variable $ContextMap external := map{};
-declare variable $start := $ContextMap?page-start ?: 1;
-declare variable $size  := $ContextMap?page-size ?: 20;
-declare variable $search := $ContextMap?search;
-declare variable $field := $ContextMap?field;
-declare variable $order-by := $ContextMap?order-by?:'name';
-
-let $produkte := collection('datastore-sanofi-produkt')/produkt
-let $kv := collection('datastore-sanofi-kv')/kv[@id=$ContextMap?context-item-id]
-let $regelungen := 
-  for $item in collection('datastore-sanofi-regelung')/regelung
-  order by $item/*[name()=$order-by] ascending
-  return 
-  <regelung>
-    {$item/@id}
-    {$item/name}
-    <kv>
-    {
-      for $kv in $kv[@id=$item/kv]
-      return <key>{$kv/@id}{$kv/name/string()}</key>
-        }
-    </kv>
-    <produkt>{
-      (
-        for $p in $produkte[contains($item/(name,wirkstoffname),normalize-space(./name))] 
-        return <key>{$p/@id}{string-join(($p/name/string(),$p/herstellername/string()),' - ')}</key> 
-      , for $p in $produkte[@id=$item/produkt/key] 
-        return <key>{$p/@id}{string-join(($p/name/string(),$p/herstellername/string()),' - ')}</key>
-    )
-      }
-    </produkt>
-    {$item/mapt}
-    {$item/impact2}
-    {$item/amr-beschreibung}
-    {$item/bps-beschreibung}
-  </regelung>
-let $search-result := 
-  if ($search and $field) then $regelungen[*[name()=$field] contains text {$search}]
-  else if ($search) then $regelungen[node() contains text {$search}]
-  else $regelungen
-let $page := <page count="{count($search-result)}">{$search-result => subsequence($start,$size)}</page>
-return $page
-          ]]>
-      </query>
-    </list>
     <element name="name" type="hidden">
     </element>
     <element name="kv" type="foreign-key" required="">
@@ -336,21 +304,11 @@ declare %plugin:provide("schema", "kv")
 function _:schema-kv-kontext() as element(schema) {
   _:schema() update (
        insert node attribute render {"context-item"} into ./element[@name="kv"]
-       (:,
-      delete node ./element[@name="kv"]/label:)
+       ,
+      delete node ./element[@name="kv"]/label
       (: Label wird weiter angezeigt, damit das layout nicht zerschossen wird. :)
   )
 };
-
-
-declare %plugin:provide("schema", "schema-exporter")
-function _:schema-export-kontext() as element(schema) {
-  _:schema() update (
-    insert node <element name="hallo" type="text"/> into .  )
-};
-
-
-
 
 
 (:~
@@ -559,8 +517,9 @@ function _:schema-render-table-thead-tr-td-actions(
   $Item as element()*, 
   $Schema as element(schema), 
   $Context as map(*)
-) as element(xhtml:th) {
+) as element(xhtml:th)* {
   <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
+  ,<th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
 };
 
 declare %plugin:provide("content/view/context","kv")
@@ -591,7 +550,7 @@ function _:schema-render-table-import-app(
   plugin:default("schema/render/table")!.($Items,$Schema,$ContextMap)
 };
 
-declare %plugin:provide("schema/render/table")
+(:declare %plugin:provide("schema/render/table","stammdaten/regelung")
 function _:schema-render-table(
   $Items as element()*, 
   $Schema as element(schema), 
@@ -638,7 +597,7 @@ function _:schema-render-table(
        </div>
      <div class="form-group">
          {
-            for $name in ('provider','context-provider','context','field','page-start','order-by')
+            for $name in ('provider','context-provider','context','field','page-start','order-by','context-item-id')
             return <input type="hidden" name="{$name}" value="{$ContextMap=>map:get($name)}"/>
           }
           {
@@ -655,30 +614,12 @@ function _:schema-render-table(
           }
        </div>
 			</form>
-      {plugin:default("schema/render/table")!.($items,$schema,$ContextMap)//xhtml:div[contains(@class,"ibox-content")]}
+      {plugin:default("schema/render/table/embed")!.($items,$schema,$ContextMap)}
 	</div>
 </div>
-};
+};:)
 
-declare %plugin:provide("schema/render/table/tbody/tr/td/foreign-key")
-function _:schema-render-table-tbody-tr-td-foreign-key(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $ContextMap as map(*)
-) as element(xhtml:td) {
-  let $mode := if ($ContextMap?contextType='page') then "" else "-2"
-  return 
-    <td xmlns="http://www.w3.org/1999/xhtml">
-      { if ($Item/*:key) then
-        for $key in $Item/*:key 
-        return
-        modal:button("influx-modal-dialog"||$mode,
-          "/schema/form/modal/"||$key/@id||"?provider="||$Schema/*:element[@name=$Item/name()]/*:provider||"&amp;context=&amp;context-provider="||$Schema/@provider||"&amp;context-item-id="||$key/../../@id||"&amp;mode=view",
-          <a>{$key/node()}</a>
-        )
-        else $Item/node()}
-    </td>
-};
+
 
 (: Stammdaten/Regelung :)
 

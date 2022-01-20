@@ -16,48 +16,6 @@ declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common
 declare %plugin:provide('ui/page/heading') function _:breadcrumb($m){common:ui-page-heading($m)};
 
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kk")
-    %plugin:provide("schema/render/new","kv")
-function _:management-summary-render-new(
-  $Item as element(management-summary), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue Management Summary angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
-
-(: provide sorting for items :)
-declare %plugin:provide("schema/process/table/items","kv")
-%plugin:provide("schema/process/table/items","kv-top-4")
-function _:schema-render-table-prepare-rows(
-    $Items as element()*, 
-    $Schema as element(schema),
-    $Context as map(*)
-) {
-  if ($Context?context-item-id) 
-  then $Items[kv=$Context?context-item-id]
-  else for $x in $Items order by $x/datum return $x
-};
-
-declare %plugin:provide("schema/process/table/items","kk")
-%plugin:provide("schema/process/table/items","kk-top-4")
-function _:schema-process-table-items-kk(
-    $Items as element()*, 
-    $Schema as element(schema),
-    $Context as map(*)
-) {
-  if ($Context?context-item-id) 
-  then $Items[kk=$Context?context-item-id]
-  else for $x in $Items order by $x/datum return $x
-};
-
-
-
 (: provide for columns :)
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*)){
@@ -135,7 +93,7 @@ function _:no-form-buttons($Item as element(management-summary)?, $Schema as ele
   };
   
 declare %plugin:provide("content/view/context","kk")
-function _:content-view($Item as element(management-summary)?, $Schema as element(schema), $Context as map(*)){
+function _:content-view($Item as element(management-summary)*, $Schema as element(schema), $Context as map(*)){
 let $id := $Item/@id/string()
 let $name := $Item/name/string()
 let $kk := $Context("context-item")
@@ -339,7 +297,7 @@ var lineOptions = {
 
 declare %plugin:provide("content/view/context","kv")
 function _:content-view-for-kv(
-  $Item as element(management-summary)?, 
+  $Item as element(management-summary)*, 
   $Schema as element(schema), 
   $Context as map(*)
 ) {

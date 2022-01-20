@@ -55,13 +55,6 @@ function _:management-summary-render-new(
     )
 };
 
-
-declare %plugin:provide("schema/process/table/items","kv")
-function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
-{
-for $item in $Items order by $item/land return $item
-};
-
 declare %plugin:provide("schema/set/elements","kv")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
     let $columns := plugin:lookup("plato/schema/columns/get")!.("kv")
@@ -227,9 +220,8 @@ return
                   let $date := $item/@last-modified-date
                   order by $date descending
                   return $item
-              let $item-latest := $items[1]
               return
-                  plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                  plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
           }
           </div>
       </div>
@@ -245,13 +237,12 @@ return
                                          =>map:put("schema",$schema)
                                          =>map:put("context-schema",$Schema)
                 let $items :=
-                    for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
+                    for $item in plugin:provider-lookup($provider,"datastore/dataobject/search")!.("kv",$Item/@id,$schema,$Context)
                     let $date := $item/@last-modified-date
                     order by $date descending
                     return $item
-                let $item-latest := $items[1]
                 return
-                plugin:provider-lookup($provider,"content/view/context",$context)!.($item-latest,$schema,$Context)
+                plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
             }
           </div>
       </div>
@@ -287,13 +278,10 @@ return
                                          =>map:put("context-item", $Item)
                                          =>map:put("schema",$schema)
                                          =>map:put("context-schema",$Schema)
-                let $items :=
-                    for $item in plugin:provider-lookup($provider,"datastore/dataobject/search")!.("kv/key",$Item/@id,$schema,$Context)
-                    let $date := $item/@last-modified-date
-                    order by $date descending
-                    return $item
+                let $items :=db:eval("collection('datastore-sanofi-regelung')/regelung[kv=$ci]",map{"ci":$Item/@id/string()})
+                    
                 return
-                plugin:provider-lookup($provider,"schema/render/table/embed",$context)!.($items,$schema,$Context)
+                plugin:provider-lookup($provider,"schema/render/table",$context)!.($items,$schema,$Context)
             }
           </div>
       </div>

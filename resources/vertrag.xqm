@@ -33,7 +33,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contracts()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-balance-scale"></i> <span class="nav-label">Verträge</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/vertrag&amp;provider=sanofi/vertrag&amp;contextType=page"><i class="fa fa-balance-scale"></i> <span class="nav-label">Verträge</span></a>
   </li>
 };
 
@@ -41,10 +41,9 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-contracts-fusioniert()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items/fusioniert" data-sortkey="ZZZ">
-      <a class="ajax" href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/vertrag&amp;provider=sanofi/vertrag"><i class="fa fa-balance-scale"></i> <span class="nav-label">Verträge</span></a>
+      <a  href="{$global:servlet-prefix}/schema/list/items?context=fusioniert/vertrag&amp;provider=sanofi/vertrag&amp;contextType=page"><i class="fa fa-balance-scale"></i> <span class="nav-label">Verträge</span></a>
   </li>
 };
-
 
 (: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
 
@@ -171,8 +170,10 @@ function _:schema-process-table-items-lav(
       then $Items[produkt/key = $produkte/@id or produkt/key = $produkte/(string-join((name,herstellername)," - ")=>normalize-space())]
       else $Items};
 
+
+(: --- sort columns for table views --- :)
 declare %plugin:provide("schema/set/elements")
-function _:schema-render-table-prepare-rows-only-name($Items as element()*, $Schema as element(schema),$Context as map(*))
+function _:set-columns($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
     let $columns := plugin:lookup("plato/schema/columns/get")!.("vertrag")
     let $schema := $Schema update delete node ./*:element
@@ -351,51 +352,6 @@ function _:schema-render-table-tbody-tr-td-enum(
 };
 
 
-declare
-    %plugin:provide("schema/render/new")
-function _:vertrag-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-    alert:info("Neuer Vertrag angelegt.")
-   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-};
-
-
-declare
-    %plugin:provide("schema/render/update")
-function _:vertrag-render-update($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-    alert:info("Vertrag wurde geändert abgespeichert.")
-};
-
-declare
-    %plugin:provide("schema/render/delete")
-function _:vertrag-render-del($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-    alert:info("Vertrag wurde gelöscht.")
-};
-
-declare
-    %plugin:provide("schema/render/new","kk")
-    %plugin:provide("schema/render/update","kk")
-    %plugin:provide("schema/render/delete","kk")
-function _:kk-vertrag-render-new($Item as element(vertrag), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-    let $provider := "sanofi/vertrag"
-    let $context := "kk"
-    let $schema := plugin:provider-lookup($provider,"schema",$context)!.()
-    let $items :=
-        for $item in plugin:provider-lookup($provider,"datastore/dataobject/all")!.($schema,$Context)
-        let $date := $item/@last-modified-date
-        order by $date descending
-        return $item
-    return
-    plugin:provider-lookup($provider,"content/view/context",$context)!.($items,$schema,$Context)
-};
-
 declare %plugin:provide("content/view/context")
 function _:render-page-lav-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
 {
@@ -403,7 +359,7 @@ function _:render-page-lav-table($Items as element(vertrag)*, $Schema as element
   let $context := $Context?context
   let $Context := $Context => map:put("contextType","form")
   return
-    <div xmlns="http://www.w3.org/1999/xhtml">
+  <div xmlns="http://www.w3.org/1999/xhtml">
     <div class="row">
       <div class="col-md-6 form-group">
         <h5 class="form-label">Verträge mit Sanofi</h5>
@@ -428,8 +384,7 @@ function _:render-page-lav-table($Items as element(vertrag)*, $Schema as element
 (:
 Use modal buttons in table views in context "kk" instead of page buttons.
 :)
-declare %plugin:provide("schema/render/button/page/edit","kk")
-%plugin:provide("schema/render/button/page/edit","lav")
+declare %plugin:provide("schema/render/button/page/edit")
 function _:schema-render-button-page-edit($Item as element(), $Schema as element(schema), $Context as map(*))
 as element()
 {
