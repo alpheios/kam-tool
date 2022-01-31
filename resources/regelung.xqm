@@ -33,7 +33,7 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/schema/list/items" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=stammdaten/regelung&amp;provider=sanofi/regelung&amp;contextType=page"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=&amp;provider=sanofi/regelung&amp;contextType=page"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen</span></a>
   </li>
 };
 
@@ -43,152 +43,12 @@ declare %plugin:provide('side-navigation-item')
   function _:nav-item-stammdaten-regelungen-admin()
   as element(xhtml:li) {
   <li xmlns="http://www.w3.org/1999/xhtml" data-parent="/admin" data-sortkey="ZZZ">
-      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
+      <a href="{$global:servlet-prefix}/schema/list/items?context=admin&amp;provider=sanofi/regelung&amp;contextType=page"><i class="fa fa-clipboard"></i> <span class="nav-label">Regelungen (admin)</span></a>
   </li>
 };
 
-declare
-    %plugin:provide("schema/render/new")
-function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element()*
-{
-    alert:info("Neue Regelung angelegt.")
-   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-};
 
-(: ------------------------------- STAMMDATEN ENDE -------------------------------------------- :)
-
-declare %plugin:provide("schema/render/button/page/edit","kv") function _:swap-button-to-modal-edit ($Item,$Schema,$Context){
-plugin:provider-lookup("default","schema/render/button/modal/edit")($Item,$Schema,$Context)
-};
-
-
-(: adapter for ui:page to schema title :)
-declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
-declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
-declare %plugin:provide('ui/page/heading') function _:ui-page-heading($m){common:ui-page-heading($m)};
-
-
-(:
-    Debug ein/aus Schalter
-:)
-declare %plugin:provide("schema/render/page/debug/itemX") function _:debug-kk ($Item,$Schema,$Context){
-<pre>{serialize($Item)}</pre>
-};
-
-
-declare %plugin:provide("schema/render/button/modal/new")
-function _:schema-render-button-modal-new(
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element()? {
-
-    let $context := $Context("context")
-    let $provider := $Schema/@provider/string()
-    let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
-    return
-      ui:modal-button(<a class="btn btn-sm"><span class="fa fa-plus"/></a>,$link)
-};
-
-(:
-  Provider für die Profilseiten Widgets
-:)
-
-declare %plugin:provide("profile/dashboard/widget")
-function _:profile-dashboard-widget-regelungen($Profile as element())
-{
-<div class="col-md-6">
-  {
-    let $context := map { }
-    let $schema := plugin:provider-lookup("sanofi/regelung","schema")!.()
-    let $kv-schema := plugin:provider-lookup("sanofi/kv", "schema")!.()
-    let $kvs := plugin:provider-lookup("sanofi/kv","datastore/dataobject/all")!.($kv-schema,$context)
-    let $items  := plugin:provider-lookup("sanofi/regelung","datastore/dataobject/all")!.($schema,$context)
-    let $items  := 
-      for $item in $items 
-      for $kv in $kvs
-      where $kv/*:verantwortlich/string() = $Profile/@id/string() and $item/*:kv/string() = $kv/@id/string()
-      return $item
-    return
-        plugin:lookup("schema/render/table/page")!.($items,$schema,$context)
-  }
-</div>
-};
-
-
-(:
-   Sortierung und Filterung für die Stammdaten
-:)
-
-(: provide sorting for items :)
-declare %plugin:provide("schema/process/table/items","kv")
- %plugin:provide("schema/process/table/items","kk")
-  %plugin:provide("schema/process/table/items")
-function _:schema-render-table-prepare-rows(
-  $Items as element()*, 
-  $Schema as element(schema),
-  $Context as map(*)
-) {
-  let $items := if ($Context?context) then $Items[*[name()=$Context?context][.=$Context?context-item-id]] else $Items
-  for $item in $items
-  order by $item/regelungsbeginn, $item/priority 
-  return $item
-};
-
-declare %plugin:provide("schema/set/elements")
-function _:schema-render-table-prepare-rows-only-name(
-  $Items as element()*, 
-  $Schema as element(schema),
-  $Context as map(*)
-) {
-    let $columns := plugin:lookup("plato/schema/columns/get")!.("regelung")
-    let $schema := $Schema update delete node ./*:element
-    let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
-    let $schema := $schema update insert node $elements-in-order as last into .
-    return $schema
-};
-
-declare %plugin:provide("schema/set/elements","kv")
-function _:schema-render-table-prepare-rows-only-name-kv(
-  $Items as element()*, 
-  $Schema as element(schema),
-  $Context as map(*)
-) {
-    let $columns := plugin:lookup("plato/schema/columns/get")!.("regelung")
-    let $schema := $Schema update delete node ./*:element
-    let $elements-in-order := 
-      for $name in $columns 
-      where $name != "kv"
-      return $Schema/element[@name=$name]
-    let $schema := $schema update insert node $elements-in-order as last into .
-    return $schema
-};
-
-declare %plugin:provide("schema/datastore/dataobject/put/pre-hook")
-function _:combine-regelung-name(
-	$Item as element(),
-	$Schema as element(schema),
-	$Context as map(*)
-) {
-    let $context := $Context?context
-    let $foreign-provider := $Schema/element[@name/string() = "kv"]/provider/string()
-    let $foreign-schema := plugin:provider-lookup($foreign-provider, "schema", $context)!.()
-    let $kv-key := $Schema/element[@name/string() = "kv"]/key/string()
-    let $kv-fk := $Item/kv/string()
-	let $kv := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)!.($kv-key, $kv-fk, $foreign-schema, $Context)/name/string()
-
-    let $product-provider := $Schema/element[@name/string() = "produkt"]/provider/string()
-    let $product-key := $Schema/element[@name/string() = "produkt"]/key/string()
-    let $product-schema := plugin:provider-lookup($product-provider, "schema", $context)!.()
-    let $productNames :=
-        for $product in $Item/produkt/key/string()
-        let $p := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)!.($product-key, $product, $product-schema, $Context)/name/string()
-        return normalize-space($p)
-	let $products := string-join($productNames, "_")
-
-	return
-        $Item update replace value of node ./name with string-join(($products, $kv), "_")
-};
+(: ------------------------------- SCHEMA -------------------------------------------- :)
 
 declare %plugin:provide("schema") function _:schema()
 as element(schema){
@@ -200,7 +60,7 @@ as element(schema){
     </element>
     <element name="kv" type="foreign-key" required="">
             <provider>sanofi/kv</provider>
-            <key>kv</key>
+            <key>@id</key>
             <display-name>name/string()</display-name>
             <label>KV</label>
             <class>col-md-6</class>
@@ -242,7 +102,7 @@ return (
       <class>col-md-6</class>
     </element>   
       
-    <element name="amr-beschreibung" type="summernote">
+    <element name="amr-beschreibung" type="link">
       <label>AMV/Ziele Beschreibung, weitere Ergänzungen</label>
     </element>
     
@@ -259,7 +119,7 @@ return (
       <label>Typ(en) der Praxisbesonderheit</label>
      </element>
      
-    <element name="pbs-beschreibung" type="summernote">
+    <element name="pbs-beschreibung" type="link">
       <label>PBS Beschreibung</label>
     </element>
     <element name="pbs-stand" type="date">
@@ -278,17 +138,18 @@ return (
       <label>Kurz - Wetterbericht</label>
     </element>
         
-    <element name="impact2" type="enum">
+    <element name="impact2" type="enum" default="0">
       <label>Produktwetter</label>
+      <enum key="0"/>
       <enum key="1">1 - sonnig - keine bzw. kleine negative Auswirkungen auf das Produkt</enum>
       <enum key="2">2 - bewölkt - mittlere negative Auswirkungen auf das Produkt</enum>
       <enum key="3">3 - regnerisch - große negative Auswirkungen auf das Produkt</enum>
     </element>
     
-     <element name="kamhc_fazit" type="summernote">
+     <element name="kamhc_fazit" type="link">
       <label>KAM HC Fazit</label>
     </element>   
-    <element name="notizen" type="summernote" default="https://">
+    <element name="notizen" type="link" default="https://">
          <label>Link (https://) </label>
     </element>
    <element name="regelung-quote" render="table" type="foreign-key" required="">
@@ -300,6 +161,62 @@ return (
  </schema>
 };
 
+
+
+(: adapter for ui:page to schema title :)
+declare %plugin:provide('ui/page/title') function _:heading($m){_:schema()//*:title/string()};
+declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
+declare %plugin:provide('ui/page/heading') function _:ui-page-heading($m){common:ui-page-heading($m)};
+
+
+
+declare %plugin:provide("schema/render/button/modal/new")
+function _:schema-render-button-modal-new(
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element()? {
+
+    let $context := $Context("context")
+    let $provider := $Schema/@provider/string()
+    let $link := plugin:provider-lookup($provider,"schema/render/button/modal/new/link",$context)!.($Schema,$Context)
+    return
+      ui:modal-button(<a class="btn btn-sm"><span class="fa fa-plus"/></a>,$link)
+};
+
+
+
+(:
+  Provider für die Profilseiten Widgets
+:)
+
+declare %plugin:provide("profile/dashboard/widget")
+function _:profile-dashboard-widget-regelungen($Profile as element())
+{
+<div class="col-md-6">
+  {
+    let $context := map { }
+    let $schema := plugin:provider-lookup("sanofi/regelung","schema")!.()
+    let $kv-schema := plugin:provider-lookup("sanofi/kv", "schema")!.()
+    let $kvs := plugin:provider-lookup("sanofi/kv","datastore/dataobject/all")!.($kv-schema,$context)
+    let $items  := plugin:provider-lookup("sanofi/regelung","datastore/dataobject/all")!.($schema,$context)
+    let $items  := 
+      for $item in $items 
+      for $kv in $kvs
+      where $kv/*:verantwortlich/string() = $Profile/@id/string() and $item/*:kv/string() = $kv/@id/string()
+      return $item
+    return
+        plugin:lookup("schema/render/table/page")!.($items,$schema,$context)
+  }
+</div>
+};
+
+
+(:
+   Sortierung und Filterung für die Stammdaten
+:)
+(: ------------------------------- KV CONTEXT -------------------------------------------- :)
+
+
 declare %plugin:provide("schema", "kv")
 function _:schema-kv-kontext() as element(schema) {
   _:schema() update (
@@ -309,6 +226,103 @@ function _:schema-kv-kontext() as element(schema) {
       (: Label wird weiter angezeigt, damit das layout nicht zerschossen wird. :)
   )
 };
+
+
+
+(: KV nicht auf Seite, sondern im einem modal öffnen :)
+declare %plugin:provide("schema/render/button/page/edit","kv") 
+function _:swap-button-to-modal-edit ($Item,$Schema,$Context){
+  plugin:provider-lookup("default","schema/render/button/modal/edit")($Item,$Schema,$Context)
+};
+
+
+
+declare %plugin:provide("content/view/context","kv")
+function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+};
+
+
+
+(: provide sorting for items :)
+declare %plugin:provide("schema/process/table/items","kv")
+        %plugin:provide("schema/process/table/items","kk")
+        %plugin:provide("schema/process/table/items")
+function _:schema-render-table-prepare-rows(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+  let $items := if ($Context?context) then $Items[*[name()=$Context?context][.=$Context?context-item-id]] else $Items
+  for $item in $items
+  order by $item/regelungsbeginn, $item/priority 
+  return $item
+};
+
+
+
+declare %plugin:provide("schema/set/elementsX","kv")
+function _:schema-render-table-prepare-rows-only-name-kv(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("regelung")
+    let $schema := $Schema update delete node ./*:element
+    let $elements-in-order := 
+      for $name in $columns 
+      return $Schema/element[@name=$name]
+    let $schema := $schema update insert node $elements-in-order as last into .
+    return $schema
+};
+
+
+
+(: ------------------------------- Stammdaten CONTEXT -------------------------------------------- :)
+(: Spalten für die Anzeige in Tabellen auswählen :)
+declare %plugin:provide("schema/set/elements")
+function _:schema-render-table-prepare-rows-only-name(
+  $Items as element()*, 
+  $Schema as element(schema),
+  $Context as map(*)
+) {
+    let $columns := plugin:lookup("plato/schema/columns/get")!.("regelung")
+    let $schema := $Schema update delete node ./*:element
+    let $elements-in-order := for $name in $columns return $Schema/element[@name=$name]
+    let $schema := $schema update insert node $elements-in-order as last into .
+    return $schema
+};
+
+
+
+declare %plugin:provide("datastore/dataobject/put/pre-hook")
+function _:combine-regelung-name(
+	$Item as element(),
+	$Schema as element(schema),
+	$Context as map(*)
+) {
+    let $context := $Context?context
+    let $foreign-provider := $Schema/element[@name = "kv"]/provider/string()
+    let $foreign-schema := plugin:provider-lookup($foreign-provider, "schema", $context)!.()
+    let $kv-key := $Schema/element[@name = "kv"]/key/string()
+    let $kv-fk := $Item/kv/string()
+  	let $kv := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)
+                !.($kv-key, $kv-fk, $foreign-schema, $Context)/name/string()
+
+    let $product-provider := $Schema/element[@name/string() = "produkt"]/provider/string()
+    let $product-key := $Schema/element[@name/string() = "produkt"]/key/string()
+    let $product-schema := plugin:provider-lookup($product-provider, "schema", $context)!.()
+    let $productNames :=
+        for $product in $Item/produkt/key/string()
+        let $p := plugin:provider-lookup($foreign-provider,"datastore/dataobject/field",$context)!.($product-key, $product, $product-schema, $Context)/name/string()
+        return normalize-space($p)
+	let $products := string-join($productNames, "_")
+
+	return
+        $Item update replace value of node ./name with string-join(($products, $kv), "_")
+};
+
 
 
 (:~
@@ -374,6 +388,145 @@ function _:schema-datastore-dataobject-put(
           else plugin:provider-lookup($provider,"schema/render/update",$context)!.($item, $schema, $Context)
    )
  };
+ 
+ 
+
+
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions")
+function _:schema-render-table-tbody-tr-td-action-edit(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else (plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context))}</td>
+};
+
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions")
+function _:schema-render-table-tbody-tr-td-action-copy(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then () else <a class="ajax fa fa-copy" href="{$global:servlet-prefix}/sanofi/regelung/copy/{$Item/@id}"/>}</td>
+};
+
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
+function _:schema-render-table-tbody-tr-td-actions-admin-2(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context)}</td>
+};
+
+
+
+declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
+function _:schema-render-table-tbody-tr-td-actions-admin-1(
+  $Item as element(), 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:td) {
+  let $context := $Context => map:get("context")
+  let $provider := $Schema/@provider/string()
+  let $contextType := $Context => map:get("contextType")
+  let $editButtonProvider :=
+    if ($contextType = "form")
+    then "schema/render/button/modal/edit"
+    else "schema/render/button/page/edit"
+  return
+    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else ()}</td>
+};
+
+
+
+declare %plugin:provide("schema/render/table/thead/tr/actions")
+function _:schema-render-table-thead-tr-td-actions(
+  $Item as element()*, 
+  $Schema as element(schema), 
+  $Context as map(*)
+) as element(xhtml:th)* {
+  plugin:default("schema/render/table/thead/tr/actions")!.($Item,$Schema,$Context)
+  ,<th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
+};
+
+
+
+declare 
+%plugin:provide("schema/ui/page/content")
+function _:render-page-table-stammdaten2($Items as element(regelung)*, $Schema as element(schema), $Context)
+{
+  if ($Context?items) then
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+  else if ($Context?item) then
+  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
+};
+
+
+
+declare %plugin:provide("schema/render/table","influx/schema/import/app")
+function _:schema-render-table-import-app(
+  $Items as element()*, 
+  $Schema as element(schema), 
+  $ContextMap as map(*)
+) as element(xhtml:div) {
+  plugin:default("schema/render/table")!.($Items,$Schema,$ContextMap)
+};
+
+
+
+
+declare 
+%plugin:provide("content/view/context")
+function _:render-page-table-stammdaten($Items as element(vertrag)*, $Schema as element(schema), $Context)
+{
+  if ($Context?items) then
+  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
+  else if ($Context?item) then
+  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
+};
+
+
+
+(: helper functions :)
+(: Funktione für deutsches, aktuelles Datum :)
+declare function _:current-date-to-html5-input-date-de() 
+as xs:string? {
+    format-dateTime(current-dateTime(), "[D01].[M01].[Y0001]", "de", (), ())
+};
+
+
+
  (: _____________________ab hier kommt die Hilfe_______________________ :)
  
 declare %plugin:provide("schema/help") 
@@ -440,214 +593,4 @@ function _:help ($Items as element()*, $Schema as element(schema), $Context as m
           </div>
    </div>     
 </div>
-};
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions")
-function _:schema-render-table-tbody-tr-td-action-edit(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:td) {
-  let $context := $Context => map:get("context")
-  let $provider := $Schema/@provider/string()
-  let $contextType := $Context => map:get("contextType")
-  let $editButtonProvider :=
-    if ($contextType = "form")
-    then "schema/render/button/modal/edit"
-    else "schema/render/button/page/edit"
-  return
-    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else (plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context))}</td>
-};
-
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions")
-function _:schema-render-table-tbody-tr-td-action-copy(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:td) {
-  let $context := $Context => map:get("context")
-  let $provider := $Schema/@provider/string()
-  let $contextType := $Context => map:get("contextType")
-  let $editButtonProvider :=
-    if ($contextType = "form")
-    then "schema/render/button/modal/edit"
-    else "schema/render/button/page/edit"
-  return
-    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then () else <a class="ajax fa fa-copy" href="{$global:servlet-prefix}/sanofi/regelung/copy/{$Item/@id}"/>}</td>
-};
-
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
-function _:schema-render-table-tbody-tr-td-actions-admin-2(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:td) {
-  let $context := $Context => map:get("context")
-  let $provider := $Schema/@provider/string()
-  let $contextType := $Context => map:get("contextType")
-  let $editButtonProvider :=
-    if ($contextType = "form")
-    then "schema/render/button/modal/edit"
-    else "schema/render/button/page/edit"
-  return
-    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($provider,$editButtonProvider,$context)!.($Item,$Schema,$Context)}</td>
-};
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions","admin")
-function _:schema-render-table-tbody-tr-td-actions-admin-1(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:td) {
-  let $context := $Context => map:get("context")
-  let $provider := $Schema/@provider/string()
-  let $contextType := $Context => map:get("contextType")
-  let $editButtonProvider :=
-    if ($contextType = "form")
-    then "schema/render/button/modal/edit"
-    else "schema/render/button/page/edit"
-  return
-    <td xmlns="http://www.w3.org/1999/xhtml">{if ($Item/@readonly) then (<i class="fa fa-snowflake-o"/>) else ()}</td>
-};
-
-declare %plugin:provide("schema/render/table/thead/tr/actions")
-function _:schema-render-table-thead-tr-td-actions(
-  $Item as element()*, 
-  $Schema as element(schema), 
-  $Context as map(*)
-) as element(xhtml:th)* {
-  <th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
-  ,<th xmlns="http://www.w3.org/1999/xhtml" data-sort-ignore="true"></th>
-};
-
-declare %plugin:provide("content/view/context","kv")
-function _:render-page-table($Items as element(vertrag)*, $Schema as element(schema), $Context)
-{
-  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
-};
-
-
-declare 
-%plugin:provide("schema/ui/page/content")
-function _:render-page-table-stammdaten2($Items as element(regelung)*, $Schema as element(schema), $Context)
-{
-  if ($Context?items) then
-  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
-  else if ($Context?item) then
-  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
-};
-
-
-
-declare %plugin:provide("schema/render/table","influx/schema/import/app")
-function _:schema-render-table-import-app(
-  $Items as element()*, 
-  $Schema as element(schema), 
-  $ContextMap as map(*)
-) as element(xhtml:div) {
-  plugin:default("schema/render/table")!.($Items,$Schema,$ContextMap)
-};
-
-(:declare %plugin:provide("schema/render/table","stammdaten/regelung")
-function _:schema-render-table(
-  $Items as element()*, 
-  $Schema as element(schema), 
-  $ContextMap as map(*)
-) as element(xhtml:div) {
-  let $context :=$ContextMap => map:get('context')
-  let $provider := $Schema/@provider/string()
-  let $uuid := random:uuid()
-  let $table-class := "schema-"||$Schema/@name||"-table"
-  (: select, sort, filter and process items :)
-  let $page  := xquery:eval($Schema/list/query/text(),map{"ContextMap":$ContextMap})
-  let $count := $page/@count?:0 => xs:integer()
-  let $items := $page/element()
-  (: next line fixes: page-size must not be greater than the total count :)
-  (:let $ContextMap := if ($ContextMap?page-size > $count) then $ContextMap=>map:put("page-size",$count) else $ContextMap:)
-  (: prepare schema to only contain fields ("elements"), that were created in the items :)
-  let $schema := $Schema update delete node ./element
-  let $schema := $schema update for $element in subsequence($items,1,1)/element() return insert node $Schema/element[@name=$element/name()] into .
-  return
-  
-<div xmlns="http://www.w3.org/1999/xhtml" 
-     class="slimScrollDiv bg-gray" style="position: relative; overflow: hidden; width: auto; height: 100%;">
-	<div class="full-height-scroll" style="overflow: hidden; width: auto; height: 100%;">
-    {plugin:provider-lookup($provider,"schema/render/table/debug")!.($items,$schema,$ContextMap)}
-			<form method="GET" action="/schema/list/items" class="ajax">
-      
- 		<div class="row col-md-12">
-        <div class="row col-md-6">
-			<div class="input-group">
-				<input id="filter-{$uuid}" type="text" class="form-control" placeholder="Search" data-i18n="search-table" name="search" value="{$ContextMap?search}"/>
-				<span class="input-group-btn">
-					<button type="submit" onclick="document.querySelector(&quot;input[name='page-start']&quot;).value=1" class="btn btn-primary">Go!</button>
-				</span>
-        </div>
-			</div>
-        <div class="col-md-2">
-				<div class="input-group">
-					<input type="number" min="1" max="100" value="{$ContextMap?page-size?:15}" name="page-size" class="form-control" size="4"/>
-					<span class="input-group-btn">
-						<button type="submit" class="btn btn-primary">set</button>
-					</span>
-          </div>
-       </div>
-       </div>
-     <div class="form-group">
-         {
-            for $name in ('provider','context-provider','context','field','page-start','order-by','context-item-id')
-            return <input type="hidden" name="{$name}" value="{$ContextMap=>map:get($name)}"/>
-          }
-          {
-            let $page-count := ($count div $ContextMap?page-size) => floor() => xs:integer()
-            let $page-size := $ContextMap?page-size
-            let $page-start := if ($ContextMap?page-start=1) then $page-size else $ContextMap?page-start
-            for $i in 1 to $page-count
-            let $page-oversize := if ($i = $page-count) then $page-size - ($count mod $page-size) else 0
-            let $class := attribute class {if ($page-start div $page-size = $i) then "btn btn-primary" else "btn btn-outline"}
-            return <button onclick="document.querySelector(&quot;input[name='page-start']&quot;).value={$i*$ContextMap?page-size}">
-                      {$class}
-                      {($i*$page-size)-$page-size + 1} - {$i*$page-size - $page-oversize}
-                   </button>
-          }
-       </div>
-			</form>
-      {plugin:default("schema/render/table/embed")!.($items,$schema,$ContextMap)}
-	</div>
-</div>
-};:)
-
-
-
-(: Stammdaten/Regelung :)
-
-declare %plugin:provide("schema/render/table/tbody/tr/actions","stammdaten/regelung")
-function _:schema-render-table-tbody-tr-td-actions(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $ContextMap as map(*)
-) as element(xhtml:td) {
-    <td xmlns="http://www.w3.org/1999/xhtml">{plugin:provider-lookup($_:ns,"schema/render/button/modal/edit","stammdaten/regelung")!.($Item,$Schema,$ContextMap)}</td>
-};
-
-
-declare 
-%plugin:provide("content/view/context","stammdaten/regelung")
-function _:render-page-table-stammdaten($Items as element(vertrag)*, $Schema as element(schema), $Context)
-{
-  if ($Context?items) then
-  plugin:provider-lookup($_:ns,"schema/render/table")!.($Items, $Schema, $Context)
-  else if ($Context?item) then
-  plugin:provider-lookup($_:ns,"schema/render/page/form")!.($Items, $Schema, $Context)
-};
-
-
-
-(: helper functions :)
-(: Funktione für deutsches, aktuelles Datum :)
-declare function _:current-date-to-html5-input-date-de() 
-as xs:string? {
-    format-dateTime(current-dateTime(), "[D01].[M01].[Y0001]", "de", (), ())
 };

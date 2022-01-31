@@ -19,19 +19,6 @@ function _:datastore-name(
     'datastore-sanofi-kv-kenngroessen'
 };
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kk")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neuen TOP-4 Eintrag angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
 
 (: provide sorting for items :)
 declare %plugin:provide("schema/process/table/items")

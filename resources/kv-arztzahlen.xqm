@@ -25,18 +25,35 @@ function _:datastore-name(
     'datastore-sanofi-kv-arztzahlen'
 };
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kv")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue Zahlen angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
+declare %plugin:provide("schema") function _:schema()
+as element(schema){
+<schema xmlns="" name="kv-arztzahlen" domain="sanofi" provider="sanofi/kv-arztzahlen">
+    <modal>
+        <title>KV Arztzahlen</title>
+    </modal>
+    <element name="name" type="text">
+        <label>Name</label>
+    </element>
+    <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
+        <label>Datum</label>
+    </element>
+    {
+        for $fachrichtung in $_:fachrichtungen
+        let $element-name := "zahl-"||lower-case(translate($fachrichtung, " ", "-"))
+        return
+            <element name="{$element-name}" type="number">
+                <label>{$fachrichtung}</label>
+            </element>
+    }
+    <element name="kv" type="foreign-key" render="context-item" required="">
+        <provider>sanofi/kv</provider>
+        <key>@id</key>
+        <display-name>name</display-name>
+    </element>
+    <element name="notizen" type="link">
+        <label>Link</label>
+    </element>
+  </schema>
 };
 
 declare %plugin:provide("schema/process/table/items")
@@ -75,35 +92,6 @@ function _:schema-column-filter($Item as element()*, $Schema as element(schema),
 };
 
 
-declare %plugin:provide("schema") function _:schema()
-as element(schema){
-<schema xmlns="" name="kv-arztzahlen" domain="sanofi" provider="sanofi/kv-arztzahlen">
-    <modal>
-        <title>KV Arztzahlen</title>
-    </modal>
-    <element name="name" type="text">
-        <label>Name</label>
-    </element>
-    <element name="datum" type="date" default="{date-util:current-date-to-html5-input-date()}">
-        <label>Datum</label>
-    </element>
-    {
-        for $fachrichtung in $_:fachrichtungen
-        let $element-name := "zahl-"||lower-case(translate($fachrichtung, " ", "-"))
-        return
-            <element name="{$element-name}" type="number">
-                <label>{$fachrichtung}</label>
-            </element>
-    }
-    <element name="kv" type="foreign-key" render="context-item" required="">
-        <provider>sanofi/kv</provider>
-        <key>@id</key>
-        <display-name>name</display-name>
-    </element>
-    <element name="notizen" type="textarea">
-        <label>Link</label>
-    </element>
-  </schema>
-};
+
 
 

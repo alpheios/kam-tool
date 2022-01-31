@@ -44,14 +44,6 @@ function _:datastore-name(
     'datastore-sanofi-quote'
 };
 
-declare
-    %plugin:provide("schema/render/new")
-function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element()*
-{
-    alert:info("Neue Quote angelegt.")
-   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-};
 
 declare %plugin:provide("schema/set/elements","stammdaten/regelung")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){

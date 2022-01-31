@@ -148,18 +148,6 @@ as element()?
     (: Label für Feld "kk" löschen :)
 };
 
-declare
-    %plugin:provide("schema/render/new","kk")
-    %plugin:provide("schema/render/update","kk")
-    %plugin:provide("schema/render/delete","kk")
-    %plugin:provide("schema/render/new","kv")
-    %plugin:provide("schema/render/update","kv")
-    %plugin:provide("schema/render/delete","kv")
-function _:kk-blauer-ozean-render-new($Item as element(blauer-ozean), $Schema as element(schema), $Context as map(*))
-as element(xhtml:div)
-{
-    plugin:provider-lookup("sanofi/blauer-ozean","content/view/context",$Context("context"))!.($Item,$Schema,$Context)
-};
 
 
 declare %plugin:provide("content/view/context","kk")

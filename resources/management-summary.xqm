@@ -94,6 +94,7 @@ function _:no-form-buttons($Item as element(management-summary)?, $Schema as ele
   
 declare %plugin:provide("content/view/context","kk")
 function _:content-view($Item as element(management-summary)*, $Schema as element(schema), $Context as map(*)){
+let $Item := (for $x in $Item let $datum:=$x/datum order by $datum descending return $x)[1]
 let $id := $Item/@id/string()
 let $name := $Item/name/string()
 let $kk := $Context("context-item")

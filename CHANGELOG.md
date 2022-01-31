@@ -1,4 +1,12 @@
 # Changes
+## Version 2.3.3 [31.01.2022]
+* Beim Import wurden für Regelungen nicht die Namen der Regelungen automatisch generiert. 
+Jetzt werden die Namen auch beim Import generiert.
+
+## Version 2.3.2 [27.01.2022]
+* Regelungen waren falsch verlinkt, daher hat die Anzeige, Neuanlage und das Ändern nicht mehr funktioniert.
+* Die Anzeige für die Stammdaten funktioniert jetzt wieder
+
 ## Version 2.3.1 [20.01.2022]
 * Fehlermeldungen wegen falscher Rückgabewerte (mehrere statt einer)
 Bug-Fixes

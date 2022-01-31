@@ -28,20 +28,6 @@ declare %plugin:provide('ui/page/title') function _:heading($m){_:schema-default
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 declare %plugin:provide("ui/page/heading") function _:ui-page-heading($m){common:ui-page-heading($m)};
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","lav")
-function _:management-summary-render-new(
-  $Item as element(lav), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue LAV angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
-
 declare %plugin:provide("schema/process/table/items","lav")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$Context as map(*))
 {
@@ -90,7 +76,7 @@ return (
             <label>Ansprechpartner</label>
             <display-name>string-join((vorname/string(), " ",name/string()))</display-name>
     </element>
-    <element name="notizen" type="html">
+    <element name="notizen" type="link">
         <label>Link</label>
     </element>
 </schema>

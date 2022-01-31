@@ -1,5 +1,4 @@
-kv
-produkt
+name
 mapt
 impact2
 amr-beschreibung

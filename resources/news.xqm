@@ -33,16 +33,6 @@ declare %plugin:provide("ui/page/content","admin") function _:admin-ui-page-cont
 declare %plugin:provide("ui/page/content") function _:ui-page-content($m){common:ui-page-content($m)};
 
 
-declare
-    %plugin:provide("schema/render/new")
-function _:render-new($Item as element(), $Schema as element(schema), $Context as map(*))
-as element()*
-{
-    alert:info("Neue News angelegt.")
-   ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-
-};
-
 declare %plugin:provide("schema/set/elements")
 function _:schema-render-table-prepare-rows-only-name(
   $Items as element()*, 

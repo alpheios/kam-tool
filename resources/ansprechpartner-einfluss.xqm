@@ -31,20 +31,6 @@ function _:schema-process-table-items(
   $Items[ansprechpartner=$Context?context-item-id]
 };
 
-declare
-    %plugin:provide("schema/render/new")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue Ansprechpartner-Einfluss angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
-
-
 declare %plugin:provide("schema") 
 function _:schema-customer-influence()
 as element(schema){

@@ -208,21 +208,6 @@ function _:clear-connection(
   )
 };
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kk")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neuer Ansprechpartner angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
-
-
 declare %plugin:provide("schema/ui/page/content")
 function _:sanofi-ansprechpartner(
   $Items as element(ansprechpartner)*,

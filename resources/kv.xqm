@@ -41,20 +41,6 @@ declare %plugin:provide("schema/render/modal/debug/itemXXX") function _:debug-kv
 <pre>{serialize($Item)}</pre>
 };
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kv")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue KV angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
-
 declare %plugin:provide("schema/set/elements","kv")
 function _:schema-column-filter($Item as element()*, $Schema as element(schema), $Context as map(*)){
     let $columns := plugin:lookup("plato/schema/columns/get")!.("kv")
@@ -100,7 +86,7 @@ as element(schema){
       <label>Merkmale der Regelungen</label>
     </element> 
     (:   :)
-    <element name="notizen" type="html">
+    <element name="notizen" type="link">
         <label>Link</label>
     </element>
 </schema>

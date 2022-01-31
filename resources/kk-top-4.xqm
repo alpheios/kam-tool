@@ -24,19 +24,6 @@ function _:datastore-name(
     'datastore-sanofi-kk-kenngroessen'
 };
 
-declare
-    %plugin:provide("schema/render/new")
-    %plugin:provide("schema/render/new","kk")
-function _:management-summary-render-new(
-  $Item as element(), 
-  $Schema as element(schema), 
-  $Context as map(*)
-) {
-    (
-        alert:info("Neue TOP-4 Zahlen angelegt.")
-        ,plugin:default("schema/render/new")!.($Item,$Schema,$Context)
-    )
-};
 
 declare %plugin:provide("schema/process/table/items","kk-history")
 function _:schema-render-table-prepare-rows-jf($Items as element()*, $Schema as element(schema),$ContextMap as map(*))
